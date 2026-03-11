@@ -32,10 +32,12 @@
       align-items: stretch;
       justify-content: flex-start;
       padding: 16px;
+      overflow-x: hidden;
     }
 
     .page {
-      width: min(1280px, 96vw);
+      width: 100%;
+      max-width: 1280px;
       display: grid;
       gap: 18px;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -529,6 +531,7 @@
       }
       .hero, .card {
         padding: 16px;
+      overflow-x: hidden;
       }
       .topbar {
         flex-direction: column;
