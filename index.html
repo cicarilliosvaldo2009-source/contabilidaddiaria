@@ -38,6 +38,7 @@
     .page {
       width: 100%;
       max-width: 1280px;
+      min-width: 0;
       display: grid;
       gap: 18px;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -56,6 +57,16 @@
       gap: 18px;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       align-content: start;
+    }
+
+    .page,
+    .view,
+    .view-grid,
+    .card,
+    form,
+    .summary-controls,
+    .filter-group {
+      min-width: 0;
     }
 
     #view-main .view-grid {
@@ -163,6 +174,8 @@
       border-radius: 20px;
       padding: 20px;
       box-shadow: var(--shadow);
+      max-width: 100%;
+      overflow: hidden;
     }
 
     .sync-card {
@@ -198,14 +211,17 @@
 
     input, select {
       width: 100%;
+      inline-size: 100%;
+      max-width: 100%;
+      max-inline-size: 100%;
+      min-width: 0;
+      min-inline-size: 0;
       padding: 12px 14px;
       border-radius: 12px;
       border: 1px solid var(--line);
       background: #fffdf8;
       font-size: 16px;
       outline: none;
-      max-width: 100%;
-      min-width: 0;
       display: block;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -215,6 +231,13 @@
       min-width: 0;
     }
 
+    form,
+    .sync-form,
+    .summary-controls,
+    .filter-group {
+      width: 100%;
+      max-width: 100%;
+    }
     .summary-controls > .filter-group {
       min-width: 0;
     }
@@ -222,10 +245,19 @@
     input[type="date"],
     input[type="time"],
     input[type="month"] {
-      width: 100%;
-      max-width: 100%;
-      min-width: 0;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
       box-sizing: border-box;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    input[type="date"]::-webkit-date-and-time-value,
+    input[type="time"]::-webkit-date-and-time-value,
+    input[type="month"]::-webkit-date-and-time-value {
+      width: 100%;
+      min-width: 0;
     }
 
     input:focus {
