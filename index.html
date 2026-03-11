@@ -173,6 +173,16 @@
       background: #fffdf8;
       font-size: 16px;
       outline: none;
+      max-width: 100%;
+      min-width: 0;
+      display: block;
+    }
+
+    input[type="date"],
+    input[type="time"],
+    input[type="month"] {
+      max-width: 100%;
+      min-width: 0;
     }
 
     input:focus {
@@ -248,13 +258,16 @@
       gap: 12px;
       align-items: flex-end;
       flex-wrap: wrap;
+      max-width: 100%;
     }
 
     .filter-group {
       display: flex;
       flex-direction: column;
       gap: 6px;
-      min-width: 160px;
+      flex: 1 1 160px;
+      min-width: 0;
+      max-width: 100%;
     }
 
     .history-layout {
@@ -508,6 +521,15 @@
       .calendar-weekdays,
       .calendar-grid {
         min-width: 100%;
+      }
+      .summary-controls {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+      }
+      .filter-group {
+        width: 100%;
+        min-width: 0;
       }
       .calendar-weekdays span {
         font-size: 9px;
