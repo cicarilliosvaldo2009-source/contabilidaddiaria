@@ -176,13 +176,25 @@
       max-width: 100%;
       min-width: 0;
       display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    form > div {
+      min-width: 0;
+    }
+
+    .summary-controls > .filter-group {
+      min-width: 0;
     }
 
     input[type="date"],
     input[type="time"],
     input[type="month"] {
+      width: 100%;
       max-width: 100%;
       min-width: 0;
+      box-sizing: border-box;
     }
 
     input:focus {
@@ -508,6 +520,12 @@
       .filter-group {
         width: 100%;
         min-width: 0;
+      }
+      input[type=\"date\"],
+      input[type=\"time\"],
+      input[type=\"month\"] {
+        padding: 10px 12px;
+        font-size: 15px;
       }
       .calendar-cell {
         min-height: 96px;
