@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Contabilidad diaria Uber</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
   <style>
     :root {
       --bg: #f3efe7;
@@ -300,8 +303,7 @@
       display: grid;
       gap: 10px;
     }
-
-    .result-row {
+.result-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -595,7 +597,7 @@
         padding: 10px 12px;
         font-size: 15px;
       }
-      .calendar-cell {
+.calendar-cell {
         min-height: 96px;
       }
     }
@@ -814,8 +816,7 @@
             </div>
             <p class="note" id="month-note"></p>
           </section>
-
-          <section class="card" id="day-detail-card">
+<section class="card" id="day-detail-card">
             <h2 id="day-detail-title" style="margin: 0 0 8px;">Detalle del día</h2>
             <div id="day-detail-list"></div>
             <p class="note" id="day-detail-empty">Seleccioná un día del calendario.</p>
@@ -833,6 +834,7 @@
       </div>
     </section>
   </main>
+
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script>
@@ -864,8 +866,7 @@
     const monthAvgGrossEl = document.getElementById("month-avg-gross");
     const monthAvgNetEl = document.getElementById("month-avg-net");
     const monthNoteEl = document.getElementById("month-note");
-
-    const calendarTitle = document.getElementById("calendar-title");
+const calendarTitle = document.getElementById("calendar-title");
     const calendarGrid = document.getElementById("calendar-grid");
     const dayDetailTitle = document.getElementById("day-detail-title");
     const dayDetailList = document.getElementById("day-detail-list");
@@ -897,8 +898,7 @@
     let syncMode = "local";
     let currentUserId = null;
     const historyState = { items: [] };
-
-    let editingId = null;
+let editingId = null;
     let selectedDate = null;
 
     const today = new Date();
@@ -1280,7 +1280,6 @@
         ? "Registros: " + items.length + " en " + month + " (" + driverLabel + ")."
         : "Sin registros para " + month + " (" + driverLabel + ").";
     };
-
     const renderCalendar = () => {
       const monthValue = monthFilterInput.value || today.toISOString().slice(0, 7);
       const parts = monthValue.split("-");
