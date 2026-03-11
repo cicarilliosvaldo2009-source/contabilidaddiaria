@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -680,13 +680,13 @@
               <label for="driver">Conductor</label>
               <select id="driver">
                 <option value="" selected disabled>Seleccionar conductor</option>
-                <option value="martin">Martín</option>
+                <option value="martin">MartÃ­n</option>
                 <option value="osvaldo">Osvaldo</option>
               </select>
             </div>
 
             <div>
-              <label for="income">Ganancia total del día</label>
+              <label for="income">Ganancia total del dÃ­a</label>
               <input type="number" id="income" min="0" step="0.01" placeholder="Ej: 45000" />
             </div>
 
@@ -703,7 +703,7 @@
             <div class="actions">
               <button type="button" class="primary" id="calc-btn">Calcular</button>
               <button type="button" class="secondary" id="save-btn">Guardar en historial</button>
-              <button type="button" class="ghost hidden" id="cancel-edit-btn">Cancelar edición</button>
+              <button type="button" class="ghost hidden" id="cancel-edit-btn">Cancelar ediciÃ³n</button>
               <button type="button" class="ghost" id="clear-btn">Limpiar</button>
               <button type="button" class="ghost" id="history-btn">Ir al historial</button>
             </div>
@@ -715,27 +715,27 @@
           <div class="results">
             <div class="result-row">
               <span>Promedio por hora (bruto)</span>
-              <strong id="avg-gross">—</strong>
+              <strong id="avg-gross">â€”</strong>
             </div>
             <div class="result-row">
               <span>Ganancia total neta</span>
-              <strong id="net-total">—</strong>
+              <strong id="net-total">â€”</strong>
             </div>
             <div class="result-row">
               <span>Promedio por hora (neto)</span>
-              <strong id="avg-net">—</strong>
+              <strong id="avg-net">â€”</strong>
             </div>
           </div>
-          <p class="note" id="note">Completá los campos para ver los cálculos.</p>
+          <p class="note" id="note">CompletÃ¡ los campos para ver los cÃ¡lculos.</p>
         </section>
 
         <section class="card sync-card" id="sync-card">
           <div class="sync-header">
             <div>
-              <h2 style="margin: 0 0 6px;">Sincronización entre dispositivos</h2>
-              <p class="note" id="sync-status">Sincronización desactivada.</p>
+              <h2 style="margin: 0 0 6px;">SincronizaciÃ³n entre dispositivos</h2>
+              <p class="note" id="sync-status">SincronizaciÃ³n desactivada.</p>
             </div>
-            <button type="button" class="ghost mini hidden" id="sync-logout-btn">Cerrar sesión</button>
+            <button type="button" class="ghost mini hidden" id="sync-logout-btn">Cerrar sesiÃ³n</button>
           </div>
           <form class="sync-form" id="sync-form">
             <div>
@@ -743,12 +743,12 @@
               <input type="email" id="sync-email" autocomplete="email" placeholder="tu@email.com" />
             </div>
             <div>
-              <label for="sync-password">Contraseña</label>
-              <input type="password" id="sync-password" autocomplete="current-password" placeholder="••••••••" />
+              <label for="sync-password">ContraseÃ±a</label>
+              <input type="password" id="sync-password" autocomplete="current-password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" />
             </div>
             <div class="actions">
               <button type="button" class="secondary" id="sync-signup-btn">Crear cuenta</button>
-              <button type="button" class="primary" id="sync-login-btn">Iniciar sesión</button>
+              <button type="button" class="primary" id="sync-login-btn">Iniciar sesiÃ³n</button>
             </div>
           </form>
         </section>
@@ -767,7 +767,7 @@
                 <label for="driver-filter">Conductor</label>
                 <select id="driver-filter">
                   <option value="all">Todos</option>
-                  <option value="martin">Martín</option>
+                  <option value="martin">MartÃ­n</option>
                   <option value="osvaldo">Osvaldo</option>
                 </select>
               </div>
@@ -781,10 +781,10 @@
             <div class="calendar-weekdays">
               <span>Lunes</span>
               <span>Martes</span>
-              <span>Miércoles</span>
+              <span>MiÃ©rcoles</span>
               <span>Jueves</span>
               <span>Viernes</span>
-              <span>Sábado</span>
+              <span>SÃ¡bado</span>
               <span>Domingo</span>
             </div>
             <div class="calendar-grid" id="calendar-grid"></div>
@@ -797,35 +797,35 @@
             <div class="results">
               <div class="result-row">
                 <span>Ganancia total</span>
-                <strong id="month-income">—</strong>
+                <strong id="month-income">â€”</strong>
               </div>
               <div class="result-row">
                 <span>Combustible total</span>
-                <strong id="month-fuel">—</strong>
+                <strong id="month-fuel">â€”</strong>
               </div>
               <div class="result-row">
                 <span>Ganancia neta total</span>
-                <strong id="month-net">—</strong>
+                <strong id="month-net">â€”</strong>
               </div>
               <div class="result-row">
                 <span>Horas totales</span>
-                <strong id="month-hours">—</strong>
+                <strong id="month-hours">â€”</strong>
               </div>
               <div class="result-row">
                 <span>Promedio por hora (bruto)</span>
-                <strong id="month-avg-gross">—</strong>
+                <strong id="month-avg-gross">â€”</strong>
               </div>
               <div class="result-row">
                 <span>Promedio por hora (neto)</span>
-                <strong id="month-avg-net">—</strong>
+                <strong id="month-avg-net">â€”</strong>
               </div>
             </div>
             <p class="note" id="month-note"></p>
           </section>
 <section class="card" id="day-detail-card">
-            <h2 id="day-detail-title" style="margin: 0 0 8px;">Detalle del día</h2>
+            <h2 id="day-detail-title" style="margin: 0 0 8px;">Detalle del dÃ­a</h2>
             <div id="day-detail-list"></div>
-            <p class="note" id="day-detail-empty">Seleccioná un día del calendario.</p>
+            <p class="note" id="day-detail-empty">SeleccionÃ¡ un dÃ­a del calendario.</p>
             <p class="note" id="history-status"></p>
           </section>
 
@@ -834,7 +834,7 @@
               <button type="button" class="ghost" id="clear-history-btn">Borrar historial</button>
               <button type="button" class="ghost" id="back-main-btn">Volver a carga</button>
             </div>
-            <p class="note">El historial se guarda en este dispositivo y se sincroniza si iniciás sesión.</p>
+            <p class="note">El historial se guarda en este dispositivo y se sincroniza si iniciÃ¡s sesiÃ³n.</p>
           </section>
         </div>
       </div>
@@ -928,7 +928,7 @@ let editingId = null;
     ];
 
     const DRIVER_LABELS = {
-      martin: "Martín",
+      martin: "MartÃ­n",
       osvaldo: "Osvaldo"
     };
 
@@ -1059,16 +1059,16 @@ let editingId = null;
     const calculate = () => {
       const { hours, minutes, totalHours, net, avgGross, avgNet } = compute();
       const fmt = formatter();
-      avgGrossEl.textContent = totalHours > 0 ? fmt.format(avgGross) : "—";
+      avgGrossEl.textContent = totalHours > 0 ? fmt.format(avgGross) : "â€”";
       netTotalEl.textContent = fmt.format(net);
-      avgNetEl.textContent = totalHours > 0 ? fmt.format(avgNet) : "—";
+      avgNetEl.textContent = totalHours > 0 ? fmt.format(avgNet) : "â€”";
 
       if (totalHours > 0) {
         const hourLabel = hours === 1 ? "hora" : "horas";
         const minuteLabel = minutes === 1 ? "minuto" : "minutos";
         noteEl.textContent = "Calculado con " + hours + " " + hourLabel + " y " + minutes + " " + minuteLabel + ".";
       } else {
-        noteEl.textContent = "Ingresá las horas y minutos trabajados para ver los promedios.";
+        noteEl.textContent = "IngresÃ¡ las horas y minutos trabajados para ver los promedios.";
       }
     };
 
@@ -1153,7 +1153,7 @@ let editingId = null;
         return;
       }
       if (!supabaseClient) {
-        setSyncStatus("Sincronización no configurada. Completá SUPABASE_URL y SUPABASE_ANON_KEY.");
+        setSyncStatus("SincronizaciÃ³n no configurada. CompletÃ¡ SUPABASE_URL y SUPABASE_ANON_KEY.");
         if (syncForm) {
           syncForm.classList.add("hidden");
         }
@@ -1164,7 +1164,7 @@ let editingId = null;
       }
       if (session) {
         const email = session.user && session.user.email ? session.user.email : "tu cuenta";
-        setSyncStatus("Sincronización activa con " + email + ".");
+        setSyncStatus("SincronizaciÃ³n activa con " + email + ".");
         if (syncForm) {
           syncForm.classList.add("hidden");
         }
@@ -1172,7 +1172,7 @@ let editingId = null;
           syncLogoutButton.classList.remove("hidden");
         }
       } else {
-        setSyncStatus("Sincronización desactivada. Iniciá sesión para sincronizar.");
+        setSyncStatus("SincronizaciÃ³n desactivada. IniciÃ¡ sesiÃ³n para sincronizar.");
         if (syncForm) {
           syncForm.classList.remove("hidden");
         }
@@ -1204,7 +1204,7 @@ let editingId = null;
           .order("time", { ascending: false });
         if (error) {
           syncMode = "local";
-          setSyncStatus("Sincronización con error. Usando datos locales.", true);
+          setSyncStatus("SincronizaciÃ³n con error. Usando datos locales.", true);
           setHistory(getLocalHistory());
         } else {
           setHistory(data.map(fromDbEntry));
@@ -1276,8 +1276,8 @@ let editingId = null;
       monthFuelEl.textContent = fmt.format(totals.fuel);
       monthNetEl.textContent = fmt.format(totals.net);
       monthHoursEl.textContent = formatHours(totals.hours);
-      monthAvgGrossEl.textContent = totals.hours > 0 ? fmt.format(totals.income / totals.hours) : "—";
-      monthAvgNetEl.textContent = totals.hours > 0 ? fmt.format(totals.net / totals.hours) : "—";
+      monthAvgGrossEl.textContent = totals.hours > 0 ? fmt.format(totals.income / totals.hours) : "â€”";
+      monthAvgNetEl.textContent = totals.hours > 0 ? fmt.format(totals.net / totals.hours) : "â€”";
 
       const driverLabel = driverFilterInput && driverFilterInput.value !== "all"
         ? getDriverLabel(driverFilterInput.value)
@@ -1318,8 +1318,8 @@ let editingId = null;
         const dateString = year + "-" + pad2(monthIndex + 1) + "-" + pad2(day);
         const data = dailyMap[dateString];
         const avgGross = data && data.hours > 0 ? data.income / data.hours : 0;
-        const netDisplay = data ? fmt.format(data.net) : "—";
-        const avgDisplay = avgGross > 0 ? fmt.format(avgGross) : "—";
+        const netDisplay = data ? fmt.format(data.net) : "â€”";
+        const avgDisplay = avgGross > 0 ? fmt.format(avgGross) : "â€”";
         const weekday = new Date(year, monthIndex, day).getDay();
         const colors = getHeatColors(avgGross, weekday);
 
@@ -1369,8 +1369,8 @@ let editingId = null;
       historyStatus.textContent = "";
 
       if (!date) {
-        dayDetailTitle.textContent = "Detalle del día";
-        dayDetailEmpty.textContent = "Seleccioná un día del calendario.";
+        dayDetailTitle.textContent = "Detalle del dÃ­a";
+        dayDetailEmpty.textContent = "SeleccionÃ¡ un dÃ­a del calendario.";
         dayDetailEmpty.style.display = "block";
         return;
       }
@@ -1379,7 +1379,7 @@ let editingId = null;
       dayDetailTitle.textContent = "Detalle del " + date;
 
       if (!items.length) {
-        dayDetailEmpty.textContent = "No hay registros para este día.";
+        dayDetailEmpty.textContent = "No hay registros para este dÃ­a.";
         dayDetailEmpty.style.display = "block";
         return;
       }
@@ -1390,7 +1390,7 @@ let editingId = null;
 
       items.forEach((entry) => {
         const avgGross = entry.totalHours > 0 ? entry.income / entry.totalHours : 0;
-        const avgText = avgGross > 0 ? fmt.format(avgGross) : "—";
+        const avgText = avgGross > 0 ? fmt.format(avgGross) : "â€”";
         const row = document.createElement("div");
         row.className = "day-entry";
         row.innerHTML =
@@ -1479,12 +1479,12 @@ let editingId = null;
       const wasEditing = Boolean(editingId);
 
       if (income === 0 && fuel === 0 && totalHours === 0) {
-        historyStatus.textContent = "Completá los datos antes de guardar.";
+        historyStatus.textContent = "CompletÃ¡ los datos antes de guardar.";
         return;
       }
 
       if (!driver) {
-        noteEl.textContent = "Seleccioná un conductor antes de guardar.";
+        noteEl.textContent = "SeleccionÃ¡ un conductor antes de guardar.";
         return;
       }
 
@@ -1512,7 +1512,7 @@ let editingId = null;
         } else {
           selectedDate = date;
           await refreshHistory();
-          resetEditState(wasEditing ? "Edición guardada." : "Registro guardado.");
+          resetEditState(wasEditing ? "EdiciÃ³n guardada." : "Registro guardado.");
           clearForm();
           return;
         }
@@ -1528,7 +1528,7 @@ let editingId = null;
       setHistory(items);
       selectedDate = date;
       renderHistoryView();
-      resetEditState(wasEditing ? "Edición guardada." : "Registro guardado.");
+      resetEditState(wasEditing ? "EdiciÃ³n guardada." : "Registro guardado.");
       clearForm();
     };
 
@@ -1539,10 +1539,10 @@ let editingId = null;
       if (driverInput) {
         driverInput.value = "";
       }
-      avgGrossEl.textContent = "—";
-      netTotalEl.textContent = "—";
-      avgNetEl.textContent = "—";
-      noteEl.textContent = "Completá los campos para ver los cálculos.";
+      avgGrossEl.textContent = "â€”";
+      netTotalEl.textContent = "â€”";
+      avgNetEl.textContent = "â€”";
+      noteEl.textContent = "CompletÃ¡ los campos para ver los cÃ¡lculos.";
     };
 
     const clearHistory = async () => {
@@ -1622,7 +1622,7 @@ let editingId = null;
       const email = syncEmailInput ? syncEmailInput.value.trim() : "";
       const password = syncPasswordInput ? syncPasswordInput.value.trim() : "";
       if (!email || !password) {
-        setSyncStatus("Completá correo y contraseña para sincronizar.");
+        setSyncStatus("CompletÃ¡ correo y contraseÃ±a para sincronizar.");
         return null;
       }
       return { email, password };
@@ -1630,7 +1630,7 @@ let editingId = null;
 
     const handleSignUp = async () => {
       if (!supabaseClient) {
-        setSyncStatus("Sincronización no configurada.", true);
+        setSyncStatus("SincronizaciÃ³n no configurada.", true);
         return;
       }
       const credentials = getSyncCredentials();
@@ -1642,12 +1642,12 @@ let editingId = null;
         setSyncStatus("No se pudo crear la cuenta: " + error.message, true);
         return;
       }
-      setSyncStatus("Cuenta creada. Revisá tu correo si pide confirmación.");
+      setSyncStatus("Cuenta creada. RevisÃ¡ tu correo si pide confirmaciÃ³n.");
     };
 
     const handleSignIn = async () => {
       if (!supabaseClient) {
-        setSyncStatus("Sincronización no configurada.", true);
+        setSyncStatus("SincronizaciÃ³n no configurada.", true);
         return;
       }
       const credentials = getSyncCredentials();
@@ -1656,10 +1656,10 @@ let editingId = null;
       }
       const { error } = await supabaseClient.auth.signInWithPassword(credentials);
       if (error) {
-        setSyncStatus("No se pudo iniciar sesión: " + error.message, true);
+        setSyncStatus("No se pudo iniciar sesiÃ³n: " + error.message, true);
         return;
       }
-      setSyncStatus("Sesión iniciada. Sincronizando...");
+      setSyncStatus("SesiÃ³n iniciada. Sincronizando...");
     };
 
     const handleSignOut = async () => {
@@ -1667,7 +1667,7 @@ let editingId = null;
         return;
       }
       await supabaseClient.auth.signOut();
-      setSyncStatus("Sesión cerrada. Usando datos locales.");
+      setSyncStatus("SesiÃ³n cerrada. Usando datos locales.");
     };
 
     ["input", "change"].forEach((evt) => {
@@ -1693,7 +1693,7 @@ let editingId = null;
 
     calcButton.addEventListener("click", calculate);
     saveButton.addEventListener("click", saveEntry);
-    cancelEditButton.addEventListener("click", () => stopEdit("Edición cancelada."));
+    cancelEditButton.addEventListener("click", () => stopEdit("EdiciÃ³n cancelada."));
     clearButton.addEventListener("click", clearForm);
     clearHistoryButton.addEventListener("click", clearHistory);
 
@@ -1713,6 +1713,7 @@ let editingId = null;
   </script>
 </body>
 </html>
+
 
 
 
