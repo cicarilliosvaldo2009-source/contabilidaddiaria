@@ -56,6 +56,16 @@
       align-content: start;
     }
 
+    #view-main .view-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (max-width: 900px) {
+      #view-main .view-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .topbar {
       grid-column: 1 / -1;
       display: flex;
@@ -156,6 +166,7 @@
     .sync-card {
       grid-column: 1 / -1;
     }
+
 
     .sync-header {
       display: flex;
@@ -612,30 +623,6 @@
       </div>
     </div>
 
-    <section class="card sync-card" id="sync-card">
-      <div class="sync-header">
-        <div>
-          <h2 style="margin: 0 0 6px;">Sincronización entre dispositivos</h2>
-          <p class="note" id="sync-status">Sincronización desactivada.</p>
-        </div>
-        <button type="button" class="ghost mini hidden" id="sync-logout-btn">Cerrar sesión</button>
-      </div>
-      <form class="sync-form" id="sync-form">
-        <div>
-          <label for="sync-email">Correo</label>
-          <input type="email" id="sync-email" autocomplete="email" placeholder="tu@email.com" />
-        </div>
-        <div>
-          <label for="sync-password">Contraseña</label>
-          <input type="password" id="sync-password" autocomplete="current-password" placeholder="••••••••" />
-        </div>
-        <div class="actions">
-          <button type="button" class="secondary" id="sync-signup-btn">Crear cuenta</button>
-          <button type="button" class="primary" id="sync-login-btn">Iniciar sesión</button>
-        </div>
-      </form>
-    </section>
-
     <section id="view-main" class="view">
       <div class="view-grid">
 
@@ -697,6 +684,30 @@
             </div>
           </div>
           <p class="note" id="note">Completá los campos para ver los cálculos.</p>
+        </section>
+
+        <section class="card sync-card" id="sync-card">
+          <div class="sync-header">
+            <div>
+              <h2 style="margin: 0 0 6px;">Sincronización entre dispositivos</h2>
+              <p class="note" id="sync-status">Sincronización desactivada.</p>
+            </div>
+            <button type="button" class="ghost mini hidden" id="sync-logout-btn">Cerrar sesión</button>
+          </div>
+          <form class="sync-form" id="sync-form">
+            <div>
+              <label for="sync-email">Correo</label>
+              <input type="email" id="sync-email" autocomplete="email" placeholder="tu@email.com" />
+            </div>
+            <div>
+              <label for="sync-password">Contraseña</label>
+              <input type="password" id="sync-password" autocomplete="current-password" placeholder="••••••••" />
+            </div>
+            <div class="actions">
+              <button type="button" class="secondary" id="sync-signup-btn">Crear cuenta</button>
+              <button type="button" class="primary" id="sync-login-btn">Iniciar sesión</button>
+            </div>
+          </form>
         </section>
       </div>
     </section>
