@@ -153,6 +153,24 @@
       box-shadow: var(--shadow);
     }
 
+    .sync-card {
+      grid-column: 1 / -1;
+    }
+
+    .sync-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .sync-form {
+      display: grid;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
     form {
       display: grid;
       gap: 14px;
@@ -506,6 +524,10 @@
         gap: 10px;
         align-items: flex-start;
       }
+      .sync-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
       .actions {
         flex-direction: column;
       }
@@ -589,6 +611,30 @@
         <button type="button" class="nav-btn" data-view="history">Ver historial</button>
       </div>
     </div>
+
+    <section class="card sync-card" id="sync-card">
+      <div class="sync-header">
+        <div>
+          <h2 style="margin: 0 0 6px;">Sincronización entre dispositivos</h2>
+          <p class="note" id="sync-status">Sincronización desactivada.</p>
+        </div>
+        <button type="button" class="ghost mini hidden" id="sync-logout-btn">Cerrar sesión</button>
+      </div>
+      <form class="sync-form" id="sync-form">
+        <div>
+          <label for="sync-email">Correo</label>
+          <input type="email" id="sync-email" autocomplete="email" placeholder="tu@email.com" />
+        </div>
+        <div>
+          <label for="sync-password">Contraseña</label>
+          <input type="password" id="sync-password" autocomplete="current-password" placeholder="••••••••" />
+        </div>
+        <div class="actions">
+          <button type="button" class="secondary" id="sync-signup-btn">Crear cuenta</button>
+          <button type="button" class="primary" id="sync-login-btn">Iniciar sesión</button>
+        </div>
+      </form>
+    </section>
 
     <section id="view-main" class="view">
       <div class="view-grid">
@@ -735,13 +781,14 @@
               <button type="button" class="ghost" id="clear-history-btn">Borrar historial</button>
               <button type="button" class="ghost" id="back-main-btn">Volver a carga</button>
             </div>
-            <p class="note">El historial se guarda en este dispositivo.</p>
+            <p class="note">El historial se guarda en este dispositivo y se sincroniza si iniciás sesión.</p>
           </section>
         </div>
       </div>
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script>
     const incomeInput = document.getElementById("income");
     const timeWorkedInput = document.getElementById("time-worked");
@@ -750,6 +797,14 @@
     const driverInput = document.getElementById("driver");
     const monthFilterInput = document.getElementById("month-filter");
     const driverFilterInput = document.getElementById("driver-filter");
+
+    const syncStatusEl = document.getElementById("sync-status");
+    const syncForm = document.getElementById("sync-form");
+    const syncEmailInput = document.getElementById("sync-email");
+    const syncPasswordInput = document.getElementById("sync-password");
+    const syncLoginButton = document.getElementById("sync-login-btn");
+    const syncSignupButton = document.getElementById("sync-signup-btn");
+    const syncLogoutButton = document.getElementById("sync-logout-btn");
 
     const avgGrossEl = document.getElementById("avg-gross");
     const netTotalEl = document.getElementById("net-total");
@@ -784,6 +839,19 @@
     const viewHistory = document.getElementById("view-history");
 
     const historyKey = "uber-daily-history";
+
+    const SUPABASE_URL = "https://dpsffmkoimzvqgwksoff.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwc2ZmbWtvaW16dnFnd2tzb2ZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyNjQ1MDksImV4cCI6MjA4ODg0MDUwOX0.Kms7i-avDF6g-EdjWQ7WygzIC93Xm2jaf4TnKZKLOKI";
+    const supabaseAvailable = typeof window.supabase !== "undefined";
+    const supabaseConfigured = SUPABASE_URL.startsWith("https://") && SUPABASE_ANON_KEY.length > 20;
+    const supabaseClient = supabaseAvailable && supabaseConfigured
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+      : null;
+
+    let syncMode = "local";
+    let currentUserId = null;
+    const historyState = { items: [] };
+
     let editingId = null;
     let selectedDate = null;
 
@@ -826,6 +894,13 @@
     };
 
     const pad2 = (value) => String(value).padStart(2, "0");
+
+    const createId = () => {
+      if (typeof crypto !== "undefined" && crypto.randomUUID) {
+        return crypto.randomUUID();
+      }
+      return String(Date.now()) + "-" + Math.random().toString(16).slice(2);
+    };
 
     const getTimeParts = () => {
       const timeParts = (timeWorkedInput.value || "00:00").split(":");
@@ -947,10 +1022,51 @@
 
     const normalizeEntry = (entry) => ({
       ...entry,
-      driver: entry.driver || "martin"
+      id: entry.id ? String(entry.id) : createId(),
+      driver: entry.driver || "martin",
+      income: Number(entry.income) || 0,
+      fuel: Number(entry.fuel) || 0,
+      net: Number(entry.net) || 0,
+      avgGross: Number(entry.avgGross) || 0,
+      avgNet: Number(entry.avgNet) || 0,
+      totalHours: Number(entry.totalHours) || 0
     });
 
-    const getHistory = () => {
+    const fromDbEntry = (row) => normalizeEntry({
+      id: row.id,
+      date: row.date,
+      time: row.time,
+      income: row.income,
+      fuel: row.fuel,
+      net: row.net,
+      avgGross: row.avg_gross,
+      avgNet: row.avg_net,
+      totalHours: row.total_hours,
+      driver: row.driver
+    });
+
+    const toDbEntry = (entry, userId) => ({
+      id: String(entry.id),
+      user_id: userId,
+      date: entry.date,
+      time: entry.time,
+      income: entry.income,
+      fuel: entry.fuel,
+      net: entry.net,
+      avg_gross: entry.avgGross,
+      avg_net: entry.avgNet,
+      total_hours: entry.totalHours,
+      driver: entry.driver
+    });
+
+    const setHistory = (items) => {
+      historyState.items = items.map(normalizeEntry);
+      saveLocalHistory(historyState.items);
+    };
+
+    const getHistory = () => historyState.items;
+
+    const getLocalHistory = () => {
       try {
         const raw = localStorage.getItem(historyKey);
         const parsed = raw ? JSON.parse(raw) : [];
@@ -958,6 +1074,10 @@
       } catch (error) {
         return [];
       }
+    };
+
+    const saveLocalHistory = (items) => {
+      localStorage.setItem(historyKey, JSON.stringify(items));
     };
 
     const filterByDriver = (items) => {
@@ -968,8 +1088,108 @@
       return items.filter((entry) => entry.driver === selected);
     };
 
-    const saveHistory = (items) => {
-      localStorage.setItem(historyKey, JSON.stringify(items));
+    const setSyncStatus = (message, isError = false) => {
+      if (!syncStatusEl) {
+        return;
+      }
+      syncStatusEl.textContent = message;
+      syncStatusEl.style.color = isError ? "#b23b3b" : "";
+    };
+
+    const updateSyncUI = (session) => {
+      if (!syncStatusEl) {
+        return;
+      }
+      if (!supabaseClient) {
+        setSyncStatus("Sincronización no configurada. Completá SUPABASE_URL y SUPABASE_ANON_KEY.");
+        if (syncForm) {
+          syncForm.classList.add("hidden");
+        }
+        if (syncLogoutButton) {
+          syncLogoutButton.classList.add("hidden");
+        }
+        return;
+      }
+      if (session) {
+        const email = session.user && session.user.email ? session.user.email : "tu cuenta";
+        setSyncStatus("Sincronización activa con " + email + ".");
+        if (syncForm) {
+          syncForm.classList.add("hidden");
+        }
+        if (syncLogoutButton) {
+          syncLogoutButton.classList.remove("hidden");
+        }
+      } else {
+        setSyncStatus("Sincronización desactivada. Iniciá sesión para sincronizar.");
+        if (syncForm) {
+          syncForm.classList.remove("hidden");
+        }
+        if (syncLogoutButton) {
+          syncLogoutButton.classList.add("hidden");
+        }
+      }
+    };
+
+    const syncLocalToCloud = async (userId) => {
+      const localItems = getLocalHistory();
+      if (!localItems.length || !supabaseClient) {
+        return;
+      }
+      const payload = localItems.map((entry) => toDbEntry(entry, userId));
+      const { error } = await supabaseClient.from("entries").upsert(payload, { onConflict: "id" });
+      if (error) {
+        setSyncStatus("No se pudo subir el historial local.", true);
+      }
+    };
+
+    const refreshHistory = async () => {
+      if (syncMode === "cloud" && supabaseClient && currentUserId) {
+        const { data, error } = await supabaseClient
+          .from("entries")
+          .select("*")
+          .eq("user_id", currentUserId)
+          .order("date", { ascending: false })
+          .order("time", { ascending: false });
+        if (error) {
+          syncMode = "local";
+          setSyncStatus("Sincronización con error. Usando datos locales.", true);
+          setHistory(getLocalHistory());
+        } else {
+          setHistory(data.map(fromDbEntry));
+        }
+      } else {
+        setHistory(getLocalHistory());
+      }
+      renderHistoryView();
+    };
+
+    const applySession = async (session) => {
+      updateSyncUI(session);
+      if (session && session.user && session.user.id) {
+        syncMode = "cloud";
+        currentUserId = session.user.id;
+        await syncLocalToCloud(currentUserId);
+        await refreshHistory();
+      } else {
+        syncMode = "local";
+        currentUserId = null;
+        setHistory(getLocalHistory());
+        renderHistoryView();
+      }
+    };
+
+    const initSync = async () => {
+      if (!supabaseClient) {
+        updateSyncUI(null);
+        setHistory(getLocalHistory());
+        renderHistoryView();
+        return;
+      }
+      const { data } = await supabaseClient.auth.getSession();
+      await applySession(data ? data.session : null);
+      supabaseClient.auth.onAuthStateChange((_event, session) => {
+        applySession(session);
+      });
     };
 
     const buildDailyMap = (items) => {
@@ -1160,7 +1380,11 @@
           driverFilterInput.value = "all";
         }
         selectedDate = null;
-        renderHistoryView();
+        if (syncMode === "cloud") {
+          refreshHistory();
+        } else {
+          renderHistoryView();
+        }
       }
     };
 
@@ -1182,21 +1406,26 @@
       setView("main");
     };
 
-    const stopEdit = (message) => {
+    const resetEditState = (message) => {
       editingId = null;
       saveButton.textContent = "Guardar en historial";
       cancelEditButton.classList.add("hidden");
       if (message) {
         historyStatus.textContent = message;
       }
+    };
+
+    const stopEdit = (message) => {
+      resetEditState(message);
       renderHistoryView();
     };
 
-    const saveEntry = () => {
+    const saveEntry = async () => {
       const { income, fuel, totalHours, net, avgGross, avgNet } = compute();
       const date = dateInput.value || todayString;
       const time = formatTimeValue(timeWorkedInput.value || "00:00");
       const driver = driverInput ? driverInput.value : "";
+      const wasEditing = Boolean(editingId);
 
       if (income === 0 && fuel === 0 && totalHours === 0) {
         historyStatus.textContent = "Completá los datos antes de guardar.";
@@ -1208,31 +1437,8 @@
         return;
       }
 
-      const items = getHistory();
-      if (editingId) {
-        const index = items.findIndex((item) => item.id === editingId);
-        if (index !== -1) {
-          items[index] = {
-            id: editingId,
-            date,
-            time,
-            income,
-            fuel,
-            net,
-            avgGross,
-            avgNet,
-            totalHours,
-            driver
-          };
-          saveHistory(items);
-          selectedDate = date;
-          stopEdit("Edición guardada.");
-          return;
-        }
-      }
-
       const entry = {
-        id: Date.now(),
+        id: editingId || createId(),
         date,
         time,
         income,
@@ -1244,11 +1450,34 @@
         driver
       };
 
-      items.unshift(entry);
-      saveHistory(items);
+      if (syncMode === "cloud" && supabaseClient && currentUserId) {
+        const { error } = await supabaseClient
+          .from("entries")
+          .upsert(toDbEntry(entry, currentUserId), { onConflict: "id" });
+
+        if (error) {
+          syncMode = "local";
+          setSyncStatus("No se pudo guardar en la nube. Guardando local.", true);
+        } else {
+          selectedDate = date;
+          await refreshHistory();
+          resetEditState(wasEditing ? "Edición guardada." : "Registro guardado.");
+          clearForm();
+          return;
+        }
+      }
+
+      const items = getHistory();
+      const index = items.findIndex((item) => String(item.id) === String(entry.id));
+      if (index !== -1) {
+        items[index] = entry;
+      } else {
+        items.unshift(entry);
+      }
+      setHistory(items);
       selectedDate = date;
       renderHistoryView();
-      historyStatus.textContent = "Registro guardado.";
+      resetEditState(wasEditing ? "Edición guardada." : "Registro guardado.");
       clearForm();
     };
 
@@ -1265,11 +1494,53 @@
       noteEl.textContent = "Completá los campos para ver los cálculos.";
     };
 
-    const clearHistory = () => {
-      localStorage.removeItem(historyKey);
+    const clearHistory = async () => {
+      if (syncMode === "cloud" && supabaseClient && currentUserId) {
+        const { error } = await supabaseClient
+          .from("entries")
+          .delete()
+          .eq("user_id", currentUserId);
+        if (error) {
+          historyStatus.textContent = "No se pudo borrar el historial en la nube.";
+          return;
+        }
+        setHistory([]);
+      } else {
+        localStorage.removeItem(historyKey);
+        setHistory([]);
+      }
       selectedDate = null;
       renderHistoryView();
       historyStatus.textContent = "Historial borrado.";
+    };
+
+    const deleteEntry = async (id) => {
+      if (syncMode === "cloud" && supabaseClient && currentUserId) {
+        const { error } = await supabaseClient
+          .from("entries")
+          .delete()
+          .eq("id", id);
+        if (error) {
+          historyStatus.textContent = "No se pudo eliminar en la nube.";
+          return;
+        }
+        await refreshHistory();
+        historyStatus.textContent = "Registro eliminado.";
+        return;
+      }
+
+      const items = getHistory();
+      const index = items.findIndex((item) => String(item.id) === String(id));
+      if (index === -1) {
+        return;
+      }
+      const removed = items.splice(index, 1);
+      setHistory(items);
+      if (removed.length && selectedDate === removed[0].date) {
+        selectedDate = removed[0].date;
+      }
+      renderHistoryView();
+      historyStatus.textContent = "Registro eliminado.";
     };
 
     dayDetailList.addEventListener("click", (event) => {
@@ -1278,21 +1549,16 @@
         return;
       }
       const action = button.getAttribute("data-action");
-      const id = parseInt(button.getAttribute("data-id"), 10);
-      const items = getHistory();
-      const index = items.findIndex((item) => item.id === id);
-      if (index === -1) {
+      const id = button.getAttribute("data-id");
+
+      if (action === "delete") {
+        deleteEntry(id);
         return;
       }
 
-      if (action === "delete") {
-        const removed = items.splice(index, 1);
-        saveHistory(items);
-        if (removed.length && selectedDate === removed[0].date) {
-          selectedDate = removed[0].date;
-        }
-        renderHistoryView();
-        historyStatus.textContent = "Registro eliminado.";
+      const items = getHistory();
+      const index = items.findIndex((item) => String(item.id) === String(id));
+      if (index === -1) {
         return;
       }
 
@@ -1300,6 +1566,58 @@
         startEdit(items[index]);
       }
     });
+
+    const getSyncCredentials = () => {
+      const email = syncEmailInput ? syncEmailInput.value.trim() : "";
+      const password = syncPasswordInput ? syncPasswordInput.value.trim() : "";
+      if (!email || !password) {
+        setSyncStatus("Completá correo y contraseña para sincronizar.");
+        return null;
+      }
+      return { email, password };
+    };
+
+    const handleSignUp = async () => {
+      if (!supabaseClient) {
+        setSyncStatus("Sincronización no configurada.", true);
+        return;
+      }
+      const credentials = getSyncCredentials();
+      if (!credentials) {
+        return;
+      }
+      const { error } = await supabaseClient.auth.signUp(credentials);
+      if (error) {
+        setSyncStatus("No se pudo crear la cuenta: " + error.message, true);
+        return;
+      }
+      setSyncStatus("Cuenta creada. Revisá tu correo si pide confirmación.");
+    };
+
+    const handleSignIn = async () => {
+      if (!supabaseClient) {
+        setSyncStatus("Sincronización no configurada.", true);
+        return;
+      }
+      const credentials = getSyncCredentials();
+      if (!credentials) {
+        return;
+      }
+      const { error } = await supabaseClient.auth.signInWithPassword(credentials);
+      if (error) {
+        setSyncStatus("No se pudo iniciar sesión: " + error.message, true);
+        return;
+      }
+      setSyncStatus("Sesión iniciada. Sincronizando...");
+    };
+
+    const handleSignOut = async () => {
+      if (!supabaseClient) {
+        return;
+      }
+      await supabaseClient.auth.signOut();
+      setSyncStatus("Sesión cerrada. Usando datos locales.");
+    };
 
     ["input", "change"].forEach((evt) => {
       incomeInput.addEventListener(evt, calculate);
@@ -1310,6 +1628,16 @@
     monthFilterInput.addEventListener("change", renderHistoryView);
     if (driverFilterInput) {
       driverFilterInput.addEventListener("change", renderHistoryView);
+    }
+
+    if (syncSignupButton) {
+      syncSignupButton.addEventListener("click", handleSignUp);
+    }
+    if (syncLoginButton) {
+      syncLoginButton.addEventListener("click", handleSignIn);
+    }
+    if (syncLogoutButton) {
+      syncLogoutButton.addEventListener("click", handleSignOut);
     }
 
     calcButton.addEventListener("click", calculate);
@@ -1324,7 +1652,13 @@
       btn.addEventListener("click", () => setView(btn.getAttribute("data-view")));
     });
 
-    renderHistoryView();
+    const init = async () => {
+      setHistory(getLocalHistory());
+      renderHistoryView();
+      await initSync();
+    };
+
+    init();
   </script>
 </body>
 </html>
