@@ -126,6 +126,9 @@
         font-size: 12px;
         font-weight: 700;
         background: #fffdf8;
+        color: var(--accent-2);
+        -webkit-appearance: none;
+        appearance: none;
         cursor: pointer;
       }
 
@@ -239,6 +242,8 @@
         border: 1px solid var(--line);
         background: #fffdf8;
         font-size: 16px;
+        color: var(--ink);
+        -webkit-text-fill-color: var(--ink);
         outline: none;
         display: block;
         overflow: hidden;
@@ -269,6 +274,8 @@
         box-sizing: border-box;
         -webkit-appearance: none;
         appearance: none;
+        color: var(--ink);
+        -webkit-text-fill-color: var(--ink);
       }
 
       input[type="date"]::-webkit-date-and-time-value,
@@ -276,6 +283,7 @@
       input[type="month"]::-webkit-date-and-time-value {
         width: 100%;
         min-width: 0;
+        color: var(--ink);
       }
 
       input:focus {
@@ -2000,5 +2008,6 @@
     </script>
   </body>
 </html>
+
 
 
