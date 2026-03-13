@@ -199,7 +199,8 @@
         overflow: hidden;
       }
 
-      .sync-card {
+      .sync-card,
+      .sync-footer {
         grid-column: 1 / -1;
       }
 
@@ -207,6 +208,14 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .sync-footer-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         gap: 12px;
         flex-wrap: wrap;
       }
@@ -295,6 +304,50 @@
         display: flex;
         gap: 10px;
         flex-wrap: wrap;
+      }
+
+      .extras {
+        margin-top: 6px;
+        border: 1px dashed var(--line);
+        border-radius: 12px;
+        padding: 10px 12px;
+        background: #fffdf8;
+      }
+
+      .extras summary {
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--muted);
+        list-style: none;
+      }
+
+      .extras summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .extras-grid {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        margin-top: 10px;
+      }
+
+      .goal-panel {
+        margin-top: 16px;
+        padding-top: 12px;
+        border-top: 1px dashed var(--line);
+      }
+
+      .goal-grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+
+      .reminder-card {
+        background: #fff6e7;
+        border-color: #ead8c5;
       }
 
       button {
@@ -694,6 +747,52 @@
 
       <section id="view-main" class="view">
         <div class="view-grid">
+          <section class="card sync-card" id="sync-card">
+            <div class="sync-header">
+              <div>
+                <h2 style="margin: 0 0 6px">
+                  Sincronización entre dispositivos
+                </h2>
+                <p class="note" id="sync-status">Sincronización desactivada.</p>
+              </div>
+            </div>
+            <form class="sync-form" id="sync-form">
+              <div>
+                <label for="sync-email">Correo</label>
+                <input
+                  type="email"
+                  id="sync-email"
+                  autocomplete="email"
+                  placeholder="tu@email.com"
+                />
+              </div>
+              <div>
+                <label for="sync-password">Contraseña</label>
+                <input
+                  type="password"
+                  id="sync-password"
+                  autocomplete="current-password"
+                  placeholder="••••••••"
+                />
+              </div>
+              <div class="actions">
+                <button type="button" class="secondary" id="sync-signup-btn">
+                  Crear cuenta
+                </button>
+                <button type="button" class="primary" id="sync-login-btn">
+                  Iniciar sesión
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <section class="card reminder-card hidden" id="reminder-card">
+            <h3 style="margin: 0 0 6px">Hoy todavía no hay carga</h3>
+            <p class="note" id="reminder-text">
+              Registrá tu jornada para llevar el control al día.
+            </p>
+          </section>
+
           <section class="card">
             <form id="calc-form">
               <div>
@@ -744,6 +843,42 @@
                 />
               </div>
 
+              <details class="extras" id="extras-panel">
+                <summary>Otros gastos (opcional)</summary>
+                <div class="extras-grid">
+                  <div>
+                    <label for="tolls">Peajes</label>
+                    <input
+                      type="number"
+                      id="tolls"
+                      min="0"
+                      step="0.01"
+                      placeholder="Ej: 1200"
+                    />
+                  </div>
+                  <div>
+                    <label for="parking">Estacionamiento</label>
+                    <input
+                      type="number"
+                      id="parking"
+                      min="0"
+                      step="0.01"
+                      placeholder="Ej: 800"
+                    />
+                  </div>
+                  <div>
+                    <label for="other-expenses">Otros</label>
+                    <input
+                      type="number"
+                      id="other-expenses"
+                      min="0"
+                      step="0.01"
+                      placeholder="Ej: 500"
+                    />
+                  </div>
+                </div>
+              </details>
+
               <div class="actions">
                 <button type="button" class="primary" id="calc-btn">
                   Calcular
@@ -776,6 +911,10 @@
                 <strong id="net-total">—</strong>
               </div>
               <div class="result-row">
+                <span>Gastos extra</span>
+                <strong id="extra-costs">—</strong>
+              </div>
+              <div class="result-row">
                 <span>Promedio por hora (neto)</span>
                 <strong id="avg-net">—</strong>
               </div>
@@ -783,52 +922,46 @@
             <p class="note" id="note">
               Completá los campos para ver los cálculos.
             </p>
-          </section>
 
-          <section class="card sync-card" id="sync-card">
-            <div class="sync-header">
-              <div>
-                <h2 style="margin: 0 0 6px">
-                  Sincronización entre dispositivos
-                </h2>
-                <p class="note" id="sync-status">Sincronización desactivada.</p>
+            <div class="goal-panel">
+              <h3 style="margin: 0 0 10px">Metas</h3>
+              <div class="goal-grid">
+                <div>
+                  <label for="goal-hourly">Meta por hora (bruto)</label>
+                  <input
+                    type="number"
+                    id="goal-hourly"
+                    min="0"
+                    step="0.01"
+                    placeholder="Ej: 15000"
+                  />
+                </div>
+                <div>
+                  <label for="goal-weekly">Meta semanal (bruto)</label>
+                  <input
+                    type="number"
+                    id="goal-weekly"
+                    min="0"
+                    step="0.01"
+                    placeholder="Ej: 350000"
+                  />
+                </div>
               </div>
-              <button
-                type="button"
-                class="ghost mini hidden"
-                id="sync-logout-btn"
-              >
-                Cerrar sesión
+              <p class="note" id="goal-daily-status">Definí tus metas.</p>
+            </div>
+          </section>
+          <section class="card sync-footer hidden" id="sync-footer">
+            <div class="sync-footer-inner">
+              <div>
+                <h3 style="margin: 0 0 6px">Sesión activa</h3>
+                <p class="note" id="sync-footer-status">
+                  Sincronización activa.
+                </p>
+              </div>
+              <button type="button" class="secondary" id="sync-logout-btn">
+                Cerrar sesión / Cambiar cuenta
               </button>
             </div>
-            <form class="sync-form" id="sync-form">
-              <div>
-                <label for="sync-email">Correo</label>
-                <input
-                  type="email"
-                  id="sync-email"
-                  autocomplete="email"
-                  placeholder="tu@email.com"
-                />
-              </div>
-              <div>
-                <label for="sync-password">Contraseña</label>
-                <input
-                  type="password"
-                  id="sync-password"
-                  autocomplete="current-password"
-                  placeholder="••••••••"
-                />
-              </div>
-              <div class="actions">
-                <button type="button" class="secondary" id="sync-signup-btn">
-                  Crear cuenta
-                </button>
-                <button type="button" class="primary" id="sync-login-btn">
-                  Iniciar sesión
-                </button>
-              </div>
-            </form>
           </section>
         </div>
       </section>
@@ -882,6 +1015,10 @@
                   <strong id="month-fuel">—</strong>
                 </div>
                 <div class="result-row">
+                  <span>Gastos extra total</span>
+                  <strong id="month-extra">—</strong>
+                </div>
+                <div class="result-row">
                   <span>Ganancia neta total</span>
                   <strong id="month-net">—</strong>
                 </div>
@@ -896,6 +1033,10 @@
                 <div class="result-row">
                   <span>Promedio por hora (neto)</span>
                   <strong id="month-avg-net">—</strong>
+                </div>
+                <div class="result-row">
+                  <span>Meta semanal (bruto)</span>
+                  <strong id="week-goal-status">—</strong>
                 </div>
               </div>
               <p class="note" id="month-note"></p>
@@ -935,6 +1076,9 @@
       const incomeInput = document.getElementById("income");
       const timeWorkedInput = document.getElementById("time-worked");
       const fuelInput = document.getElementById("fuel");
+      const tollsInput = document.getElementById("tolls");
+      const parkingInput = document.getElementById("parking");
+      const otherExpensesInput = document.getElementById("other-expenses");
       const dateInput = document.getElementById("date");
       const driverInput = document.getElementById("driver");
       const driverSelectWrap = document.getElementById("driver-select-wrap");
@@ -943,7 +1087,10 @@
       const monthFilterInput = document.getElementById("month-filter");
       const driverFilterInput = document.getElementById("driver-filter");
 
+      const syncCard = document.getElementById("sync-card");
+      const syncFooter = document.getElementById("sync-footer");
       const syncStatusEl = document.getElementById("sync-status");
+      const syncFooterStatus = document.getElementById("sync-footer-status");
       const syncForm = document.getElementById("sync-form");
       const syncEmailInput = document.getElementById("sync-email");
       const syncPasswordInput = document.getElementById("sync-password");
@@ -954,14 +1101,20 @@
       const avgGrossEl = document.getElementById("avg-gross");
       const netTotalEl = document.getElementById("net-total");
       const avgNetEl = document.getElementById("avg-net");
+      const extraCostsEl = document.getElementById("extra-costs");
       const noteEl = document.getElementById("note");
+      const goalHourlyInput = document.getElementById("goal-hourly");
+      const goalWeeklyInput = document.getElementById("goal-weekly");
+      const goalDailyStatusEl = document.getElementById("goal-daily-status");
 
       const monthIncomeEl = document.getElementById("month-income");
       const monthFuelEl = document.getElementById("month-fuel");
+      const monthExtraEl = document.getElementById("month-extra");
       const monthNetEl = document.getElementById("month-net");
       const monthHoursEl = document.getElementById("month-hours");
       const monthAvgGrossEl = document.getElementById("month-avg-gross");
       const monthAvgNetEl = document.getElementById("month-avg-net");
+      const weekGoalStatusEl = document.getElementById("week-goal-status");
       const monthNoteEl = document.getElementById("month-note");
       const calendarTitle = document.getElementById("calendar-title");
       const calendarGrid = document.getElementById("calendar-grid");
@@ -969,6 +1122,8 @@
       const dayDetailList = document.getElementById("day-detail-list");
       const dayDetailEmpty = document.getElementById("day-detail-empty");
       const historyStatus = document.getElementById("history-status");
+      const reminderCard = document.getElementById("reminder-card");
+      const reminderText = document.getElementById("reminder-text");
 
       const calcButton = document.getElementById("calc-btn");
       const saveButton = document.getElementById("save-btn");
@@ -983,6 +1138,7 @@
       const viewHistory = document.getElementById("view-history");
 
       const historyKey = "uber-daily-history";
+      const goalsKey = "uber-daily-goals";
 
       const TEAM_ID = "uber-team-1";
       const SUPABASE_URL = "https://dpsffmkoimzvqgwksoff.supabase.co";
@@ -1049,7 +1205,27 @@
           maximumFractionDigits: 2,
         });
 
+      const loadGoals = () => {
+        try {
+          const raw = localStorage.getItem(goalsKey);
+          const parsed = raw ? JSON.parse(raw) : {};
+          return {
+            hourly: Number(parsed.hourly) || 0,
+            weekly: Number(parsed.weekly) || 0,
+          };
+        } catch (error) {
+          return { hourly: 0, weekly: 0 };
+        }
+      };
+
+      const saveGoals = (goals) => {
+        localStorage.setItem(goalsKey, JSON.stringify(goals));
+      };
+
       const parseValue = (input) => {
+        if (!input) {
+          return 0;
+        }
         const value = parseFloat(input.value);
         return Number.isFinite(value) ? value : 0;
       };
@@ -1139,6 +1315,102 @@
         return entry.driver === currentDriverId;
       };
 
+      const getGoals = () => ({
+        hourly: parseValue(goalHourlyInput),
+        weekly: parseValue(goalWeeklyInput),
+      });
+
+      const updateDailyGoalStatus = (avgGross, totalHours) => {
+        if (!goalDailyStatusEl) {
+          return;
+        }
+        const { hourly } = getGoals();
+        if (hourly <= 0) {
+          goalDailyStatusEl.textContent = "Definí tu meta por hora.";
+          return;
+        }
+        if (totalHours <= 0) {
+          goalDailyStatusEl.textContent =
+            "Meta diaria: ingresá horas trabajadas.";
+          return;
+        }
+        const fmt = formatter();
+        if (avgGross >= hourly) {
+          goalDailyStatusEl.textContent = "Meta diaria: cumplida.";
+        } else {
+          goalDailyStatusEl.textContent =
+            "Meta diaria: faltan " + fmt.format(hourly - avgGross) + " por hora.";
+        }
+      };
+
+      const getWeekRange = (referenceDate) => {
+        const start = new Date(referenceDate);
+        const dayIndex = (start.getDay() + 6) % 7;
+        start.setDate(start.getDate() - dayIndex);
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(start);
+        end.setDate(start.getDate() + 6);
+        end.setHours(23, 59, 59, 999);
+        return { start, end };
+      };
+
+      const updateWeeklyGoalStatus = () => {
+        if (!weekGoalStatusEl) {
+          return;
+        }
+        const { weekly } = getGoals();
+        if (weekly <= 0) {
+          weekGoalStatusEl.textContent = "Definí una meta semanal.";
+          return;
+        }
+        const { start, end } = getWeekRange(today);
+        const items = filterByDriver(getHistory());
+        const weekTotal = items.reduce((acc, entry) => {
+          if (!entry.date) {
+            return acc;
+          }
+          const entryDate = new Date(entry.date + "T00:00:00");
+          if (entryDate >= start && entryDate <= end) {
+            acc += entry.income || 0;
+          }
+          return acc;
+        }, 0);
+        const fmt = formatter();
+        if (weekTotal >= weekly) {
+          weekGoalStatusEl.textContent = "Cumplida.";
+        } else {
+          weekGoalStatusEl.textContent =
+            "Faltan " + fmt.format(weekly - weekTotal) + ".";
+        }
+      };
+
+      const updateReminderBanner = () => {
+        if (!reminderCard) {
+          return;
+        }
+        const driver = isAutoDriverActive()
+          ? currentDriverId
+          : driverInput
+            ? driverInput.value
+            : "";
+        const items = getHistory();
+        const hasToday = items.some(
+          (entry) =>
+            entry.date === todayString &&
+            (!driver || entry.driver === driver)
+        );
+        if (hasToday) {
+          reminderCard.classList.add("hidden");
+          return;
+        }
+        reminderCard.classList.remove("hidden");
+        if (reminderText) {
+          reminderText.textContent = driver
+            ? "Hoy todavía no hay carga para " + getDriverLabel(driver) + "."
+            : "Registrá tu jornada para llevar el control al día.";
+        }
+      };
+
       const getThresholds = (weekday) => {
         if (weekday === 5) {
           return { low: 12000, mid: 15000, high: 17000 };
@@ -1190,15 +1462,23 @@
       const compute = () => {
         const income = parseValue(incomeInput);
         const fuel = parseValue(fuelInput);
+        const tolls = parseValue(tollsInput);
+        const parking = parseValue(parkingInput);
+        const otherExpenses = parseValue(otherExpensesInput);
+        const extraCosts = tolls + parking + otherExpenses;
         const { hours, minutes } = getTimeParts();
         const totalHours = hours + minutes / 60;
-        const net = income - fuel;
+        const net = income - fuel - extraCosts;
         const avgGross = totalHours > 0 ? income / totalHours : 0;
         const avgNet = totalHours > 0 ? net / totalHours : 0;
 
         return {
           income,
           fuel,
+          tolls,
+          parking,
+          otherExpenses,
+          extraCosts,
           hours,
           minutes,
           totalHours,
@@ -1209,11 +1489,15 @@
       };
 
       const calculate = () => {
-        const { hours, minutes, totalHours, net, avgGross, avgNet } = compute();
+        const { hours, minutes, totalHours, net, avgGross, avgNet, extraCosts } =
+          compute();
         const fmt = formatter();
         avgGrossEl.textContent = totalHours > 0 ? fmt.format(avgGross) : "—";
         netTotalEl.textContent = fmt.format(net);
         avgNetEl.textContent = totalHours > 0 ? fmt.format(avgNet) : "—";
+        if (extraCostsEl) {
+          extraCostsEl.textContent = fmt.format(extraCosts);
+        }
 
         if (totalHours > 0) {
           const hourLabel = hours === 1 ? "hora" : "horas";
@@ -1232,6 +1516,8 @@
           noteEl.textContent =
             "Ingresá las horas y minutos trabajados para ver los promedios.";
         }
+
+        updateDailyGoalStatus(avgGross, totalHours);
       };
 
       const normalizeEntry = (entry) => ({
@@ -1240,6 +1526,9 @@
         driver: entry.driver || "martin",
         income: Number(entry.income) || 0,
         fuel: Number(entry.fuel) || 0,
+        tolls: Number(entry.tolls) || 0,
+        parking: Number(entry.parking) || 0,
+        otherExpenses: Number(entry.otherExpenses) || 0,
         net: Number(entry.net) || 0,
         avgGross: Number(entry.avgGross) || 0,
         avgNet: Number(entry.avgNet) || 0,
@@ -1253,6 +1542,9 @@
           time: row.time,
           income: row.income,
           fuel: row.fuel,
+          tolls: row.tolls,
+          parking: row.parking,
+          otherExpenses: row.other_expenses,
           net: row.net,
           avgGross: row.avg_gross,
           avgNet: row.avg_net,
@@ -1268,6 +1560,9 @@
         time: entry.time,
         income: entry.income,
         fuel: entry.fuel,
+        tolls: entry.tolls,
+        parking: entry.parking,
+        other_expenses: entry.otherExpenses,
         net: entry.net,
         avg_gross: entry.avgGross,
         avg_net: entry.avgNet,
@@ -1305,21 +1600,27 @@
       };
 
       const setSyncStatus = (message, isError = false) => {
-        if (!syncStatusEl) {
-          return;
+        if (syncStatusEl) {
+          syncStatusEl.textContent = message;
+          syncStatusEl.style.color = isError ? "#b23b3b" : "";
         }
-        syncStatusEl.textContent = message;
-        syncStatusEl.style.color = isError ? "#b23b3b" : "";
+        if (syncFooterStatus) {
+          syncFooterStatus.textContent = message;
+          syncFooterStatus.style.color = isError ? "#b23b3b" : "";
+        }
       };
 
       const updateSyncUI = (session) => {
-        if (!syncStatusEl) {
-          return;
-        }
         if (!supabaseClient) {
           setSyncStatus(
             "Sincronización no configurada. Completá SUPABASE_URL y SUPABASE_ANON_KEY."
           );
+          if (syncCard) {
+            syncCard.classList.remove("hidden");
+          }
+          if (syncFooter) {
+            syncFooter.classList.add("hidden");
+          }
           if (syncForm) {
             syncForm.classList.add("hidden");
           }
@@ -1334,6 +1635,12 @@
               ? session.user.email
               : "tu cuenta";
           setSyncStatus("Sincronización activa con " + email + ".");
+          if (syncCard) {
+            syncCard.classList.add("hidden");
+          }
+          if (syncFooter) {
+            syncFooter.classList.remove("hidden");
+          }
           if (syncForm) {
             syncForm.classList.add("hidden");
           }
@@ -1344,6 +1651,12 @@
           setSyncStatus(
             "Sincronización desactivada. Iniciá sesión para sincronizar."
           );
+          if (syncCard) {
+            syncCard.classList.remove("hidden");
+          }
+          if (syncFooter) {
+            syncFooter.classList.add("hidden");
+          }
           if (syncForm) {
             syncForm.classList.remove("hidden");
           }
@@ -1455,16 +1768,23 @@
           (acc, entry) => {
             acc.income += entry.income || 0;
             acc.fuel += entry.fuel || 0;
+            acc.extras +=
+              (entry.tolls || 0) +
+              (entry.parking || 0) +
+              (entry.otherExpenses || 0);
             acc.net += entry.net || 0;
             acc.hours += entry.totalHours || 0;
             return acc;
           },
-          { income: 0, fuel: 0, net: 0, hours: 0 }
+          { income: 0, fuel: 0, extras: 0, net: 0, hours: 0 }
         );
 
         const fmt = formatter();
         monthIncomeEl.textContent = fmt.format(totals.income);
         monthFuelEl.textContent = fmt.format(totals.fuel);
+        if (monthExtraEl) {
+          monthExtraEl.textContent = fmt.format(totals.extras);
+        }
         monthNetEl.textContent = fmt.format(totals.net);
         monthHoursEl.textContent = formatHours(totals.hours);
         monthAvgGrossEl.textContent =
@@ -1485,6 +1805,8 @@
             driverLabel +
             ")."
           : "Sin registros para " + month + " (" + driverLabel + ").";
+
+        updateWeeklyGoalStatus();
       };
       const renderCalendar = () => {
         const monthValue =
@@ -1629,6 +1951,15 @@
             "<span>Combustible: " +
             fmt.format(entry.fuel) +
             "</span>" +
+            "<span>Peajes: " +
+            fmt.format(entry.tolls || 0) +
+            "</span>" +
+            "<span>Estacionamiento: " +
+            fmt.format(entry.parking || 0) +
+            "</span>" +
+            "<span>Otros gastos: " +
+            fmt.format(entry.otherExpenses || 0) +
+            "</span>" +
             "<span>Conductor: " +
             getDriverLabel(entry.driver) +
             "</span>" +
@@ -1645,6 +1976,7 @@
         renderCalendar();
         renderMonthlySummary();
         renderDayDetails(selectedDate);
+        updateReminderBanner();
       };
 
       const setView = (view) => {
@@ -1679,6 +2011,15 @@
         timeWorkedInput.value = formatTimeValue(entry.time);
         incomeInput.value = entry.income;
         fuelInput.value = entry.fuel;
+        if (tollsInput) {
+          tollsInput.value = entry.tolls || "";
+        }
+        if (parkingInput) {
+          parkingInput.value = entry.parking || "";
+        }
+        if (otherExpensesInput) {
+          otherExpensesInput.value = entry.otherExpenses || "";
+        }
         if (driverInput) {
           driverInput.value = entry.driver || "martin";
         }
@@ -1715,7 +2056,18 @@
       };
 
       const saveEntry = async () => {
-        const { income, fuel, totalHours, net, avgGross, avgNet } = compute();
+        const {
+          income,
+          fuel,
+          tolls,
+          parking,
+          otherExpenses,
+          extraCosts,
+          totalHours,
+          net,
+          avgGross,
+          avgNet,
+        } = compute();
         const date = dateInput.value || todayString;
         const time = formatTimeValue(timeWorkedInput.value || "00:00");
         const driver = getEffectiveDriver();
@@ -1726,7 +2078,7 @@
           items.find((item) => item.date === date && item.driver === driver);
         const merged = Boolean(existing);
 
-        if (income === 0 && fuel === 0 && totalHours === 0) {
+        if (income === 0 && fuel === 0 && extraCosts === 0 && totalHours === 0) {
           historyStatus.textContent = "Completá los datos antes de guardar.";
           return;
         }
@@ -1744,6 +2096,9 @@
           time,
           income,
           fuel,
+          tolls,
+          parking,
+          otherExpenses,
           net,
           avgGross,
           avgNet,
@@ -1754,8 +2109,13 @@
         if (existing) {
           const mergedIncome = (existing.income || 0) + income;
           const mergedFuel = (existing.fuel || 0) + fuel;
+          const mergedTolls = (existing.tolls || 0) + tolls;
+          const mergedParking = (existing.parking || 0) + parking;
+          const mergedOtherExpenses =
+            (existing.otherExpenses || 0) + otherExpenses;
+          const mergedExtras = mergedTolls + mergedParking + mergedOtherExpenses;
           const mergedHours = (existing.totalHours || 0) + totalHours;
-          const mergedNet = mergedIncome - mergedFuel;
+          const mergedNet = mergedIncome - mergedFuel - mergedExtras;
           entry = {
             ...existing,
             id: existing.id,
@@ -1763,6 +2123,9 @@
             driver,
             income: mergedIncome,
             fuel: mergedFuel,
+            tolls: mergedTolls,
+            parking: mergedParking,
+            otherExpenses: mergedOtherExpenses,
             totalHours: mergedHours,
             net: mergedNet,
             avgGross: mergedHours > 0 ? mergedIncome / mergedHours : 0,
@@ -1820,6 +2183,15 @@
         incomeInput.value = "";
         timeWorkedInput.value = "00:00";
         fuelInput.value = "";
+        if (tollsInput) {
+          tollsInput.value = "";
+        }
+        if (parkingInput) {
+          parkingInput.value = "";
+        }
+        if (otherExpensesInput) {
+          otherExpensesInput.value = "";
+        }
         if (driverInput) {
           driverInput.value = "";
         }
@@ -1828,7 +2200,11 @@
         avgGrossEl.textContent = "—";
         netTotalEl.textContent = "—";
         avgNetEl.textContent = "—";
+        if (extraCostsEl) {
+          extraCostsEl.textContent = "—";
+        }
         noteEl.textContent = "Completá los campos para ver los cálculos.";
+        updateDailyGoalStatus(0, 0);
       };
 
       const clearHistory = async () => {
@@ -1961,15 +2337,52 @@
         setSyncStatus("Sesión cerrada. Usando datos locales.");
       };
 
+      const applySavedGoals = () => {
+        const goals = loadGoals();
+        if (goalHourlyInput) {
+          goalHourlyInput.value = goals.hourly ? String(goals.hourly) : "";
+        }
+        if (goalWeeklyInput) {
+          goalWeeklyInput.value = goals.weekly ? String(goals.weekly) : "";
+        }
+      };
+
+      const handleGoalsChange = () => {
+        const goals = getGoals();
+        saveGoals(goals);
+        const { avgGross, totalHours } = compute();
+        updateDailyGoalStatus(avgGross, totalHours);
+        updateWeeklyGoalStatus();
+      };
+
       ["input", "change"].forEach((evt) => {
         incomeInput.addEventListener(evt, calculate);
         timeWorkedInput.addEventListener(evt, calculate);
         fuelInput.addEventListener(evt, calculate);
+        if (tollsInput) {
+          tollsInput.addEventListener(evt, calculate);
+        }
+        if (parkingInput) {
+          parkingInput.addEventListener(evt, calculate);
+        }
+        if (otherExpensesInput) {
+          otherExpensesInput.addEventListener(evt, calculate);
+        }
       });
+
+      if (goalHourlyInput) {
+        goalHourlyInput.addEventListener("input", handleGoalsChange);
+      }
+      if (goalWeeklyInput) {
+        goalWeeklyInput.addEventListener("input", handleGoalsChange);
+      }
 
       monthFilterInput.addEventListener("change", renderHistoryView);
       if (driverFilterInput) {
         driverFilterInput.addEventListener("change", renderHistoryView);
+      }
+      if (driverInput) {
+        driverInput.addEventListener("change", updateReminderBanner);
       }
 
       if (syncSignupButton) {
@@ -2000,7 +2413,11 @@
 
       const init = async () => {
         setHistory(getLocalHistory());
+        applySavedGoals();
         renderHistoryView();
+        calculate();
+        updateWeeklyGoalStatus();
+        updateReminderBanner();
         await initSync();
       };
 
@@ -2008,6 +2425,8 @@
     </script>
   </body>
 </html>
+
+
 
 
 
