@@ -119,8 +119,20 @@
         font-weight: 700;
       }
 
-      .topbar-menu-wrap {
-        position: relative;
+      .topbar-driver-badge {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--accent-2);
+        background: rgba(13, 91, 82, 0.08);
+        border: 1px solid rgba(13, 91, 82, 0.15);
+        border-radius: 999px;
+        padding: 3px 10px;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+      }
+
+      .topbar-driver-badge.hidden {
+        display: none;
       }
 
       .topbar-menu-btn {
@@ -1136,13 +1148,13 @@
       }
 
       .card-results {
-        background: var(--ink);
-        border-color: transparent;
-        color: #fff;
+        background: #fdf8f0;
+        border-color: #ede3d4;
+        color: var(--ink);
       }
 
       .card-results h2 {
-        color: rgba(255, 255, 255, 0.6);
+        color: var(--muted);
         font-size: 11px;
         font-weight: 700;
         text-transform: uppercase;
@@ -1151,29 +1163,24 @@
       }
 
       .card-results .result-row {
-        background: rgba(255, 255, 255, 0.07);
+        background: rgba(255, 255, 255, 0.75);
         border-radius: 10px;
         padding: 11px 14px;
         font-size: 14px;
-        color: rgba(255, 255, 255, 0.7);
+        color: var(--ink);
       }
 
       .card-results .result-row strong {
-        color: #fff;
+        color: var(--ink);
         font-size: 15px;
       }
 
       .card-results .note {
-        color: rgba(255, 255, 255, 0.4);
+        color: var(--muted);
       }
 
       .card-results .goal-panel {
-        border-top-color: rgba(255, 255, 255, 0.12);
-      }
-
-      .card-results #goal-daily-status,
-      .card-results #week-goal-inline {
-        color: rgba(255, 255, 255, 0.5);
+        border-top-color: #ede3d4;
       }
 
       /* ── Goals view ── */
@@ -1475,7 +1482,13 @@
   <body>
     <main class="page">
       <div class="topbar">
-        <h2 id="topbar-title">Cargar jornada</h2>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <h2 id="topbar-title">Cargar jornada</h2>
+          <span
+            class="topbar-driver-badge hidden"
+            id="topbar-driver-badge"
+          ></span>
+        </div>
         <div style="display: flex; align-items: center; gap: 8px">
           <button
             type="button"
@@ -1603,22 +1616,6 @@
               <div>
                 <label for="date">Fecha</label>
                 <input type="date" id="date" />
-              </div>
-
-              <div id="driver-select-wrap">
-                <label for="driver">Conductor</label>
-                <select id="driver">
-                  <option value="" selected disabled>
-                    Seleccionar conductor
-                  </option>
-                  <option value="martin">Martín</option>
-                  <option value="osvaldo">Osvaldo</option>
-                </select>
-              </div>
-
-              <div id="driver-auto-wrap" class="hidden">
-                <label for="driver-auto">Conductor</label>
-                <input type="text" id="driver-auto" readonly />
               </div>
 
               <div>
@@ -2196,19 +2193,28 @@
       };
 
       const updateDriverUI = () => {
-        if (!driverAutoWrap || !driverSelectWrap) {
-          return;
-        }
+        const badge = document.getElementById("topbar-driver-badge");
         if (isAutoDriverActive()) {
           const driverId = editDriverOverride || currentDriverId;
-          if (driverAutoInput) {
-            driverAutoInput.value = getDriverLabel(driverId);
+          if (driverAutoInput) driverAutoInput.value = getDriverLabel(driverId);
+          if (driverAutoWrap) driverAutoWrap.classList.remove("hidden");
+          if (driverSelectWrap) driverSelectWrap.classList.add("hidden");
+          if (badge) {
+            badge.textContent = getDriverLabel(driverId);
+            badge.classList.remove("hidden");
           }
-          driverAutoWrap.classList.remove("hidden");
-          driverSelectWrap.classList.add("hidden");
         } else {
-          driverAutoWrap.classList.add("hidden");
-          driverSelectWrap.classList.remove("hidden");
+          if (driverAutoWrap) driverAutoWrap.classList.add("hidden");
+          if (driverSelectWrap) driverSelectWrap.classList.remove("hidden");
+          if (badge) {
+            const driverVal = driverInput ? driverInput.value : "";
+            if (driverVal) {
+              badge.textContent = getDriverLabel(driverVal);
+              badge.classList.remove("hidden");
+            } else {
+              badge.classList.add("hidden");
+            }
+          }
         }
       };
 
