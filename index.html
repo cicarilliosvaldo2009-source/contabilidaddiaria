@@ -35,6 +35,132 @@
         --font: "Inter", "Segoe UI", system-ui, sans-serif;
       }
 
+      body.dark {
+        --bg: #141210;
+        --bg-2: #1a1714;
+        --ink: #f0ebe2;
+        --muted: #8a7f74;
+        --accent: #e8702a;
+        --accent-2: #2a9d8f;
+        --card: #1e1b17;
+        --line: #2e2a24;
+        --shadow: 0 2px 12px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(0, 0, 0, 0.25);
+        background: #141210;
+      }
+
+      body.dark .card-form {
+        background: #1e1b17;
+      }
+
+      body.dark .card-results {
+        background: #1a1915;
+        border-color: #2e2a24;
+      }
+
+      body.dark .card-results .result-row {
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      body.dark input,
+      body.dark select {
+        background: #252119;
+        color: var(--ink);
+        -webkit-text-fill-color: var(--ink);
+        border-color: var(--line);
+      }
+
+      body.dark .extras {
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      body.dark .topbar-dropdown {
+        background: #1e1b17;
+      }
+
+      body.dark .sync-drawer {
+        background: #1e1b17;
+      }
+
+      body.dark .goals-config-btn,
+      body.dark .goals-config-panel {
+        background: #1e1b17;
+      }
+
+      body.dark .goals-stat {
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      body.dark .goals-driver-split-bar {
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      body.dark .goals-week-row {
+        background: #1e1b17;
+      }
+
+      body.dark .goals-week-row:hover {
+        background: #252119;
+      }
+
+      body.dark .result-row {
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      body.dark .day-entry {
+        background: #252119;
+      }
+
+      body.dark .calendar-cell {
+        background: #1a1714;
+      }
+
+      body.dark .calendar-day:hover {
+        background: rgba(232, 112, 42, 0.08);
+      }
+
+      body.dark .calendar-empty {
+        background: repeating-linear-gradient(
+          -45deg,
+          transparent,
+          transparent 5px,
+          rgba(255, 255, 255, 0.02) 5px,
+          rgba(255, 255, 255, 0.02) 6px
+        );
+      }
+
+      body.dark .calendar-day.selected {
+        background: rgba(42, 157, 143, 0.12);
+        box-shadow: inset 0 0 0 2px var(--accent-2);
+      }
+
+      body.dark .topbar-sync-btn:hover,
+      body.dark .topbar-menu-btn:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: var(--line);
+      }
+
+      body.dark .nav-btn:hover {
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--accent);
+      }
+
+      body.dark .nav-btn.active {
+        background: rgba(42, 157, 143, 0.15);
+      }
+
+      body.dark .goals-week-detail-entry {
+        background: #252119;
+      }
+
+      body.dark .week-summary-card {
+        background: #1e1b17;
+      }
+
+      body.dark .reminder-alert {
+        background: #252119;
+        border-color: #3a3027;
+      }
+
       * {
         box-sizing: border-box;
       }
@@ -43,13 +169,30 @@
         margin: 0;
         font-family: var(--font);
         color: var(--ink);
-        background: #f2ede4;
+        background: var(--bg);
         min-height: 100vh;
         display: flex;
         align-items: stretch;
         justify-content: flex-start;
         padding: 16px;
         overflow-x: hidden;
+        transition: background 0.3s ease, color 0.3s ease;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 9999;
+        opacity: 0.032;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        background-size: 256px 256px;
+        background-repeat: repeat;
+      }
+
+      body.dark::before {
+        opacity: 0.045;
       }
 
       .page {
@@ -67,6 +210,18 @@
       .view {
         grid-column: 1 / -1;
         width: 100%;
+        animation: view-fade-in 0.18s ease both;
+      }
+
+      @keyframes view-fade-in {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
       .view-grid {
@@ -133,6 +288,65 @@
 
       .topbar-driver-badge.hidden {
         display: none;
+      }
+
+      .dropdown-divider {
+        height: 1px;
+        background: var(--line);
+        margin: 4px 0;
+      }
+
+      .dropdown-toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        cursor: pointer;
+        border-radius: 10px;
+        transition: background 0.15s;
+        user-select: none;
+      }
+
+      .dropdown-toggle-row:hover {
+        background: #fff6e7;
+        color: var(--ink);
+      }
+
+      body.dark .dropdown-toggle-row:hover {
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .toggle-switch {
+        width: 36px;
+        height: 20px;
+        border-radius: 999px;
+        background: var(--line);
+        position: relative;
+        transition: background 0.25s;
+        flex-shrink: 0;
+      }
+
+      .toggle-switch.on {
+        background: var(--accent-2);
+      }
+
+      .toggle-knob {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: white;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+        transition: transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1);
+      }
+
+      .toggle-switch.on .toggle-knob {
+        transform: translateX(16px);
       }
 
       .topbar-menu-btn {
@@ -690,10 +904,10 @@
 
       .calendar-weekdays span {
         text-align: center;
-        font-size: 10px;
+        font-size: 11px;
         text-transform: uppercase;
-        letter-spacing: 0.1em;
-        font-weight: 800;
+        letter-spacing: 0.06em;
+        font-weight: 700;
         color: var(--ink);
         padding: 4px 0;
       }
@@ -809,12 +1023,16 @@
         background: rgba(227, 109, 47, 0.12);
       }
 
-      .calendar-metric {
-        display: flex;
-        flex-direction: column;
-        font-size: 10px;
-        color: var(--muted);
-        gap: 2px;
+      .calendar-income {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--accent-2);
+        margin-top: 4px;
+        line-height: 1.2;
+      }
+
+      body.dark .calendar-income {
+        color: #4caf84;
       }
 
       .calendar-value {
@@ -823,8 +1041,77 @@
         font-size: 11px;
       }
 
-      #day-detail-card {
-        display: block;
+      .detail-entry-row {
+        padding: 10px 0 6px;
+      }
+
+      .detail-entry-driver {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 4px;
+      }
+
+      .detail-driver-name {
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--ink);
+      }
+
+      .detail-driver-net {
+        font-weight: 700;
+        font-size: 16px;
+        color: var(--accent-2);
+        letter-spacing: -0.3px;
+      }
+
+      .detail-entry-stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 12px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .detail-entry-divider {
+        height: 1px;
+        background: var(--line);
+        margin: 6px 0;
+      }
+
+      .entry-actions {
+        display: flex;
+        gap: 0;
+        border-top: 1px solid var(--line);
+        margin-top: 10px;
+      }
+
+      .entry-action-btn {
+        flex: 1;
+        padding: 9px 10px;
+        background: transparent;
+        border: none;
+        border-right: 1px solid var(--line);
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--accent-2);
+        cursor: pointer;
+        text-align: center;
+        border-radius: 0;
+        transition: background 0.15s;
+      }
+
+      .entry-action-btn:last-child {
+        border-right: none;
+        color: #c0392b;
+      }
+
+      .entry-action-btn:hover {
+        background: rgba(0, 0, 0, 0.03);
+      }
+
+      body.dark .entry-action-btn:hover {
+        background: rgba(255, 255, 255, 0.04);
       }
 
       #day-detail-list {
@@ -834,35 +1121,106 @@
       }
 
       .day-entry {
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 12px 14px;
+        border-radius: 16px;
         background: #fff;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06),
+          0 4px 12px rgba(0, 0, 0, 0.05);
+        border: none;
         display: grid;
-        gap: 8px;
+        gap: 0;
+      }
+
+      body.dark .day-entry {
+        background: #252119;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
       }
 
       .day-entry-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 14px;
+        font-size: 15px;
+        font-weight: 700;
+        padding: 14px 16px 10px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .day-entry-header strong {
+        color: var(--ink);
+        letter-spacing: -0.1px;
+      }
+
+      .day-entry-header span {
+        font-size: 13px;
         font-weight: 600;
+        color: var(--accent-2);
+      }
+
+      .day-entry-net {
+        font-size: 17px !important;
+        font-weight: 700 !important;
+        color: var(--accent-2) !important;
+        letter-spacing: -0.3px;
       }
 
       .day-entry-meta {
         display: grid;
-        gap: 3px;
-        font-size: 12px;
+        gap: 0;
+        font-size: 13px;
+        color: var(--ink);
+      }
+
+      .day-entry-meta span {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 9px 16px;
+        border-bottom: 1px solid var(--line);
         color: var(--muted);
-        line-height: 1.5;
+      }
+
+      .day-entry-meta span:last-child {
+        border-bottom: none;
+      }
+
+      .day-entry-meta span::after {
+        content: attr(data-value);
+        font-weight: 400;
+        color: var(--muted);
+        font-size: 13px;
       }
 
       .table-actions {
         display: flex;
-        gap: 6px;
-        flex-wrap: wrap;
-        margin-top: 2px;
+        gap: 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .table-actions .mini {
+        flex: 1;
+        border-radius: 0;
+        border: none;
+        padding: 11px 10px;
+        font-size: 13px;
+        font-weight: 600;
+        text-align: center;
+        background: transparent;
+        color: var(--accent-2);
+        border-right: 1px solid var(--line);
+      }
+
+      .table-actions .mini:last-child {
+        border-right: none;
+        color: #c0392b;
+      }
+
+      .table-actions .mini:hover {
+        background: rgba(0, 0, 0, 0.03);
+      }
+
+      body.dark .table-actions .mini:hover {
+        background: rgba(255, 255, 255, 0.04);
       }
 
       .mini {
@@ -981,11 +1339,7 @@
           font-size: 11px;
           border-radius: 4px;
         }
-        .calendar-metric {
-          font-size: 9px;
-          gap: 2px;
-        }
-        .calendar-value {
+        .calendar-income {
           font-size: 10px;
         }
       }
@@ -995,61 +1349,25 @@
       }
 
       .goals-config-btn {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+        grid-column: 1 / -1;
         width: 100%;
-        padding: 12px 18px;
+        padding: 13px 18px;
         background: var(--card);
         border: 1px solid var(--line);
-        border-radius: 14px;
+        border-radius: var(--radius);
         font-size: 14px;
-        font-weight: 700;
+        font-weight: 600;
         color: var(--muted);
         cursor: pointer;
-        transition: background 0.15s, color 0.15s, border-color 0.15s;
+        text-align: center;
         box-shadow: var(--shadow);
+        transition: background 0.15s, color 0.15s;
       }
 
       .goals-config-btn:hover {
-        background: #fff8ee;
+        background: #fff6e7;
         color: var(--accent);
         border-color: #e8c99a;
-      }
-
-      .goals-config-btn.open {
-        border-radius: 14px 14px 0 0;
-        border-bottom-color: transparent;
-        color: var(--ink);
-      }
-
-      .goals-config-chevron {
-        font-size: 16px;
-        transition: transform 0.25s ease;
-        display: inline-block;
-      }
-
-      .goals-config-btn.open .goals-config-chevron {
-        transform: rotate(180deg);
-      }
-
-      .goals-config-panel {
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.3s ease;
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-top: none;
-        border-radius: 0 0 14px 14px;
-        box-shadow: var(--shadow);
-      }
-
-      .goals-config-panel.open {
-        max-height: 300px;
-      }
-
-      .goals-config-inner {
-        padding: 16px 18px 18px;
       }
 
       /* ── Sync drawer ── */
@@ -1065,8 +1383,8 @@
         border: 1.5px solid var(--line);
         border-radius: 10px;
         cursor: pointer;
-        color: var(--muted);
-        transition: background 0.15s, color 0.15s, border-color 0.15s;
+        color: var(--ink);
+        transition: background 0.15s, border-color 0.15s;
       }
 
       .topbar-sync-btn:hover {
@@ -1076,8 +1394,8 @@
       }
 
       .topbar-sync-btn.synced {
-        color: #4caf84;
-        border-color: #a8e6c1;
+        color: var(--ink);
+        border-color: var(--line);
       }
 
       .sync-status-dot {
@@ -1087,18 +1405,16 @@
         width: 7px;
         height: 7px;
         border-radius: 50%;
-        background: var(--line);
+        background: #c0392b;
         border: 1.5px solid var(--card);
-        display: none;
+        display: block;
       }
 
       .sync-status-dot.active {
-        display: block;
         background: #4caf84;
       }
 
       .sync-status-dot.error {
-        display: block;
         background: #d95f1e;
       }
 
@@ -1117,24 +1433,156 @@
       }
 
       .sync-drawer-inner {
-        padding: 18px 20px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
       }
 
       .sync-drawer-header {
         display: flex;
         justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 14px;
+        align-items: center;
       }
 
-      .sync-drawer-header strong {
+      .sync-cloud-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: rgba(11, 79, 72, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent-2);
+        flex-shrink: 0;
+      }
+
+      .sync-field {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(0, 0, 0, 0.03);
+        border: 1.5px solid var(--line);
+        border-radius: 12px;
+        padding: 0 14px;
+        transition: border-color 0.15s;
+      }
+
+      body.dark .sync-field {
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .sync-field:focus-within {
+        border-color: var(--accent-2);
+      }
+
+      .sync-field-icon {
         font-size: 14px;
+        flex-shrink: 0;
+        opacity: 0.5;
+      }
+
+      .sync-field input {
+        border: none;
+        background: transparent;
+        box-shadow: none;
+        padding: 13px 0;
+        font-size: 15px;
+        flex: 1;
+      }
+
+      .sync-field input:focus {
+        border: none;
+        box-shadow: none;
+      }
+
+      .sync-login-main-btn {
+        width: 100%;
+        padding: 14px;
+        background: var(--accent-2);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 15px;
         font-weight: 700;
-        color: var(--ink);
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(11, 79, 72, 0.25);
+        transition: filter 0.15s;
+      }
+
+      .sync-login-main-btn:hover {
+        filter: brightness(1.1);
+      }
+
+      .sync-signup-link {
+        background: transparent;
+        border: none;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        text-align: center;
+        padding: 4px;
+        width: 100%;
+        transition: color 0.15s;
+      }
+
+      .sync-signup-link:hover {
+        color: var(--accent-2);
+      }
+
+      .sync-account-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(0, 0, 0, 0.03);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px 14px;
+      }
+
+      body.dark .sync-account-row {
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .sync-account-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--accent-2);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        font-weight: 300;
+        flex-shrink: 0;
+        text-transform: uppercase;
+        letter-spacing: 0;
+      }
+
+      .sync-logout-btn {
+        width: 100%;
+        padding: 12px;
+        background: transparent;
+        border: 1.5px solid var(--line);
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #c0392b;
+        cursor: pointer;
+        transition: background 0.15s, border-color 0.15s;
+      }
+
+      .sync-logout-btn:hover {
+        background: rgba(192, 57, 43, 0.06);
+        border-color: #c0392b;
       }
 
       .sync-session-panel {
-        margin-top: 4px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
       }
 
       .sync-session-panel.hidden {
@@ -1183,9 +1631,226 @@
         border-top-color: #ede3d4;
       }
 
-      /* ── Goals view ── */
+      .month-goal-wrap {
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px solid var(--line);
+      }
+
+      .month-goal-wrap.hidden {
+        display: none;
+      }
+
+      .month-goal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .month-goal-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+      }
+
+      .month-goal-pct {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--accent-2);
+      }
+
+      .month-goal-footer {
+        display: flex;
+        justify-content: flex-end;
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 6px;
+        font-weight: 600;
+      }
+      /* ── Quick edit modal ── */
+      .quick-edit-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(24, 21, 15, 0.5);
+        z-index: 2000;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        backdrop-filter: blur(2px);
+        animation: overlay-in 0.2s ease both;
+      }
+
+      .quick-edit-overlay.hidden {
+        display: none;
+      }
+
+      @keyframes overlay-in {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .quick-edit-modal {
+        background: var(--card);
+        border-radius: 24px 24px 0 0;
+        width: 100%;
+        max-width: 560px;
+        box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.18);
+        animation: modal-slide-up 0.3s cubic-bezier(0.34, 1.2, 0.64, 1) both;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+
+      @keyframes modal-slide-up {
+        from {
+          transform: translateY(100%);
+        }
+        to {
+          transform: translateY(0);
+        }
+      }
+
+      .quick-edit-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 20px 0;
+      }
+
+      .quick-edit-header h3 {
+        margin: 0;
+        font-size: 16px;
+      }
+
+      .quick-edit-body {
+        display: grid;
+        gap: 12px;
+        padding: 16px 20px;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .quick-edit-footer {
+        display: flex;
+        gap: 10px;
+        padding: 0 20px 28px;
+        justify-content: flex-end;
+      }
+
+      body.dark .quick-edit-modal {
+        background: #1e1b17;
+      }
+
+      .week-summary-card {
+        grid-column: 1 / -1;
+        padding: 16px 20px;
+      }
+
+      .week-summary-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .week-summary-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+      }
+
+      .week-summary-range {
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .week-summary-track {
+        height: 6px;
+        background: var(--line);
+        border-radius: 999px;
+        overflow: hidden;
+        margin-bottom: 8px;
+      }
+
+      .week-summary-bar {
+        height: 100%;
+        border-radius: 999px;
+        background: #4caf84;
+        transition: width 0.5s ease, background 0.3s ease;
+        max-width: 100%;
+      }
+
+      .week-summary-row {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--ink);
+      }
+
+      .week-summary-row span:last-child {
+        color: var(--muted);
+        font-weight: 500;
+      }
       .goals-grid {
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      }
+
+      .goals-expand-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        background: transparent;
+        border: none;
+        padding: 8px 0 2px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--muted);
+        cursor: pointer;
+        transition: color 0.15s;
+      }
+
+      .goals-expand-btn:hover {
+        color: var(--accent-2);
+      }
+
+      .goals-expand-chevron {
+        transition: transform 0.25s ease;
+        flex-shrink: 0;
+      }
+
+      .goals-expand-btn.open .goals-expand-chevron {
+        transform: rotate(180deg);
+      }
+
+      .goals-stats-collapsible {
+        margin-top: 12px;
+        animation: fade-in 0.2s ease both;
+      }
+
+      .goals-stats-collapsible.hidden {
+        display: none;
+      }
+
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+          transform: translateY(-6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
       .goals-hero {
@@ -1530,6 +2195,13 @@
               <button type="button" class="nav-btn" data-view="goals">
                 Metas
               </button>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-toggle-row" id="darkmode-btn">
+                <span>Modo oscuro</span>
+                <div class="toggle-switch" id="darkmode-toggle">
+                  <div class="toggle-knob"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1538,56 +2210,95 @@
       <!-- Sync drawer -->
       <div class="sync-drawer hidden" id="sync-card">
         <div class="sync-drawer-inner">
+          <!-- Header -->
           <div class="sync-drawer-header">
-            <div>
-              <strong>Sincronización</strong>
-              <p class="note" id="sync-status" style="margin: 4px 0 0">
-                Sincronización desactivada.
-              </p>
+            <div style="display: flex; align-items: center; gap: 10px">
+              <div class="sync-cloud-icon">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" />
+                </svg>
+              </div>
+              <div>
+                <div
+                  style="font-size: 15px; font-weight: 700; color: var(--ink)"
+                >
+                  Sincronización
+                </div>
+                <div
+                  style="font-size: 12px; color: var(--muted); margin-top: 1px"
+                  id="sync-status"
+                >
+                  Desactivada
+                </div>
+              </div>
             </div>
-            <button type="button" class="ghost mini" id="sync-drawer-close">
+            <button
+              type="button"
+              class="reminder-alert-close"
+              id="sync-drawer-close"
+            >
               ✕
             </button>
           </div>
+
+          <!-- Formulario login -->
           <form class="sync-form" id="sync-form">
-            <div>
-              <label for="sync-email">Correo</label>
+            <div class="sync-field">
+              <div class="sync-field-icon">✉</div>
               <input
                 type="email"
                 id="sync-email"
                 autocomplete="email"
-                placeholder="tu@email.com"
+                placeholder="Correo electrónico"
               />
             </div>
-            <div>
-              <label for="sync-password">Contraseña</label>
+            <div class="sync-field">
+              <div class="sync-field-icon">🔒</div>
               <input
                 type="password"
                 id="sync-password"
                 autocomplete="current-password"
-                placeholder="••••••••"
+                placeholder="Contraseña"
               />
             </div>
-            <div class="actions">
-              <button type="button" class="secondary" id="sync-signup-btn">
-                Crear cuenta
-              </button>
-              <button type="button" class="primary" id="sync-login-btn">
-                Iniciar sesión
-              </button>
-            </div>
-          </form>
-          <div class="sync-session-panel hidden" id="sync-footer">
-            <p class="note" id="sync-footer-status" style="margin: 0 0 10px">
-              Sincronización activa.
-            </p>
             <button
               type="button"
-              class="ghost"
-              style="width: 100%"
-              id="sync-logout-btn"
+              class="sync-login-main-btn"
+              id="sync-login-btn"
             >
-              Cerrar sesión / Cambiar cuenta
+              Iniciar sesión
+            </button>
+          </form>
+
+          <!-- Sesión activa -->
+          <div class="sync-session-panel hidden" id="sync-footer">
+            <div class="sync-account-row">
+              <div class="sync-account-avatar" id="sync-account-avatar">—</div>
+              <div>
+                <div
+                  style="font-size: 13px; font-weight: 700; color: var(--ink)"
+                  id="sync-footer-status"
+                >
+                  —
+                </div>
+                <div
+                  style="font-size: 11px; color: var(--muted); margin-top: 2px"
+                >
+                  Sincronización activa
+                </div>
+              </div>
+            </div>
+            <button type="button" class="sync-logout-btn" id="sync-logout-btn">
+              Cerrar sesión
             </button>
           </div>
         </div>
@@ -1707,15 +2418,31 @@
                 <strong id="net-total">—</strong>
               </div>
               <div class="result-row">
-                <span>Gastos extra</span>
+                <span>Gastos</span>
                 <strong id="extra-costs">—</strong>
-              </div>
-              <div class="result-row">
-                <span>Promedio por hora (neto)</span>
-                <strong id="avg-net">—</strong>
               </div>
             </div>
             <p class="note" id="note"></p>
+          </section>
+
+          <!-- Resumen semanal -->
+          <section class="card week-summary-card" id="week-summary-card">
+            <div class="week-summary-header">
+              <span class="week-summary-label">Esta semana</span>
+              <span class="week-summary-range" id="week-summary-range">—</span>
+            </div>
+            <div class="week-summary-bar-wrap">
+              <div class="week-summary-track">
+                <div
+                  class="week-summary-bar"
+                  id="week-summary-bar"
+                  style="width: 0%"
+                ></div>
+              </div>
+            </div>
+            <div class="week-summary-row">
+              <span id="week-summary-target">—</span>
+            </div>
           </section>
         </div>
       </section>
@@ -1744,13 +2471,13 @@
             </div>
             <div class="calendar-scroll">
               <div class="calendar-weekdays">
-                <span>Lunes</span>
-                <span>Martes</span>
-                <span>Miércoles</span>
-                <span>Jueves</span>
-                <span>Viernes</span>
-                <span>Sábado</span>
-                <span>Domingo</span>
+                <span>Lu</span>
+                <span>Ma</span>
+                <span>Mi</span>
+                <span>Ju</span>
+                <span>Vi</span>
+                <span>Sá</span>
+                <span>Do</span>
               </div>
               <div class="calendar-grid" id="calendar-grid"></div>
             </div>
@@ -1759,7 +2486,23 @@
           <div class="history-side">
             <section class="card">
               <h2 style="margin: 0 0 12px">Resumen del mes</h2>
-              <div class="results">
+              <div class="month-goal-wrap hidden" id="month-goal-wrap">
+                <div class="month-goal-header">
+                  <span class="month-goal-label">Meta mensual</span>
+                  <span class="month-goal-pct" id="month-goal-pct">—</span>
+                </div>
+                <div class="week-summary-track">
+                  <div
+                    class="week-summary-bar"
+                    id="month-goal-bar"
+                    style="width: 0%"
+                  ></div>
+                </div>
+                <div class="month-goal-footer">
+                  <span id="month-goal-earned">—</span>
+                </div>
+              </div>
+              <div class="results" style="margin-top: 14px">
                 <div class="result-row">
                   <span>Ganancia total</span>
                   <strong id="month-income">—</strong>
@@ -1803,7 +2546,7 @@
           <section class="card goals-hero">
             <div class="goals-hero-header">
               <div>
-                <h2 style="margin: 0 0 4px">Esta semana</h2>
+                <h2 style="margin: 0 0 2px">Esta semana</h2>
                 <p class="note" id="goals-week-range" style="margin: 0">—</p>
               </div>
               <span class="pill" id="goals-week-badge">Sin meta</span>
@@ -1821,7 +2564,30 @@
                 <span id="goals-week-target">Meta: —</span>
               </div>
             </div>
-            <div class="goals-stats-row">
+            <button
+              type="button"
+              class="goals-expand-btn"
+              id="goals-expand-btn"
+            >
+              <span>Ver detalles</span>
+              <svg
+                class="goals-expand-chevron"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div
+              class="goals-stats-row goals-stats-collapsible hidden"
+              id="goals-stats-row"
+            >
               <div class="goals-stat">
                 <span class="goals-stat-label">Días trabajados</span>
                 <strong id="goals-days-worked">0</strong>
@@ -1855,7 +2621,6 @@
             >
               <h2 style="margin: 0">Semanas anteriores</h2>
               <div class="filter-group" style="flex: 0 1 160px">
-                <label for="goals-driver-filter">Conductor</label>
                 <select id="goals-driver-filter">
                   <option value="all">Todos</option>
                   <option value="martin">Martín</option>
@@ -1889,11 +2654,11 @@
               </div>
               <button
                 type="button"
-                class="ghost"
+                class="reminder-alert-close"
                 id="goals-detail-close"
-                style="font-size: 13px"
+                aria-label="Cerrar"
               >
-                ✕ Cerrar
+                ✕
               </button>
             </div>
             <div class="goals-driver-split" id="goals-detail-splits"></div>
@@ -1906,46 +2671,117 @@
           </section>
 
           <!-- Configuración de metas -->
-          <div class="goals-config-trigger">
-            <button
-              type="button"
-              class="goals-config-btn"
-              id="goals-config-toggle"
-            >
-              <span>⚙ Configurar metas</span>
-              <span class="goals-config-chevron" id="goals-config-chevron"
-                >▾</span
-              >
-            </button>
-            <div class="goals-config-panel" id="goals-config-panel">
-              <div class="goals-config-inner">
-                <div class="goal-grid">
-                  <div>
-                    <label for="goal-hourly">Meta por hora (bruto)</label>
-                    <input
-                      type="number"
-                      id="goal-hourly"
-                      min="0"
-                      step="0.01"
-                      placeholder="Ej: 15000"
-                    />
-                  </div>
-                  <div>
-                    <label for="goal-weekly">Meta semanal (bruto)</label>
-                    <input
-                      type="number"
-                      id="goal-weekly"
-                      min="0"
-                      step="0.01"
-                      placeholder="Ej: 350000"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <button
+            type="button"
+            class="goals-config-btn"
+            id="goals-config-toggle"
+          >
+            ⚙ Configurar metas
+          </button>
         </div>
       </section>
+
+      <!-- Modal configurar metas -->
+      <div class="quick-edit-overlay hidden" id="goals-config-overlay">
+        <div class="quick-edit-modal">
+          <div class="quick-edit-header">
+            <h3>Configurar metas</h3>
+            <button
+              type="button"
+              class="reminder-alert-close"
+              id="goals-config-close"
+            >
+              ✕
+            </button>
+          </div>
+          <div class="quick-edit-body" style="grid-template-columns: 1fr">
+            <div>
+              <label for="goal-hourly">Meta por hora (bruto)</label>
+              <input
+                type="number"
+                id="goal-hourly"
+                min="0"
+                step="0.01"
+                placeholder="Ej: 15000"
+              />
+            </div>
+            <div>
+              <label for="goal-weekly">Meta semanal (bruto)</label>
+              <input
+                type="number"
+                id="goal-weekly"
+                min="0"
+                step="0.01"
+                placeholder="Ej: 350000"
+              />
+            </div>
+          </div>
+          <div class="quick-edit-footer">
+            <button type="button" class="secondary" id="goals-config-done">
+              Listo
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Modal edición rápida -->
+      <div class="quick-edit-overlay hidden" id="quick-edit-overlay">
+        <div class="quick-edit-modal">
+          <div class="quick-edit-header">
+            <h3 id="quick-edit-title">Editar registro</h3>
+            <button
+              type="button"
+              class="reminder-alert-close"
+              id="quick-edit-close"
+            >
+              ✕
+            </button>
+          </div>
+          <div class="quick-edit-body">
+            <div>
+              <label for="qe-income">Ganancia</label>
+              <input
+                type="number"
+                id="qe-income"
+                min="0"
+                step="0.01"
+                placeholder="Ej: 45000"
+              />
+            </div>
+            <div>
+              <label for="qe-time">Horas trabajadas</label>
+              <input type="time" id="qe-time" step="60" value="00:00" />
+            </div>
+            <div>
+              <label for="qe-fuel">Combustible</label>
+              <input
+                type="number"
+                id="qe-fuel"
+                min="0"
+                step="0.01"
+                placeholder="Ej: 6000"
+              />
+            </div>
+            <div>
+              <label for="qe-other">Otros gastos</label>
+              <input
+                type="number"
+                id="qe-other"
+                min="0"
+                step="0.01"
+                placeholder="0"
+              />
+            </div>
+          </div>
+          <div class="quick-edit-footer">
+            <button type="button" class="ghost" id="quick-edit-cancel">
+              Cancelar
+            </button>
+            <button type="button" class="secondary" id="quick-edit-save">
+              Guardar cambios
+            </button>
+          </div>
+        </div>
+      </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -2359,11 +3195,11 @@
         );
 
         const rangeText =
-          formatDateShort(start.toISOString().slice(0, 10)) +
-          " – " +
+          formatDateShort(start.toISOString().slice(0, 10)).slice(0, 5) +
+          " al " +
           formatDateShort(
             new Date(start.getTime() + 6 * 86400000).toISOString().slice(0, 10)
-          );
+          ).slice(0, 5);
         if (goalsWeekRangeEl) goalsWeekRangeEl.textContent = rangeText;
 
         const pct =
@@ -2397,8 +3233,8 @@
             goalsWeekBadgeEl.style.color = "";
           } else if (over) {
             goalsWeekBadgeEl.textContent = "¡Meta cumplida!";
-            goalsWeekBadgeEl.style.background = "rgba(212,160,23,0.15)";
-            goalsWeekBadgeEl.style.color = "#a07010";
+            goalsWeekBadgeEl.style.background = "rgba(168, 230, 193, 0.35)";
+            goalsWeekBadgeEl.style.color = "#2a7a52";
           } else {
             goalsWeekBadgeEl.textContent =
               "Faltan " + fmt.format(effectiveMeta - weekEarned);
@@ -2458,9 +3294,9 @@
             const pctW = meta > 0 ? Math.min((earned / meta) * 100, 100) : 0;
             const overW = meta > 0 && earned >= meta;
             const dateLabel =
-              formatDateShort(ws.toISOString().slice(0, 10)) +
-              " – " +
-              formatDateShort(we_end.toISOString().slice(0, 10));
+              formatDateShort(ws.toISOString().slice(0, 10)).slice(0, 5) +
+              " al " +
+              formatDateShort(we_end.toISOString().slice(0, 10)).slice(0, 5);
             const pctLabel =
               meta > 0 ? Math.round((earned / meta) * 100) + "%" : "—";
             const dotClass = overW
@@ -2482,9 +3318,6 @@
               weekKey +
               '">' +
               '<div class="goals-week-dates">' +
-              '<div class="goals-week-badge-dot ' +
-              dotClass +
-              '"></div>' +
               "<span>" +
               dateLabel +
               "</span>" +
@@ -2507,9 +3340,6 @@
               "</div>" +
               '<div class="goals-week-amount">' +
               fmt.format(earned) +
-              '<span class="goals-week-pct">' +
-              pctLabel +
-              "</span>" +
               "</div>" +
               "</div>"
             );
@@ -2539,15 +3369,16 @@
 
         const { start: ws, entries: allWe } = weekMap.get(weekKey);
         const we_end = new Date(ws.getTime() + 6 * 86400000);
-        const dateLabel =
-          formatDateShort(ws.toISOString().slice(0, 10)) +
+        // Subtítulo sin año: "23/03 – 29/03"
+        const rangeShort =
+          formatDateShort(ws.toISOString().slice(0, 10)).slice(0, 5) +
           " – " +
-          formatDateShort(we_end.toISOString().slice(0, 10));
+          formatDateShort(we_end.toISOString().slice(0, 10)).slice(0, 5);
 
         if (titleEl)
           titleEl.textContent =
-            "Semana del " + formatDateShort(ws.toISOString().slice(0, 10));
-        if (rangeEl) rangeEl.textContent = dateLabel;
+            "Semana del " + rangeShort.replace(" – ", " al ");
+        if (rangeEl) rangeEl.textContent = "";
 
         // ── Barras por conductor ──
         const driverMeta = weekly > 0 ? weekly / ALL_DRIVERS.length : 0;
@@ -2564,10 +3395,19 @@
               driverMeta > 0
                 ? Math.round((drvEarned / driverMeta) * 100) + "%"
                 : "—";
+            const amountLabel =
+              driverMeta > 0
+                ? fmt.format(drvEarned) + " / " + fmt.format(driverMeta)
+                : fmt.format(drvEarned);
             return (
               '<div class="goals-driver-split-bar">' +
-              '<div class="split-name">' +
+              '<div class="split-name" style="display:flex;justify-content:space-between;align-items:center">' +
+              "<span>" +
               getDriverLabel2(drv) +
+              "</span>" +
+              '<span style="font-weight:700;color:var(--accent-2);font-size:12px">' +
+              pctLabel +
+              "</span>" +
               "</div>" +
               '<div class="split-track"><div class="split-fill' +
               (drvOver ? " over" : "") +
@@ -2577,13 +3417,7 @@
               (driverMeta > 0 ? barColor(drvPct) : "#4caf84") +
               '"></div></div>' +
               '<div class="split-labels"><span>' +
-              fmt.format(drvEarned) +
-              "</span><span>" +
-              (driverMeta > 0
-                ? "Meta: " + fmt.format(driverMeta)
-                : "Sin meta") +
-              " · " +
-              pctLabel +
+              amountLabel +
               "</span></div>" +
               "</div>"
             );
@@ -2616,7 +3450,7 @@
         );
         if (summaryEl) {
           summaryEl.innerHTML =
-            "<span>Total bruto: <strong>" +
+            "<span>Total: <strong>" +
             fmt.format(totalEarned) +
             "</strong></span>" +
             "<span>Neto: <strong>" +
@@ -2624,12 +3458,6 @@
             "</strong></span>" +
             "<span>Combustible: <strong>" +
             fmt.format(totalFuel) +
-            "</strong></span>" +
-            "<span>Horas: <strong>" +
-            formatHours(totalHrs) +
-            "</strong></span>" +
-            "<span>Días: <strong>" +
-            allWe.length +
             "</strong></span>";
         }
 
@@ -2676,6 +3504,53 @@
 
         panel.classList.remove("hidden");
         panel.scrollIntoView({ behavior: "smooth", block: "start" });
+      };
+
+      const updateWeeklySummary = () => {
+        const fmt = formatter();
+        const { weekly } = getGoals();
+        const driverFilter = isAutoDriverActive() ? currentDriverId : "";
+        const { start } = getWeekRange(today);
+        const weekEnd = new Date(start.getTime() + 6 * 86400000);
+        const items = getHistory().filter((e) => {
+          if (!e.date) return false;
+          const d = new Date(e.date + "T00:00:00");
+          if (d < start || d > weekEnd) return false;
+          if (driverFilter && e.driver !== driverFilter) return false;
+          return true;
+        });
+        const earned = items.reduce((a, e) => a + (e.income || 0), 0);
+        const meta =
+          weekly > 0
+            ? driverFilter
+              ? weekly / ALL_DRIVERS.length
+              : weekly
+            : 0;
+        const pct = meta > 0 ? Math.min((earned / meta) * 100, 100) : 0;
+
+        const barEl = document.getElementById("week-summary-bar");
+        const earnedEl = document.getElementById("week-summary-earned");
+        const targetEl = document.getElementById("week-summary-target");
+        const rangeEl = document.getElementById("week-summary-range");
+
+        if (rangeEl)
+          rangeEl.textContent =
+            formatDateShort(start.toISOString().slice(0, 10)).slice(0, 5) +
+            " al " +
+            formatDateShort(weekEnd.toISOString().slice(0, 10)).slice(0, 5);
+        if (earnedEl) earnedEl.textContent = fmt.format(earned);
+        if (targetEl)
+          targetEl.textContent =
+            meta > 0
+              ? fmt.format(earned) +
+                " / " +
+                fmt.format(meta) +
+                (pct >= 100 ? " ✓" : "")
+              : "Sin meta definida";
+        if (barEl) {
+          barEl.style.width = (meta > 0 ? pct : 0) + "%";
+          barEl.style.background = meta > 0 ? barColor(pct) : "#4caf84";
+        }
       };
 
       const updateReminderBanner = () => {
@@ -2794,28 +3669,19 @@
           avgGross,
           avgNet,
           extraCosts,
+          fuel,
         } = compute();
         const fmt = formatter();
         avgGrossEl.textContent = totalHours > 0 ? fmt.format(avgGross) : "—";
         netTotalEl.textContent = fmt.format(net);
-        avgNetEl.textContent = totalHours > 0 ? fmt.format(avgNet) : "—";
+        if (avgNetEl)
+          avgNetEl.textContent = totalHours > 0 ? fmt.format(avgNet) : "—";
         if (extraCostsEl) {
-          extraCostsEl.textContent = fmt.format(extraCosts);
+          extraCostsEl.textContent = fmt.format(fuel + extraCosts);
         }
 
         if (totalHours > 0) {
-          const hourLabel = hours === 1 ? "hora" : "horas";
-          const minuteLabel = minutes === 1 ? "minuto" : "minutos";
-          noteEl.textContent =
-            "Calculado con " +
-            hours +
-            " " +
-            hourLabel +
-            " y " +
-            minutes +
-            " " +
-            minuteLabel +
-            ".";
+          noteEl.textContent = "";
         } else {
           noteEl.textContent = "";
         }
@@ -2911,11 +3777,11 @@
         const dot = document.getElementById("sync-status-dot");
         const btn = document.getElementById("topbar-sync-btn");
         if (dot) {
-          dot.className = "sync-status-dot";
+          dot.className = "sync-status-dot"; // rojo por defecto
           if (isError) {
-            dot.classList.add("error");
-          } else if (message.includes("activa")) {
-            dot.classList.add("active");
+            dot.classList.add("error"); // naranja en error
+          } else if (message === "Activa") {
+            dot.classList.add("active"); // verde cuando hay sesión
             if (btn) btn.classList.add("synced");
           } else {
             if (btn) btn.classList.remove("synced");
@@ -2925,23 +3791,29 @@
 
       const updateSyncUI = (session) => {
         if (!supabaseClient) {
-          setSyncStatus("Sincronización no configurada.");
+          setSyncStatus("Sin configurar");
           if (syncForm) syncForm.classList.remove("hidden");
           if (syncFooter) syncFooter.classList.add("hidden");
           return;
         }
         if (session) {
           const email =
-            session.user && session.user.email
-              ? session.user.email
-              : "tu cuenta";
-          setSyncStatus("Sincronización activa.");
+            session.user && session.user.email ? session.user.email : "usuario";
+          setSyncStatus("Activa");
           if (syncFooterStatus) syncFooterStatus.textContent = email;
+          const avatar = document.getElementById("sync-account-avatar");
+          if (avatar) {
+            const driverFromEmail = resolveDriverFromEmail(email);
+            const driverLabel = driverFromEmail
+              ? getDriverLabel(driverFromEmail)
+              : email;
+            avatar.textContent = driverLabel.charAt(0).toUpperCase();
+          }
           if (syncForm) syncForm.classList.add("hidden");
           if (syncFooter) syncFooter.classList.remove("hidden");
           if (syncLogoutButton) syncLogoutButton.classList.remove("hidden");
         } else {
-          setSyncStatus("Iniciá sesión para sincronizar.");
+          setSyncStatus("Desactivada");
           if (syncForm) syncForm.classList.remove("hidden");
           if (syncFooter) syncFooter.classList.add("hidden");
           if (syncLogoutButton) syncLogoutButton.classList.add("hidden");
@@ -3083,15 +3955,40 @@
           driverFilterInput && driverFilterInput.value !== "all"
             ? getDriverLabel(driverFilterInput.value)
             : "Todos";
-        monthNoteEl.textContent = items.length
-          ? "Registros: " +
-            items.length +
-            " en " +
-            month +
-            " (" +
-            driverLabel +
-            ")."
-          : "Sin registros para " + month + " (" + driverLabel + ").";
+        monthNoteEl.textContent = "";
+
+        // Barra de meta mensual (4 semanas * meta semanal / conductores)
+        const { weekly } = getGoals();
+        const monthGoalWrap = document.getElementById("month-goal-wrap");
+        const monthGoalBar = document.getElementById("month-goal-bar");
+        const monthGoalPct = document.getElementById("month-goal-pct");
+        const monthGoalEarned = document.getElementById("month-goal-earned");
+        const monthGoalTarget = document.getElementById("month-goal-target");
+
+        if (weekly > 0) {
+          const driverFilter = driverFilterInput
+            ? driverFilterInput.value
+            : "all";
+          const perDriver =
+            driverFilter !== "all" ? weekly / ALL_DRIVERS.length : weekly;
+          const monthMeta = perDriver * 4;
+          const pct = Math.min((totals.income / monthMeta) * 100, 100);
+          if (monthGoalWrap) monthGoalWrap.classList.remove("hidden");
+          if (monthGoalBar) {
+            monthGoalBar.style.width = pct + "%";
+            monthGoalBar.style.background = barColor(pct);
+          }
+          if (monthGoalPct) monthGoalPct.textContent = Math.round(pct) + "%";
+          if (monthGoalEarned)
+            monthGoalEarned.textContent =
+              fmt.format(totals.income) +
+              " / " +
+              fmt.format(monthMeta) +
+              (pct >= 100 ? " ✓" : "");
+          if (monthGoalTarget) monthGoalTarget.textContent = "";
+        } else {
+          if (monthGoalWrap) monthGoalWrap.classList.add("hidden");
+        }
 
         updateWeeklyGoalStatus();
       };
@@ -3154,16 +4051,15 @@
             cell.classList.add("selected");
           }
           cell.dataset.date = dateString;
+          const incomeDisplay = data ? fmt.format(data.income) : "";
+
           cell.innerHTML =
             '<div class="calendar-date"><span class="calendar-date-pill">' +
             day +
             "</span></div>" +
-            '<div class="calendar-metric"><span>Neto</span><span class="calendar-value">' +
-            netDisplay +
-            "</span></div>" +
-            '<div class="calendar-metric"><span>Prom/h</span><span class="calendar-value">' +
-            avgDisplay +
-            "</span></div>";
+            (data
+              ? '<div class="calendar-income">' + incomeDisplay + "</div>"
+              : "");
 
           cell.addEventListener("click", () => {
             selectedDate = dateString;
@@ -3203,70 +4099,116 @@
 
         if (dayDetailCard) dayDetailCard.classList.remove("hidden");
 
-        // Fecha en español: "13 de marzo de 2026"
+        // Scroll automático al detalle
+        setTimeout(() => {
+          if (dayDetailCard)
+            dayDetailCard.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+        }, 50);
+
+        // Fecha en español sin año: "día 4 de marzo"
         const [y, m, d] = date.split("-");
         const dateObj = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
         const dateLabel = dateObj.toLocaleDateString("es-AR", {
           day: "numeric",
           month: "long",
-          year: "numeric",
         });
-        dayDetailTitle.textContent = "Detalle del " + dateLabel;
+        dayDetailTitle.textContent = "Detalle del día " + dateLabel;
 
         const fmt = formatter();
-        items.sort((a, b) => (a.time || "").localeCompare(b.time || ""));
+        items.sort(
+          (a, b) =>
+            a.date.localeCompare(b.date) ||
+            (a.time || "").localeCompare(b.time || "")
+        );
 
-        items.forEach((entry) => {
-          const avgGross =
-            entry.totalHours > 0 ? entry.income / entry.totalHours : 0;
-          const avgText = avgGross > 0 ? fmt.format(avgGross) : "—";
-          const actions = canEditEntry(entry)
-            ? '<div class="table-actions">' +
-              '<button type="button" class="ghost mini" data-action="edit" data-id="' +
-              entry.id +
-              '">Editar</button>' +
-              '<button type="button" class="ghost mini" data-action="delete" data-id="' +
-              entry.id +
-              '">Eliminar</button>' +
-              "</div>"
-            : "";
-          const row = document.createElement("div");
-          row.className = "day-entry";
-          row.innerHTML =
-            '<div class="day-entry-header"><strong>' +
-            entry.time +
-            "</strong><span>" +
-            fmt.format(entry.net) +
-            " neto</span></div>" +
-            '<div class="day-entry-meta">' +
-            "<span>Ganancia: " +
-            fmt.format(entry.income) +
-            "</span>" +
-            "<span>Combustible: " +
-            fmt.format(entry.fuel) +
-            "</span>" +
-            (entry.tolls > 0
-              ? "<span>Peajes: " + fmt.format(entry.tolls) + "</span>"
-              : "") +
-            (entry.parking > 0
-              ? "<span>Estacionamiento: " +
-                fmt.format(entry.parking) +
-                "</span>"
-              : "") +
-            (entry.otherExpenses > 0
-              ? "<span>Otros gastos: " +
-                fmt.format(entry.otherExpenses) +
-                "</span>"
-              : "") +
-            "<span>Conductor: " +
-            getDriverLabel(entry.driver) +
-            "</span>" +
-            "<span>Prom/h bruto: " +
-            avgText +
-            "</span>" +
-            "</div>" +
-            actions;
-          dayDetailList.appendChild(row);
+        // Agrupar por fecha (puede haber varios conductores el mismo día)
+        const byDate = new Map();
+        items.forEach((e) => {
+          if (!byDate.has(e.date)) byDate.set(e.date, []);
+          byDate.get(e.date).push(e);
+        });
+
+        dayDetailList.innerHTML = Array.from(byDate.entries())
+          .map(([date, dayEntries]) => {
+            const [yy, mm, dd] = date.split("-");
+            const dObj = new Date(parseInt(yy), parseInt(mm) - 1, parseInt(dd));
+            const dLabel = dObj.toLocaleDateString("es-AR", {
+              weekday: "long",
+              day: "numeric",
+              month: "long",
+            });
+
+            const rows = dayEntries
+              .map((e) => {
+                const avgGross = e.totalHours > 0 ? e.income / e.totalHours : 0;
+                const avgText = avgGross > 0 ? fmt.format(avgGross) : "—";
+                const editBtns = canEditEntry(e)
+                  ? '<div class="entry-actions">' +
+                    '<button type="button" class="entry-action-btn" data-action="edit" data-id="' +
+                    e.id +
+                    '">Editar</button>' +
+                    '<button type="button" class="entry-action-btn entry-action-delete" data-action="delete" data-id="' +
+                    e.id +
+                    '">Eliminar</button>' +
+                    "</div>"
+                  : "";
+                return (
+                  '<div class="detail-entry-row">' +
+                  '<div class="detail-entry-driver">' +
+                  '<span class="detail-driver-name">' +
+                  getDriverLabel(e.driver) +
+                  "</span>" +
+                  '<span class="detail-driver-net">' +
+                  fmt.format(e.net) +
+                  "</span>" +
+                  "</div>" +
+                  '<div class="detail-entry-stats">' +
+                  "<span>" +
+                  (e.time || "—") +
+                  " hs</span>" +
+                  "<span>" +
+                  fmt.format(e.income) +
+                  " bruto</span>" +
+                  "<span>" +
+                  fmt.format(e.fuel) +
+                  " comb.</span>" +
+                  (e.otherExpenses > 0
+                    ? "<span>" + fmt.format(e.otherExpenses) + " otros</span>"
+                    : "") +
+                  "<span>" +
+                  avgText +
+                  "/h</span>" +
+                  "</div>" +
+                  editBtns +
+                  "</div>"
+                );
+              })
+              .join("");
+
+            return rows;
+          })
+          .join("");
+
+        // Re-attach click listeners for edit/delete on new elements
+        dayDetailList.querySelectorAll("button[data-action]").forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const action = btn.getAttribute("data-action");
+            const id = btn.getAttribute("data-id");
+            if (action === "delete") {
+              deleteEntry(id);
+              return;
+            }
+            if (action === "edit") {
+              const entry = getHistory().find(
+                (it) => String(it.id) === String(id)
+              );
+              if (entry) startEdit(entry);
+            }
+          });
         });
       };
 
@@ -3275,6 +4217,7 @@
         renderMonthlySummary();
         renderDayDetails(selectedDate);
         updateReminderBanner();
+        updateWeeklySummary();
       };
 
       const VIEW_TITLES = {
@@ -3292,69 +4235,166 @@
         const isMain = view === "main";
         const isGoals = view === "goals";
         const isHistory = view === "history";
-        viewMain.classList.toggle("hidden", !isMain);
-        viewHistory.classList.toggle("hidden", !isHistory);
-        if (viewGoals) viewGoals.classList.toggle("hidden", !isGoals);
-        navButtons.forEach((btn) => {
-          btn.classList.toggle(
-            "active",
-            btn.getAttribute("data-view") === view
-          );
-        });
-        if (topbarTitle)
-          topbarTitle.textContent = VIEW_TITLES[view] || "Panel Uber";
-        closeTopbarMenu();
-        if (isHistory) {
-          const currentMonth = today.toISOString().slice(0, 7);
-          if (monthFilterInput) {
-            monthFilterInput.value = currentMonth;
+
+        // Fade out current visible view, then switch
+        const allViews = [viewMain, viewHistory, viewGoals].filter(Boolean);
+        const currentView = allViews.find(
+          (v) => !v.classList.contains("hidden")
+        );
+
+        const doSwitch = () => {
+          viewMain.classList.toggle("hidden", !isMain);
+          viewHistory.classList.toggle("hidden", !isHistory);
+          if (viewGoals) viewGoals.classList.toggle("hidden", !isGoals);
+
+          // Retrigger animation on incoming view
+          const incoming = isMain
+            ? viewMain
+            : isHistory
+            ? viewHistory
+            : viewGoals;
+          if (incoming) {
+            incoming.style.animation = "none";
+            incoming.offsetHeight; // reflow
+            incoming.style.animation = "";
           }
-          if (driverFilterInput) {
-            driverFilterInput.value = "all";
+
+          navButtons.forEach((btn) => {
+            btn.classList.toggle(
+              "active",
+              btn.getAttribute("data-view") === view
+            );
+          });
+          if (topbarTitle)
+            topbarTitle.textContent = VIEW_TITLES[view] || "Panel Uber";
+          closeTopbarMenu();
+          if (isHistory) {
+            const currentMonth = today.toISOString().slice(0, 7);
+            if (monthFilterInput) monthFilterInput.value = currentMonth;
+            if (driverFilterInput) driverFilterInput.value = "all";
+            selectedDate = null;
+            if (dayDetailCard) dayDetailCard.classList.add("hidden");
+            if (syncMode === "cloud") {
+              refreshHistory();
+            } else {
+              renderHistoryView();
+            }
           }
-          selectedDate = null;
-          if (syncMode === "cloud") {
-            refreshHistory();
-          } else {
-            renderHistoryView();
+          if (isGoals) {
+            renderGoalsView();
           }
-        }
-        if (isGoals) {
-          renderGoalsView();
-        }
+        };
+
+        doSwitch();
       };
 
-      const startEdit = (entry) => {
-        dateInput.value = entry.date;
-        timeWorkedInput.value = formatTimeValue(entry.time);
-        incomeInput.value = entry.income;
-        fuelInput.value = entry.fuel;
-        if (tollsInput) {
-          tollsInput.value = entry.tolls || "";
-        }
-        if (parkingInput) {
-          parkingInput.value = entry.parking || "";
-        }
-        if (otherExpensesInput) {
-          otherExpensesInput.value = entry.otherExpenses || "";
-        }
-        if (driverInput) {
-          driverInput.value = entry.driver || "martin";
-        }
-        if (isAutoDriverActive()) {
-          editDriverOverride = entry.driver || currentDriverId;
-          updateDriverUI();
+      // ── Quick Edit Modal ──
+      const quickEditOverlay = document.getElementById("quick-edit-overlay");
+      const quickEditTitle = document.getElementById("quick-edit-title");
+      const qeIncome = document.getElementById("qe-income");
+      const qeTime = document.getElementById("qe-time");
+      const qeFuel = document.getElementById("qe-fuel");
+      const qeTolls = document.getElementById("qe-tolls");
+      const qeParking = document.getElementById("qe-parking");
+      const qeOther = document.getElementById("qe-other");
+      let quickEditEntryId = null;
+
+      const openQuickEdit = (entry) => {
+        if (!quickEditOverlay) return;
+        quickEditEntryId = entry.id;
+        const [y, m, d] = (entry.date || "").split("-");
+        const dateObj = y
+          ? new Date(parseInt(y), parseInt(m) - 1, parseInt(d))
+          : null;
+        const dateLabel = dateObj
+          ? dateObj.toLocaleDateString("es-AR", {
+              day: "numeric",
+              month: "long",
+            })
+          : entry.date;
+        if (quickEditTitle)
+          quickEditTitle.textContent =
+            "Editar · " + getDriverLabel(entry.driver) + " · " + dateLabel;
+        if (qeIncome) qeIncome.value = entry.income || "";
+        if (qeTime) qeTime.value = formatTimeValue(entry.time);
+        if (qeFuel) qeFuel.value = entry.fuel || "";
+        if (qeTolls) qeTolls.value = entry.tolls || "";
+        if (qeParking) qeParking.value = entry.parking || "";
+        if (qeOther) qeOther.value = entry.otherExpenses || "";
+        quickEditOverlay.classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+      };
+
+      const closeQuickEdit = () => {
+        if (quickEditOverlay) quickEditOverlay.classList.add("hidden");
+        document.body.style.overflow = "";
+        quickEditEntryId = null;
+      };
+
+      const saveQuickEdit = async () => {
+        if (!quickEditEntryId) return;
+        const items = getHistory();
+        const idx = items.findIndex(
+          (e) => String(e.id) === String(quickEditEntryId)
+        );
+        if (idx === -1) return;
+        const original = items[idx];
+        const timeParts = (qeTime ? qeTime.value || "00:00" : "00:00").split(
+          ":"
+        );
+        const hours = parseInt(timeParts[0]) || 0;
+        const mins = parseInt(timeParts[1]) || 0;
+        const totalHours = hours + mins / 60;
+        const income = parseFloat(qeIncome ? qeIncome.value : 0) || 0;
+        const fuel = parseFloat(qeFuel ? qeFuel.value : 0) || 0;
+        const tolls = original.tolls || 0;
+        const parking = original.parking || 0;
+        const otherExpenses = parseFloat(qeOther ? qeOther.value : 0) || 0;
+        const net = income - fuel - tolls - parking - otherExpenses;
+        const updated = {
+          ...original,
+          income,
+          fuel,
+          tolls,
+          parking,
+          otherExpenses,
+          net,
+          time: qeTime ? qeTime.value : "00:00",
+          totalHours,
+        };
+        items[idx] = updated;
+
+        if (syncMode === "cloud" && supabaseClient && currentUserId) {
+          const { error } = await supabaseClient
+            .from("entries")
+            .upsert(toDbEntry(updated, currentUserId), { onConflict: "id" });
+          if (error) {
+            setSyncStatus("No se pudo guardar en la nube.", true);
+          } else {
+            await refreshHistory();
+          }
         } else {
-          editDriverOverride = "";
+          setHistory(items);
+          renderHistoryView();
         }
-        editingId = entry.id;
-        selectedDate = entry.date;
-        saveButton.textContent = "Guardar cambios";
-        cancelEditButton.classList.remove("hidden");
-        historyStatus.textContent = "Editando registro del " + entry.date + ".";
-        calculate();
-        renderHistoryView();
-        setView("main");
+        closeQuickEdit();
+      };
+
+      document
+        .getElementById("quick-edit-close")
+        ?.addEventListener("click", closeQuickEdit);
+      document
+        .getElementById("quick-edit-cancel")
+        ?.addEventListener("click", closeQuickEdit);
+      document
+        .getElementById("quick-edit-save")
+        ?.addEventListener("click", saveQuickEdit);
+      quickEditOverlay?.addEventListener("click", (e) => {
+        if (e.target === quickEditOverlay) closeQuickEdit();
+      });
+
+      const startEdit = (entry) => {
+        openQuickEdit(entry);
       };
 
       const resetEditState = (message) => {
@@ -3366,6 +4406,7 @@
         if (message) {
           historyStatus.textContent = message;
         }
+        updateWeeklySummary();
       };
 
       const stopEdit = (message) => {
@@ -3523,7 +4564,7 @@
         updateDriverUI();
         avgGrossEl.textContent = "—";
         netTotalEl.textContent = "—";
-        avgNetEl.textContent = "—";
+        if (avgNetEl) avgNetEl.textContent = "—";
         if (extraCostsEl) {
           extraCostsEl.textContent = "—";
         }
@@ -3677,6 +4718,7 @@
         const { avgGross, totalHours } = compute();
         updateDailyGoalStatus(avgGross, totalHours);
         updateWeeklyGoalStatus();
+        updateWeeklySummary();
         if (viewGoals && !viewGoals.classList.contains("hidden")) {
           renderGoalsView();
         }
@@ -3684,6 +4726,19 @@
 
       if (goalsDriverFilterInput) {
         goalsDriverFilterInput.addEventListener("change", renderGoalsView);
+      }
+
+      const goalsExpandBtn = document.getElementById("goals-expand-btn");
+      const goalsStatsRow = document.getElementById("goals-stats-row");
+      if (goalsExpandBtn && goalsStatsRow) {
+        goalsExpandBtn.addEventListener("click", () => {
+          const isOpen = !goalsStatsRow.classList.contains("hidden");
+          goalsStatsRow.classList.toggle("hidden", isOpen);
+          goalsExpandBtn.classList.toggle("open", !isOpen);
+          goalsExpandBtn.querySelector("span").textContent = isOpen
+            ? "Ver detalles"
+            : "Ocultar detalles";
+        });
       }
 
       const goalsDetailCloseBtn = document.getElementById("goals-detail-close");
@@ -3711,6 +4766,24 @@
         });
       }
 
+      const darkmodeRow = document.getElementById("darkmode-btn");
+      const darkmodeToggle = document.getElementById("darkmode-toggle");
+
+      const applyDarkMode = (dark) => {
+        document.body.classList.toggle("dark", dark);
+        if (darkmodeToggle) darkmodeToggle.classList.toggle("on", dark);
+        localStorage.setItem("darkmode", dark ? "1" : "0");
+      };
+
+      if (darkmodeRow) {
+        darkmodeRow.addEventListener("click", () => {
+          applyDarkMode(!document.body.classList.contains("dark"));
+        });
+      }
+
+      // Restaurar preferencia guardada
+      applyDarkMode(localStorage.getItem("darkmode") === "1");
+
       const topbarSyncBtn = document.getElementById("topbar-sync-btn");
       const syncDrawerCloseBtn = document.getElementById("sync-drawer-close");
       const syncStatusDot = document.getElementById("sync-status-dot");
@@ -3728,14 +4801,34 @@
       }
 
       const goalsConfigToggle = document.getElementById("goals-config-toggle");
-      const goalsConfigPanel = document.getElementById("goals-config-panel");
-      if (goalsConfigToggle && goalsConfigPanel) {
-        goalsConfigToggle.addEventListener("click", () => {
-          const isOpen = goalsConfigPanel.classList.contains("open");
-          goalsConfigPanel.classList.toggle("open", !isOpen);
-          goalsConfigToggle.classList.toggle("open", !isOpen);
-        });
-      }
+      const goalsConfigOverlay = document.getElementById(
+        "goals-config-overlay"
+      );
+      const goalsConfigClose = document.getElementById("goals-config-close");
+      const goalsConfigDone = document.getElementById("goals-config-done");
+
+      const openGoalsConfig = () => {
+        if (goalsConfigOverlay) {
+          goalsConfigOverlay.classList.remove("hidden");
+          document.body.style.overflow = "hidden";
+        }
+      };
+      const closeGoalsConfig = () => {
+        if (goalsConfigOverlay) {
+          goalsConfigOverlay.classList.add("hidden");
+          document.body.style.overflow = "";
+        }
+      };
+
+      if (goalsConfigToggle)
+        goalsConfigToggle.addEventListener("click", openGoalsConfig);
+      if (goalsConfigClose)
+        goalsConfigClose.addEventListener("click", closeGoalsConfig);
+      if (goalsConfigDone)
+        goalsConfigDone.addEventListener("click", closeGoalsConfig);
+      goalsConfigOverlay?.addEventListener("click", (e) => {
+        if (e.target === goalsConfigOverlay) closeGoalsConfig();
+      });
 
       ["input", "change"].forEach((evt) => {
         incomeInput.addEventListener(evt, calculate);
@@ -3811,7 +4904,69 @@
         if (existing.length > 0 && !allDemo) return; // no pisar datos reales del usuario
 
         const entries = [
-          // Martín - días impares
+          // ── Racha de 6 días consecutivos (09/03 al 14/03) ──
+          {
+            date: "2026-03-09",
+            income: 77000,
+            time: "07:45",
+            fuel: 10500,
+            tolls: 0,
+            parking: 0,
+            otherExpenses: 0,
+            driver: "osvaldo",
+          },
+          {
+            date: "2026-03-10",
+            income: 81000,
+            time: "08:00",
+            fuel: 11000,
+            tolls: 800,
+            parking: 0,
+            otherExpenses: 0,
+            driver: "martin",
+          },
+          {
+            date: "2026-03-11",
+            income: 41000,
+            time: "04:15",
+            fuel: 6000,
+            tolls: 0,
+            parking: 0,
+            otherExpenses: 0,
+            driver: "osvaldo",
+          },
+          {
+            date: "2026-03-12",
+            income: 53000,
+            time: "05:30",
+            fuel: 7500,
+            tolls: 0,
+            parking: 0,
+            otherExpenses: 800,
+            driver: "martin",
+          },
+          {
+            date: "2026-03-13",
+            income: 67000,
+            time: "07:00",
+            fuel: 9500,
+            tolls: 800,
+            parking: 0,
+            otherExpenses: 0,
+            driver: "martin",
+          },
+          {
+            date: "2026-03-14",
+            income: 59000,
+            time: "06:00",
+            fuel: 8300,
+            tolls: 0,
+            parking: 0,
+            otherExpenses: 0,
+            driver: "osvaldo",
+          },
+
+          // Martín - otros días de marzo
           {
             date: "2026-03-03",
             income: 58000,
@@ -3838,36 +4993,6 @@
             time: "04:30",
             fuel: 6500,
             tolls: 0,
-            parking: 0,
-            otherExpenses: 0,
-            driver: "martin",
-          },
-          {
-            date: "2026-03-10",
-            income: 81000,
-            time: "08:00",
-            fuel: 11000,
-            tolls: 800,
-            parking: 500,
-            otherExpenses: 0,
-            driver: "martin",
-          },
-          {
-            date: "2026-03-12",
-            income: 53000,
-            time: "05:30",
-            fuel: 7500,
-            tolls: 0,
-            parking: 0,
-            otherExpenses: 800,
-            driver: "martin",
-          },
-          {
-            date: "2026-03-13",
-            income: 67000,
-            time: "07:00",
-            fuel: 9500,
-            tolls: 800,
             parking: 0,
             otherExpenses: 0,
             driver: "martin",
@@ -3913,7 +5038,7 @@
             driver: "martin",
           },
 
-          // Osvaldo - días pares
+          // Osvaldo - otros días de marzo
           {
             date: "2026-03-04",
             income: 49000,
@@ -3929,36 +5054,6 @@
             income: 63000,
             time: "06:30",
             fuel: 9000,
-            tolls: 0,
-            parking: 0,
-            otherExpenses: 0,
-            driver: "osvaldo",
-          },
-          {
-            date: "2026-03-09",
-            income: 77000,
-            time: "07:45",
-            fuel: 10500,
-            tolls: 800,
-            parking: 0,
-            otherExpenses: 0,
-            driver: "osvaldo",
-          },
-          {
-            date: "2026-03-11",
-            income: 41000,
-            time: "04:15",
-            fuel: 6000,
-            tolls: 0,
-            parking: 0,
-            otherExpenses: 0,
-            driver: "osvaldo",
-          },
-          {
-            date: "2026-03-14",
-            income: 59000,
-            time: "06:00",
-            fuel: 8300,
             tolls: 0,
             parking: 0,
             otherExpenses: 0,
@@ -4041,6 +5136,7 @@
         seedDemoData();
         calculate();
         updateWeeklyGoalStatus();
+        updateWeeklySummary();
         updateReminderBanner();
         await initSync();
       };
