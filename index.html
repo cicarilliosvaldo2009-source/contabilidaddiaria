@@ -2176,6 +2176,49 @@
             </svg>
             <span class="sync-status-dot" id="sync-status-dot"></span>
           </button>
+          <button
+            type="button"
+            class="topbar-sync-btn"
+            id="darkmode-btn"
+            aria-label="Modo oscuro"
+            title="Modo oscuro/claro"
+          >
+            <svg
+              id="darkmode-icon-moon"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+            <svg
+              id="darkmode-icon-sun"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              style="display: none"
+            >
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg>
+          </button>
           <div class="topbar-menu-wrap">
             <button
               type="button"
@@ -2195,13 +2238,6 @@
               <button type="button" class="nav-btn" data-view="goals">
                 Metas
               </button>
-              <div class="dropdown-divider"></div>
-              <div class="dropdown-toggle-row" id="darkmode-btn">
-                <span>Modo oscuro</span>
-                <div class="toggle-switch" id="darkmode-toggle">
-                  <div class="toggle-knob"></div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -2341,39 +2377,8 @@
               </div>
 
               <div>
-                <label>Horas y minutos trabajados</label>
-                <div style="display: flex; gap: 8px; align-items: center">
-                  <select id="time-hours" style="flex: 1; text-align: center">
-                    <option value="0">0 h</option>
-                    <option value="1">1 h</option>
-                    <option value="2">2 h</option>
-                    <option value="3">3 h</option>
-                    <option value="4">4 h</option>
-                    <option value="5">5 h</option>
-                    <option value="6">6 h</option>
-                    <option value="7">7 h</option>
-                    <option value="8">8 h</option>
-                    <option value="9">9 h</option>
-                    <option value="10">10 h</option>
-                    <option value="11">11 h</option>
-                    <option value="12">12 h</option>
-                  </select>
-                  <select id="time-minutes" style="flex: 1; text-align: center">
-                    <option value="0">00 min</option>
-                    <option value="5">05 min</option>
-                    <option value="10">10 min</option>
-                    <option value="15">15 min</option>
-                    <option value="20">20 min</option>
-                    <option value="25">25 min</option>
-                    <option value="30">30 min</option>
-                    <option value="35">35 min</option>
-                    <option value="40">40 min</option>
-                    <option value="45">45 min</option>
-                    <option value="50">50 min</option>
-                    <option value="55">55 min</option>
-                  </select>
-                </div>
-                <input type="hidden" id="time-worked" value="00:00" />
+                <label for="time-worked">Horas y minutos trabajados</label>
+                <input type="time" id="time-worked" step="60" value="00:00" />
               </div>
 
               <div>
@@ -2487,7 +2492,6 @@
               </div>
               <div class="summary-controls">
                 <div class="filter-group">
-                  <label for="driver-filter">Conductor</label>
                   <select id="driver-filter">
                     <option value="all">Todos</option>
                     <option value="martin">Martín</option>
@@ -2495,7 +2499,6 @@
                   </select>
                 </div>
                 <div class="filter-group">
-                  <label for="month-filter">Mes</label>
                   <input type="month" id="month-filter" />
                 </div>
               </div>
@@ -2562,9 +2565,24 @@
               <p class="note" id="month-note"></p>
             </section>
             <section class="card hidden" id="day-detail-card">
-              <h2 id="day-detail-title" style="margin: 0 0 8px">
-                Detalle del día
-              </h2>
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin: 0 0 8px;
+                "
+              >
+                <h2 id="day-detail-title" style="margin: 0">Detalle del día</h2>
+                <button
+                  type="button"
+                  class="reminder-alert-close"
+                  id="day-detail-close"
+                  aria-label="Cerrar"
+                >
+                  ✕
+                </button>
+              </div>
               <div id="day-detail-list"></div>
               <p class="note" id="history-status"></p>
             </section>
@@ -2651,13 +2669,6 @@
               "
             >
               <h2 style="margin: 0">Semanas anteriores</h2>
-              <div class="filter-group" style="flex: 0 1 160px">
-                <select id="goals-driver-filter">
-                  <option value="all">Todos</option>
-                  <option value="martin">Martín</option>
-                  <option value="osvaldo">Osvaldo</option>
-                </select>
-              </div>
             </div>
             <div id="goals-weeks-list" class="goals-weeks-list">
               <p class="note">Sin registros aún.</p>
@@ -2779,42 +2790,8 @@
               />
             </div>
             <div>
-              <label>Horas trabajadas</label>
-              <div style="display: flex; gap: 8px; align-items: center">
-                <select id="qe-time-hours" style="flex: 1; text-align: center">
-                  <option value="0">0 h</option>
-                  <option value="1">1 h</option>
-                  <option value="2">2 h</option>
-                  <option value="3">3 h</option>
-                  <option value="4">4 h</option>
-                  <option value="5">5 h</option>
-                  <option value="6">6 h</option>
-                  <option value="7">7 h</option>
-                  <option value="8">8 h</option>
-                  <option value="9">9 h</option>
-                  <option value="10">10 h</option>
-                  <option value="11">11 h</option>
-                  <option value="12">12 h</option>
-                </select>
-                <select
-                  id="qe-time-minutes"
-                  style="flex: 1; text-align: center"
-                >
-                  <option value="0">00 min</option>
-                  <option value="5">05 min</option>
-                  <option value="10">10 min</option>
-                  <option value="15">15 min</option>
-                  <option value="20">20 min</option>
-                  <option value="25">25 min</option>
-                  <option value="30">30 min</option>
-                  <option value="35">35 min</option>
-                  <option value="40">40 min</option>
-                  <option value="45">45 min</option>
-                  <option value="50">50 min</option>
-                  <option value="55">55 min</option>
-                </select>
-              </div>
-              <input type="hidden" id="qe-time" value="00:00" />
+              <label for="qe-time">Horas trabajadas</label>
+              <input type="time" id="qe-time" step="60" value="00:00" />
             </div>
             <div>
               <label for="qe-fuel">Combustible</label>
@@ -2853,45 +2830,6 @@
     <script>
       const incomeInput = document.getElementById("income");
       const timeWorkedInput = document.getElementById("time-worked");
-      const timeHoursSelect = document.getElementById("time-hours");
-      const timeMinutesSelect = document.getElementById("time-minutes");
-      const qeTimeInput = document.getElementById("qe-time");
-      const qeTimeHoursSelect = document.getElementById("qe-time-hours");
-      const qeTimeMinutesSelect = document.getElementById("qe-time-minutes");
-
-      // Sync selects → hidden input
-      const syncTimeSelects = () => {
-        const h = pad2(parseInt(timeHoursSelect.value) || 0);
-        const m = pad2(parseInt(timeMinutesSelect.value) || 0);
-        timeWorkedInput.value = h + ":" + m;
-        calculate();
-      };
-      if (timeHoursSelect)
-        timeHoursSelect.addEventListener("change", syncTimeSelects);
-      if (timeMinutesSelect)
-        timeMinutesSelect.addEventListener("change", syncTimeSelects);
-
-      const syncQeTimeSelects = () => {
-        const h = pad2(parseInt(qeTimeHoursSelect.value) || 0);
-        const m = pad2(parseInt(qeTimeMinutesSelect.value) || 0);
-        if (qeTimeInput) qeTimeInput.value = h + ":" + m;
-      };
-      if (qeTimeHoursSelect)
-        qeTimeHoursSelect.addEventListener("change", syncQeTimeSelects);
-      if (qeTimeMinutesSelect)
-        qeTimeMinutesSelect.addEventListener("change", syncQeTimeSelects);
-
-      // Set selects from a "HH:MM" string
-      const setTimeSelects = (val, hSel, mSel) => {
-        if (!hSel || !mSel) return;
-        const parts = (val || "00:00").split(":");
-        const h = Math.min(12, parseInt(parts[0]) || 0);
-        const rawMin = parseInt(parts[1]) || 0;
-        const m = Math.floor(rawMin / 5) * 5; // redondear a múltiplo de 5
-        hSel.value = String(h);
-        mSel.value = String(m);
-      };
-
       const fuelInput = document.getElementById("fuel");
       const tollsInput = document.getElementById("tolls");
       const parkingInput = document.getElementById("parking");
@@ -3085,7 +3023,7 @@
         const hours = parseInt(timeParts[0], 10) || 0;
         const minutes = parseInt(timeParts[1], 10) || 0;
         const safeMinutes = Math.max(0, Math.min(59, minutes));
-        const safeHours = Math.max(0, hours);
+        const safeHours = Math.max(0, Math.min(12, hours));
         if (safeMinutes !== minutes || safeHours !== hours) {
           const safeTime = pad2(safeHours) + ":" + pad2(safeMinutes);
           timeWorkedInput.value = safeTime;
@@ -4421,11 +4359,6 @@
             "Editar · " + getDriverLabel(entry.driver) + " · " + dateLabel;
         if (qeIncome) qeIncome.value = entry.income || "";
         if (qeTime) qeTime.value = formatTimeValue(entry.time);
-        setTimeSelects(
-          formatTimeValue(entry.time),
-          qeTimeHoursSelect,
-          qeTimeMinutesSelect
-        );
         if (qeFuel) qeFuel.value = entry.fuel || "";
         if (qeTolls) qeTolls.value = entry.tolls || "";
         if (qeParking) qeParking.value = entry.parking || "";
@@ -4656,8 +4589,6 @@
       const clearForm = () => {
         incomeInput.value = "";
         timeWorkedInput.value = "00:00";
-        if (timeHoursSelect) timeHoursSelect.value = "0";
-        if (timeMinutesSelect) timeMinutesSelect.value = "0";
         fuelInput.value = "";
         if (tollsInput) {
           tollsInput.value = "";
@@ -4878,11 +4809,13 @@
       }
 
       const darkmodeRow = document.getElementById("darkmode-btn");
-      const darkmodeToggle = document.getElementById("darkmode-toggle");
+      const iconSun = document.getElementById("darkmode-icon-sun");
+      const iconMoon = document.getElementById("darkmode-icon-moon");
 
       const applyDarkMode = (dark) => {
         document.body.classList.toggle("dark", dark);
-        if (darkmodeToggle) darkmodeToggle.classList.toggle("on", dark);
+        if (iconSun) iconSun.style.display = dark ? "" : "none";
+        if (iconMoon) iconMoon.style.display = dark ? "none" : "";
         localStorage.setItem("darkmode", dark ? "1" : "0");
       };
 
@@ -4943,7 +4876,13 @@
 
       ["input", "change"].forEach((evt) => {
         incomeInput.addEventListener(evt, calculate);
-        timeWorkedInput.addEventListener(evt, calculate);
+        timeWorkedInput.addEventListener(evt, () => {
+          // Corregir si supera 12 horas
+          const parts = (timeWorkedInput.value || "00:00").split(":");
+          const h = parseInt(parts[0], 10) || 0;
+          if (h > 12) timeWorkedInput.value = "12:" + (parts[1] || "00");
+          calculate();
+        });
         fuelInput.addEventListener(evt, calculate);
         if (tollsInput) {
           tollsInput.addEventListener(evt, calculate);
@@ -4967,6 +4906,17 @@
         reminderCloseButton.addEventListener("click", () => {
           reminderDismissed = true;
           reminderCard.classList.add("hidden");
+        });
+      }
+
+      const dayDetailCloseBtn = document.getElementById("day-detail-close");
+      if (dayDetailCloseBtn) {
+        dayDetailCloseBtn.addEventListener("click", () => {
+          dayDetailCard.classList.add("hidden");
+          selectedDate = null;
+          document
+            .querySelectorAll(".calendar-day.selected")
+            .forEach((el) => el.classList.remove("selected"));
         });
       }
 
