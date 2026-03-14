@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
@@ -12,18 +12,27 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest?v=3" />
-    <meta name="theme-color" content="#f3efe7" />
+    <meta name="theme-color" content="#f2ede4" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
-        --bg: #f3efe7;
-        --bg-2: #efe7d8;
-        --ink: #1e1b16;
-        --muted: #6b5f54;
-        --accent: #e36d2f;
-        --accent-2: #0d5b52;
-        --card: #fffaf0;
-        --line: #e4d8c8;
-        --shadow: 0 20px 50px rgba(30, 27, 22, 0.12);
+        --bg: #f2ede4;
+        --bg-2: #ece4d5;
+        --ink: #18150f;
+        --muted: #7a6e63;
+        --accent: #d95f1e;
+        --accent-2: #0b4f48;
+        --card: #fdfaf3;
+        --line: #e0d3c0;
+        --shadow: 0 2px 12px rgba(30, 27, 22, 0.07),
+          0 8px 32px rgba(30, 27, 22, 0.06);
+        --radius: 16px;
+        --font: "Inter", "Segoe UI", system-ui, sans-serif;
       }
 
       * {
@@ -32,15 +41,9 @@
 
       body {
         margin: 0;
-        font-family: "Lucida Sans", "Lucida Sans Unicode", "Trebuchet MS",
-          sans-serif;
+        font-family: var(--font);
         color: var(--ink);
-        background: radial-gradient(
-            1200px 500px at 10% 10%,
-            #fff6e7 0%,
-            var(--bg) 60%
-          ),
-          radial-gradient(900px 600px at 90% 10%, #f0f7f6 0%, var(--bg-2) 60%);
+        background: #f2ede4;
         min-height: 100vh;
         display: flex;
         align-items: stretch;
@@ -98,44 +101,125 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 8px 16px;
+        padding: 10px 16px;
         background: var(--card);
         border: 1px solid var(--line);
         border-radius: 18px;
         box-shadow: var(--shadow);
+        position: relative;
+        z-index: 100;
       }
 
       .topbar h2 {
         margin: 0;
-        font-size: 16px;
-        letter-spacing: 0.3px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
         color: var(--muted);
         text-transform: uppercase;
+        font-weight: 700;
+      }
+
+      .topbar-menu-wrap {
+        position: relative;
+      }
+
+      .topbar-menu-btn {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+        width: 36px;
+        height: 36px;
+        padding: 8px;
+        background: transparent;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background 0.15s, border-color 0.15s;
+      }
+
+      .topbar-menu-btn:hover {
+        background: #fff6e7;
+        border-color: #e8c99a;
+      }
+
+      .topbar-menu-btn.open {
+        background: var(--accent-2);
+        border-color: transparent;
+      }
+
+      .topbar-menu-btn span {
+        display: block;
+        height: 2px;
+        background: var(--ink);
+        border-radius: 2px;
+        transition: background 0.15s;
+      }
+
+      .topbar-menu-btn.open span {
+        background: white;
+      }
+
+      .topbar-dropdown {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        box-shadow: 0 12px 36px rgba(30, 27, 22, 0.14);
+        padding: 6px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 180px;
+        animation: dropdown-in 0.2s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+        z-index: 200;
+      }
+
+      @keyframes dropdown-in {
+        from {
+          opacity: 0;
+          transform: translateY(-6px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .topbar-dropdown.hidden {
+        display: none;
       }
 
       .nav-actions {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
+        display: none;
       }
 
       .nav-btn {
-        border: 1px solid var(--line);
-        padding: 8px 12px;
-        border-radius: 999px;
-        font-size: 12px;
+        border: none;
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-size: 13px;
         font-weight: 700;
-        background: #fffdf8;
-        color: var(--accent-2);
+        background: transparent;
+        color: var(--muted);
         -webkit-appearance: none;
         appearance: none;
         cursor: pointer;
+        text-align: left;
+        transition: background 0.15s, color 0.15s;
+        width: 100%;
+      }
+
+      .nav-btn:hover {
+        background: #fff6e7;
+        color: var(--accent);
       }
 
       .nav-btn.active {
-        background: var(--accent-2);
-        color: white;
-        border-color: transparent;
+        background: rgba(13, 91, 82, 0.08);
+        color: var(--accent-2);
       }
 
       .hero {
@@ -165,8 +249,24 @@
 
       h1 {
         margin: 0 0 8px;
-        font-size: clamp(28px, 3vw, 36px);
+        font-size: clamp(26px, 3vw, 34px);
         letter-spacing: -0.5px;
+        font-weight: 800;
+        line-height: 1.15;
+      }
+
+      h2 {
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: -0.2px;
+        margin: 0 0 12px;
+        line-height: 1.2;
+      }
+
+      h3 {
+        font-size: 15px;
+        font-weight: 700;
+        margin: 0 0 8px;
       }
 
       .subtitle {
@@ -192,7 +292,7 @@
       .card {
         background: var(--card);
         border: 1px solid var(--line);
-        border-radius: 20px;
+        border-radius: var(--radius);
         padding: 20px;
         box-shadow: var(--shadow);
         max-width: 100%;
@@ -233,9 +333,12 @@
 
       label {
         font-weight: 600;
-        font-size: 14px;
+        font-size: 13px;
+        letter-spacing: 0.02em;
         display: block;
-        margin-bottom: 6px;
+        margin-bottom: 5px;
+        color: var(--muted);
+        text-transform: uppercase;
       }
 
       input,
@@ -246,17 +349,19 @@
         max-inline-size: 100%;
         min-width: 0;
         min-inline-size: 0;
-        padding: 12px 14px;
-        border-radius: 12px;
-        border: 1px solid var(--line);
-        background: #fffdf8;
-        font-size: 16px;
+        padding: 11px 14px;
+        border-radius: 10px;
+        border: 1.5px solid var(--line);
+        background: #fff;
+        font-size: 15px;
+        font-family: var(--font);
         color: var(--ink);
         -webkit-text-fill-color: var(--ink);
         outline: none;
         display: block;
         overflow: hidden;
         text-overflow: ellipsis;
+        transition: border-color 0.15s, box-shadow 0.15s;
       }
 
       form > div {
@@ -295,23 +400,24 @@
         color: var(--ink);
       }
 
-      input:focus {
-        border-color: var(--accent);
-        box-shadow: 0 0 0 3px rgba(227, 109, 47, 0.15);
+      input:focus,
+      select:focus {
+        border-color: var(--accent-2);
+        box-shadow: 0 0 0 3px rgba(11, 79, 72, 0.12);
       }
 
       .actions {
         display: flex;
-        gap: 10px;
+        gap: 8px;
         flex-wrap: wrap;
       }
 
       .extras {
         margin-top: 6px;
-        border: 1px dashed var(--line);
-        border-radius: 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
         padding: 10px 12px;
-        background: #fffdf8;
+        background: rgba(0, 0, 0, 0.015);
       }
 
       .extras summary {
@@ -336,7 +442,7 @@
       .goal-panel {
         margin-top: 16px;
         padding-top: 12px;
-        border-top: 1px dashed var(--line);
+        border-top: 1px solid var(--line);
       }
 
       .goal-grid {
@@ -345,59 +451,152 @@
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       }
 
-      .reminder-card {
+      .reminder-alert {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 12px;
         background: #fff6e7;
-        border-color: #ead8c5;
+        border: 1px solid #e8c99a;
+        border-left: 4px solid var(--accent);
+        border-radius: 16px;
+        padding: 14px 16px;
+        box-shadow: 0 8px 32px rgba(30, 27, 22, 0.18),
+          0 2px 8px rgba(227, 109, 47, 0.12);
+        max-width: calc(100vw - 48px);
+        width: max-content;
+        animation: reminder-slide-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)
+          both;
+      }
+
+      .reminder-alert.hidden {
+        display: none;
+      }
+
+      @keyframes reminder-slide-in {
+        from {
+          opacity: 0;
+          transform: translateX(-50%) translateY(20px) scale(0.96);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0) scale(1);
+        }
+      }
+
+      .reminder-alert-icon {
+        font-size: 22px;
+        flex-shrink: 0;
+      }
+
+      .reminder-alert-body {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .reminder-alert-body strong {
+        font-size: 14px;
+        color: var(--ink);
+        display: block;
+        line-height: 1.3;
+      }
+
+      .reminder-alert-close {
+        background: transparent;
+        border: none;
+        color: var(--muted);
+        font-size: 14px;
+        padding: 4px 6px;
+        border-radius: 8px;
+        cursor: pointer;
+        flex-shrink: 0;
+        line-height: 1;
+        font-weight: 700;
+        transition: background 0.15s, color 0.15s;
+      }
+
+      .reminder-alert-close:hover {
+        background: rgba(227, 109, 47, 0.12);
+        color: var(--accent);
       }
 
       button {
         border: none;
-        padding: 10px 16px;
-        border-radius: 12px;
-        font-weight: 700;
+        padding: 10px 18px;
+        border-radius: 10px;
+        font-weight: 600;
         font-size: 14px;
+        font-family: var(--font);
         cursor: pointer;
+        transition: opacity 0.15s, filter 0.15s, box-shadow 0.15s;
+      }
+
+      button:active {
+        opacity: 0.85;
       }
 
       .primary {
         background: var(--accent);
         color: white;
+        box-shadow: 0 2px 8px rgba(217, 95, 30, 0.25);
+      }
+
+      .primary:hover {
+        filter: brightness(1.07);
+        box-shadow: 0 4px 14px rgba(217, 95, 30, 0.3);
       }
 
       .secondary {
         background: var(--accent-2);
         color: white;
+        box-shadow: 0 2px 8px rgba(11, 79, 72, 0.2);
+      }
+
+      .secondary:hover {
+        filter: brightness(1.1);
       }
 
       .ghost {
         background: transparent;
-        border: 1px solid var(--line);
+        border: 1.5px solid var(--line);
         color: var(--muted);
+      }
+
+      .ghost:hover {
+        border-color: var(--accent-2);
+        color: var(--accent-2);
       }
 
       .results {
         display: grid;
-        gap: 10px;
+        gap: 8px;
       }
+
       .result-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 10px 12px;
-        border-radius: 14px;
-        background: #fffdf7;
-        border: 1px dashed #ebdece;
-        font-size: 15px;
+        padding: 11px 14px;
+        border-radius: 10px;
+        background: rgba(0, 0, 0, 0.025);
+        border: none;
+        font-size: 14px;
       }
 
       .result-row strong {
-        font-size: 16px;
+        font-size: 15px;
+        font-weight: 700;
       }
 
       .note {
         font-size: 12px;
         color: var(--muted);
         margin-top: 8px;
+        line-height: 1.5;
       }
 
       .divider {
@@ -433,8 +632,9 @@
       .history-side {
         display: grid;
         gap: 18px;
-        grid-template-rows: auto minmax(0, 1fr) auto;
-        height: 100%;
+        grid-template-rows: auto auto auto;
+        align-content: start;
+        height: auto;
       }
 
       .history-calendar {
@@ -449,50 +649,63 @@
         align-items: flex-start;
         gap: 16px;
         flex-wrap: wrap;
+        margin-bottom: 4px;
       }
 
       .calendar-scroll {
         overflow: hidden;
+        margin-top: 16px;
       }
 
       .calendar-title {
-        font-family: "Georgia", "Times New Roman", serif;
-        font-size: 28px;
-        margin: 0 0 4px;
-        letter-spacing: 0.5px;
+        font-family: var(--font);
+        font-size: 24px;
+        font-weight: 300;
+        margin: 0 0 2px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink);
       }
 
       .calendar-weekdays {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
         gap: 0;
-        margin-top: 12px;
+        margin-bottom: 0;
+        border-bottom: 2px solid var(--ink);
+        padding-bottom: 6px;
+        margin-bottom: 2px;
       }
 
       .calendar-weekdays span {
         text-align: center;
-        font-size: 11px;
+        font-size: 10px;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: var(--muted);
-        padding: 6px 0;
+        letter-spacing: 0.1em;
+        font-weight: 800;
+        color: var(--ink);
+        padding: 4px 0;
       }
 
       .calendar-grid {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        border: 1px solid var(--line);
+        border-left: 1px solid var(--line);
+        border-top: 1px solid var(--line);
         flex: 1;
         grid-auto-rows: 1fr;
         min-height: 420px;
+        border-radius: 0 0 12px 12px;
+        overflow: hidden;
       }
 
       .calendar-cell {
         min-height: 88px;
-        padding: 8px;
+        padding: 0;
         border-right: 1px solid var(--line);
         border-bottom: 1px solid var(--line);
         background: #fffdf8;
+        transition: background 0.15s;
       }
 
       .calendar-cell:nth-child(7n) {
@@ -502,15 +715,18 @@
       .calendar-day {
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 5px;
         text-align: left;
         cursor: pointer;
         position: relative;
-        transition: box-shadow 0.2s ease;
+        height: 100%;
+        padding: 8px;
+        transition: background 0.15s;
       }
 
       .calendar-day:hover {
-        box-shadow: inset 0 0 0 1px rgba(227, 109, 47, 0.35);
+        background: rgba(227, 109, 47, 0.06);
+        box-shadow: none;
       }
 
       .calendar-day.has-data {
@@ -524,77 +740,95 @@
           var(--heat-soft)
         );
         border-color: transparent;
+        color: white;
       }
 
       .calendar-day.selected {
-        outline: 2px solid var(--accent-2);
-        outline-offset: -2px;
+        background: rgba(13, 91, 82, 0.06);
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--accent-2);
         z-index: 1;
       }
 
+      .calendar-day.today .calendar-date-pill {
+        background: var(--accent);
+        border-color: transparent;
+        color: white;
+        box-shadow: 0 2px 8px rgba(227, 109, 47, 0.35);
+      }
+
       .calendar-day.today {
-        box-shadow: inset 0 0 0 2px rgba(227, 109, 47, 0.45);
+        box-shadow: none;
       }
 
       .calendar-empty {
-        background: #fbf6ee;
+        background: repeating-linear-gradient(
+          -45deg,
+          transparent,
+          transparent 5px,
+          rgba(0, 0, 0, 0.018) 5px,
+          rgba(0, 0, 0, 0.018) 6px
+        );
       }
 
       .calendar-date {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 5px;
         font-weight: 700;
-        font-size: 13px;
+        font-size: 12px;
       }
 
       .calendar-date-pill {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 28px;
-        height: 28px;
-        border-radius: 999px;
-        border: 1px solid var(--line);
-        background: #fffdf8;
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        border: none;
+        background: transparent;
         color: var(--ink);
+        font-weight: 800;
+        font-size: 13px;
+        transition: background 0.15s, color 0.15s;
+      }
+
+      .calendar-day:hover .calendar-date-pill {
+        background: rgba(227, 109, 47, 0.12);
       }
 
       .calendar-metric {
         display: flex;
-        justify-content: space-between;
-        font-size: 11px;
+        flex-direction: column;
+        font-size: 10px;
         color: var(--muted);
-        gap: 6px;
+        gap: 2px;
       }
 
       .calendar-value {
-        font-weight: 600;
-        color: var(--ink);
+        font-weight: 700;
+        color: var(--accent-2);
+        font-size: 11px;
       }
 
       #day-detail-card {
-        display: flex;
-        flex-direction: column;
-        min-height: 0;
+        display: block;
       }
 
       #day-detail-list {
         display: grid;
         gap: 10px;
         margin-top: 12px;
-        flex: 1;
-        min-height: 0;
-        overflow: auto;
       }
 
       .day-entry {
         border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 10px;
-        background: #fffdf8;
+        border-radius: 12px;
+        padding: 12px 14px;
+        background: #fff;
         display: grid;
-        gap: 6px;
+        gap: 8px;
       }
 
       .day-entry-header {
@@ -602,25 +836,28 @@
         justify-content: space-between;
         align-items: center;
         font-size: 14px;
+        font-weight: 600;
       }
 
       .day-entry-meta {
         display: grid;
-        gap: 4px;
+        gap: 3px;
         font-size: 12px;
         color: var(--muted);
+        line-height: 1.5;
       }
 
       .table-actions {
         display: flex;
         gap: 6px;
         flex-wrap: wrap;
+        margin-top: 2px;
       }
 
       .mini {
-        padding: 6px 10px;
+        padding: 5px 10px;
         font-size: 12px;
-        border-radius: 10px;
+        border-radius: 8px;
       }
 
       .hidden {
@@ -647,11 +884,6 @@
         .card {
           padding: 16px;
           overflow-x: hidden;
-        }
-        .topbar {
-          flex-direction: column;
-          gap: 10px;
-          align-items: flex-start;
         }
         .sync-header {
           flex-direction: column;
@@ -691,6 +923,20 @@
         .calendar-grid {
           min-width: 100%;
         }
+        .calendar-header {
+          flex-direction: column;
+          gap: 10px;
+        }
+        .calendar-header .summary-controls {
+          flex-direction: row;
+          align-items: flex-end;
+          gap: 10px;
+          width: 100%;
+        }
+        .calendar-header .filter-group {
+          flex: 1 1 0;
+          min-width: 0;
+        }
         .summary-controls {
           flex-direction: column;
           align-items: stretch;
@@ -710,38 +956,411 @@
         }
         .calendar-cell {
           min-height: 72px;
+          padding: 0;
+        }
+        .calendar-day {
           padding: 6px;
         }
         .calendar-date {
-          font-size: 11px;
+          font-size: 10px;
         }
         .calendar-date-pill {
           width: 22px;
           height: 22px;
           font-size: 11px;
+          border-radius: 4px;
         }
         .calendar-metric {
           font-size: 9px;
-          gap: 4px;
-          flex-wrap: wrap;
+          gap: 2px;
         }
         .calendar-value {
           font-size: 10px;
         }
+      }
+      /* ── Goals config collapsible ── */
+      .goals-config-trigger {
+        grid-column: 1 / -1;
+      }
+
+      .goals-config-btn {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 12px 18px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--muted);
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s, border-color 0.15s;
+        box-shadow: var(--shadow);
+      }
+
+      .goals-config-btn:hover {
+        background: #fff8ee;
+        color: var(--accent);
+        border-color: #e8c99a;
+      }
+
+      .goals-config-btn.open {
+        border-radius: 14px 14px 0 0;
+        border-bottom-color: transparent;
+        color: var(--ink);
+      }
+
+      .goals-config-chevron {
+        font-size: 16px;
+        transition: transform 0.25s ease;
+        display: inline-block;
+      }
+
+      .goals-config-btn.open .goals-config-chevron {
+        transform: rotate(180deg);
+      }
+
+      .goals-config-panel {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-top: none;
+        border-radius: 0 0 14px 14px;
+        box-shadow: var(--shadow);
+      }
+
+      .goals-config-panel.open {
+        max-height: 300px;
+      }
+
+      .goals-config-inner {
+        padding: 16px 18px 18px;
+      }
+
+      /* ── Goals view ── */
+      .goals-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      }
+
+      .goals-hero {
+        grid-column: 1 / -1;
+      }
+
+      .goals-history-card {
+        grid-column: 1 / -1;
+      }
+
+      .goals-hero-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+      }
+
+      .goals-progress-wrap {
+        margin-bottom: 20px;
+      }
+
+      .goals-progress-track {
+        height: 14px;
+        background: var(--line);
+        border-radius: 999px;
+        overflow: hidden;
+        margin-bottom: 8px;
+      }
+
+      .goals-progress-bar {
+        height: 100%;
+        background: #4caf84;
+        border-radius: 999px;
+        transition: width 0.6s cubic-bezier(0.34, 1.2, 0.64, 1),
+          background 0.4s ease;
+        max-width: 100%;
+      }
+
+      .goals-progress-bar.over {
+        background: #a8e6c1;
+      }
+
+      .goals-progress-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .goals-stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 12px;
+      }
+
+      .goals-stat {
+        background: #fffdf7;
+        border: 1px dashed var(--line);
+        border-radius: 14px;
+        padding: 12px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .goals-stat-label {
+        font-size: 11px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .goals-stat strong {
+        font-size: 18px;
+        color: var(--ink);
+      }
+
+      .goals-weeks-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .goals-week-row {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 16px;
+        border-radius: 14px;
+        background: #fffdf7;
+        border: 1px solid var(--line);
+      }
+
+      .goals-week-dates {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--ink);
+        white-space: nowrap;
+      }
+
+      .goals-week-mini-bar-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .goals-week-mini-track {
+        height: 8px;
+        background: var(--line);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .goals-week-mini-bar {
+        height: 100%;
+        background: #4caf84;
+        border-radius: 999px;
+        max-width: 100%;
+        transition: background 0.3s ease;
+      }
+
+      .goals-week-mini-bar.over {
+        background: #a8e6c1;
+      }
+
+      .goals-week-mini-label {
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .goals-week-amount {
+        text-align: right;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--ink);
+        white-space: nowrap;
+      }
+
+      .goals-week-amount .goals-week-pct {
+        display: block;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--muted);
+      }
+
+      .goals-week-badge-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--line);
+        flex-shrink: 0;
+      }
+
+      .goals-week-badge-dot.hit {
+        background: var(--accent-2);
+      }
+
+      .goals-week-badge-dot.over {
+        background: #d4a017;
+      }
+
+      .goals-week-row {
+        cursor: pointer;
+        transition: box-shadow 0.18s, background 0.18s;
+      }
+
+      .goals-week-row:hover {
+        box-shadow: 0 4px 16px rgba(30, 27, 22, 0.1);
+        background: #fffbf2;
+      }
+
+      .goals-week-row.expanded {
+        border-color: var(--accent-2);
+        box-shadow: 0 4px 16px rgba(13, 91, 82, 0.1);
+      }
+
+      .goals-week-detail {
+        display: none;
+        grid-column: 1 / -1;
+        background: #f7f3eb;
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-top: 8px;
+      }
+
+      .goals-week-detail.open {
+        display: block;
+      }
+
+      .goals-week-detail-grid {
+        display: grid;
+        gap: 8px;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        margin-top: 10px;
+      }
+
+      .goals-week-detail-entry {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 13px;
+      }
+
+      .entry-date-header {
+        font-weight: 700;
+        color: var(--ink);
+        font-size: 13px;
+        padding-bottom: 4px;
+        border-bottom: 1px solid var(--line);
+        margin-bottom: 2px;
+      }
+
+      .entry-driver-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .goals-week-detail-summary {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+        font-size: 13px;
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .goals-week-detail-summary span strong {
+        color: var(--ink);
+      }
+
+      .goals-driver-split {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+
+      .goals-driver-split-bar {
+        flex: 1 1 160px;
+        background: #fffdf7;
+        border: 1px dashed var(--line);
+        border-radius: 12px;
+        padding: 10px 14px;
+      }
+
+      .goals-driver-split-bar .split-name {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 6px;
+      }
+
+      .goals-driver-split-bar .split-track {
+        height: 8px;
+        background: var(--line);
+        border-radius: 999px;
+        overflow: hidden;
+        margin-bottom: 6px;
+      }
+
+      .goals-driver-split-bar .split-fill {
+        height: 100%;
+        border-radius: 999px;
+        background: #4caf84;
+        transition: width 0.5s ease, background 0.3s ease;
+        max-width: 100%;
+      }
+
+      .goals-driver-split-bar .split-fill.over {
+        background: #a8e6c1;
+      }
+
+      .goals-driver-split-bar .split-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 600;
       }
     </style>
   </head>
   <body>
     <main class="page">
       <div class="topbar">
-        <h2>Panel Uber</h2>
-        <div class="nav-actions">
-          <button type="button" class="nav-btn active" data-view="main">
-            Cargar jornada
+        <h2 id="topbar-title">Cargar jornada</h2>
+        <div class="topbar-menu-wrap">
+          <button
+            type="button"
+            class="topbar-menu-btn"
+            id="topbar-menu-btn"
+            aria-label="Menú"
+          >
+            <span></span><span></span><span></span>
           </button>
-          <button type="button" class="nav-btn" data-view="history">
-            Ver historial
-          </button>
+          <div class="topbar-dropdown hidden" id="topbar-dropdown">
+            <button type="button" class="nav-btn" data-view="main">
+              Cargar jornada
+            </button>
+            <button type="button" class="nav-btn" data-view="history">
+              Ver historial
+            </button>
+            <button type="button" class="nav-btn" data-view="goals">
+              Metas
+            </button>
+          </div>
         </div>
       </div>
 
@@ -786,12 +1405,21 @@
             </form>
           </section>
 
-          <section class="card reminder-card hidden" id="reminder-card">
-            <h3 style="margin: 0 0 6px">Hoy todavía no hay carga</h3>
-            <p class="note" id="reminder-text">
-              Registrá tu jornada para llevar el control al día.
-            </p>
-          </section>
+          <div class="reminder-alert hidden" id="reminder-card" role="alert">
+            <div class="reminder-alert-body">
+              <strong>Hoy todavía no hay carga</strong>
+              <p class="note" id="reminder-text" style="margin: 2px 0 0">
+                Registrá tu jornada para llevar el control al día.
+              </p>
+            </div>
+            <button
+              class="reminder-alert-close"
+              id="reminder-close"
+              aria-label="Cerrar alerta"
+            >
+              ✕
+            </button>
+          </div>
 
           <section class="card">
             <form id="calc-form">
@@ -880,20 +1508,14 @@
               </details>
 
               <div class="actions">
-                <button type="button" class="primary" id="calc-btn">
-                  Calcular
-                </button>
                 <button type="button" class="secondary" id="save-btn">
                   Guardar en historial
                 </button>
                 <button type="button" class="ghost hidden" id="cancel-edit-btn">
                   Cancelar edición
                 </button>
-                <button type="button" class="ghost" id="clear-btn">
+                <button type="button" class="primary" id="clear-btn">
                   Limpiar
-                </button>
-                <button type="button" class="ghost" id="history-btn">
-                  Ir al historial
                 </button>
               </div>
             </form>
@@ -919,36 +1541,7 @@
                 <strong id="avg-net">—</strong>
               </div>
             </div>
-            <p class="note" id="note">
-              Completá los campos para ver los cálculos.
-            </p>
-
-            <div class="goal-panel">
-              <h3 style="margin: 0 0 10px">Metas</h3>
-              <div class="goal-grid">
-                <div>
-                  <label for="goal-hourly">Meta por hora (bruto)</label>
-                  <input
-                    type="number"
-                    id="goal-hourly"
-                    min="0"
-                    step="0.01"
-                    placeholder="Ej: 15000"
-                  />
-                </div>
-                <div>
-                  <label for="goal-weekly">Meta semanal (bruto)</label>
-                  <input
-                    type="number"
-                    id="goal-weekly"
-                    min="0"
-                    step="0.01"
-                    placeholder="Ej: 350000"
-                  />
-                </div>
-              </div>
-              <p class="note" id="goal-daily-status">Definí tus metas.</p>
-            </div>
+            <p class="note" id="note"></p>
           </section>
           <section class="card sync-footer hidden" id="sync-footer">
             <div class="sync-footer-inner">
@@ -1030,42 +1623,165 @@
                   <span>Promedio por hora (bruto)</span>
                   <strong id="month-avg-gross">—</strong>
                 </div>
-                <div class="result-row">
-                  <span>Promedio por hora (neto)</span>
-                  <strong id="month-avg-net">—</strong>
-                </div>
-                <div class="result-row">
-                  <span>Meta semanal (bruto)</span>
-                  <strong id="week-goal-status">—</strong>
-                </div>
               </div>
               <p class="note" id="month-note"></p>
             </section>
-            <section class="card" id="day-detail-card">
+            <section class="card hidden" id="day-detail-card">
               <h2 id="day-detail-title" style="margin: 0 0 8px">
                 Detalle del día
               </h2>
               <div id="day-detail-list"></div>
-              <p class="note" id="day-detail-empty">
-                Seleccioná un día del calendario.
-              </p>
               <p class="note" id="history-status"></p>
             </section>
-
-            <section class="card">
-              <div class="actions">
-                <button type="button" class="ghost" id="clear-history-btn">
-                  Borrar historial
-                </button>
-                <button type="button" class="ghost" id="back-main-btn">
-                  Volver a carga
-                </button>
+          </div>
+        </div>
+      </section>
+      <section id="view-goals" class="view hidden">
+        <div class="view-grid goals-grid">
+          <!-- Semana actual -->
+          <section class="card goals-hero">
+            <div class="goals-hero-header">
+              <div>
+                <h2 style="margin: 0 0 4px">Esta semana</h2>
+                <p class="note" id="goals-week-range" style="margin: 0">—</p>
               </div>
-              <p class="note">
-                El historial se guarda en este dispositivo y se sincroniza si
-                iniciás sesión.
-              </p>
-            </section>
+              <span class="pill" id="goals-week-badge">Sin meta</span>
+            </div>
+            <div class="goals-progress-wrap">
+              <div class="goals-progress-track">
+                <div
+                  class="goals-progress-bar"
+                  id="goals-progress-bar"
+                  style="width: 0%"
+                ></div>
+              </div>
+              <div class="goals-progress-labels">
+                <span id="goals-week-earned">$0</span>
+                <span id="goals-week-target">Meta: —</span>
+              </div>
+            </div>
+            <div class="goals-stats-row">
+              <div class="goals-stat">
+                <span class="goals-stat-label">Días trabajados</span>
+                <strong id="goals-days-worked">0</strong>
+              </div>
+              <div class="goals-stat">
+                <span class="goals-stat-label">Horas totales</span>
+                <strong id="goals-hours-week">0 h</strong>
+              </div>
+              <div class="goals-stat">
+                <span class="goals-stat-label">Prom. por hora</span>
+                <strong id="goals-avg-hour">—</strong>
+              </div>
+              <div class="goals-stat">
+                <span class="goals-stat-label">Días restantes</span>
+                <strong id="goals-days-left">—</strong>
+              </div>
+            </div>
+          </section>
+
+          <!-- Historial de semanas -->
+          <section class="card goals-history-card">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 12px;
+                flex-wrap: wrap;
+                margin-bottom: 14px;
+              "
+            >
+              <h2 style="margin: 0">Semanas anteriores</h2>
+              <div class="filter-group" style="flex: 0 1 160px">
+                <label for="goals-driver-filter">Conductor</label>
+                <select id="goals-driver-filter">
+                  <option value="all">Todos</option>
+                  <option value="martin">Martín</option>
+                  <option value="osvaldo">Osvaldo</option>
+                </select>
+              </div>
+            </div>
+            <div id="goals-weeks-list" class="goals-weeks-list">
+              <p class="note">Sin registros aún.</p>
+            </div>
+          </section>
+
+          <!-- Panel detalle semana seleccionada -->
+          <section
+            class="card goals-history-card hidden"
+            id="goals-week-detail-panel"
+          >
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 12px;
+                flex-wrap: wrap;
+                margin-bottom: 14px;
+              "
+            >
+              <div>
+                <h2 style="margin: 0 0 4px" id="goals-detail-title">Semana</h2>
+                <p class="note" id="goals-detail-range" style="margin: 0"></p>
+              </div>
+              <button
+                type="button"
+                class="ghost"
+                id="goals-detail-close"
+                style="font-size: 13px"
+              >
+                ✕ Cerrar
+              </button>
+            </div>
+            <div class="goals-driver-split" id="goals-detail-splits"></div>
+            <div class="divider"></div>
+            <div
+              class="goals-week-detail-summary"
+              id="goals-detail-summary"
+            ></div>
+            <div class="goals-week-detail-grid" id="goals-detail-entries"></div>
+          </section>
+
+          <!-- Configuración de metas -->
+          <div class="goals-config-trigger">
+            <button
+              type="button"
+              class="goals-config-btn"
+              id="goals-config-toggle"
+            >
+              <span>⚙ Configurar metas</span>
+              <span class="goals-config-chevron" id="goals-config-chevron"
+                >▾</span
+              >
+            </button>
+            <div class="goals-config-panel" id="goals-config-panel">
+              <div class="goals-config-inner">
+                <div class="goal-grid">
+                  <div>
+                    <label for="goal-hourly">Meta por hora (bruto)</label>
+                    <input
+                      type="number"
+                      id="goal-hourly"
+                      min="0"
+                      step="0.01"
+                      placeholder="Ej: 15000"
+                    />
+                  </div>
+                  <div>
+                    <label for="goal-weekly">Meta semanal (bruto)</label>
+                    <input
+                      type="number"
+                      id="goal-weekly"
+                      min="0"
+                      step="0.01"
+                      placeholder="Ej: 350000"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -1114,16 +1830,30 @@
       const monthHoursEl = document.getElementById("month-hours");
       const monthAvgGrossEl = document.getElementById("month-avg-gross");
       const monthAvgNetEl = document.getElementById("month-avg-net");
-      const weekGoalStatusEl = document.getElementById("week-goal-status");
+      const weekGoalStatusEl = null; // moved to goals view
       const monthNoteEl = document.getElementById("month-note");
+      const goalsWeekRangeEl = document.getElementById("goals-week-range");
+      const goalsWeekBadgeEl = document.getElementById("goals-week-badge");
+      const goalsProgressBar = document.getElementById("goals-progress-bar");
+      const goalsWeekEarnedEl = document.getElementById("goals-week-earned");
+      const goalsWeekTargetEl = document.getElementById("goals-week-target");
+      const goalsDaysWorkedEl = document.getElementById("goals-days-worked");
+      const goalsHoursWeekEl = document.getElementById("goals-hours-week");
+      const goalsAvgHourEl = document.getElementById("goals-avg-hour");
+      const goalsDaysLeftEl = document.getElementById("goals-days-left");
+      const goalsWeeksListEl = document.getElementById("goals-weeks-list");
+      const weekGoalInlineEl = document.getElementById("week-goal-inline");
       const calendarTitle = document.getElementById("calendar-title");
       const calendarGrid = document.getElementById("calendar-grid");
+      const dayDetailCard = document.getElementById("day-detail-card");
       const dayDetailTitle = document.getElementById("day-detail-title");
       const dayDetailList = document.getElementById("day-detail-list");
       const dayDetailEmpty = document.getElementById("day-detail-empty");
       const historyStatus = document.getElementById("history-status");
       const reminderCard = document.getElementById("reminder-card");
       const reminderText = document.getElementById("reminder-text");
+      const reminderCloseButton = document.getElementById("reminder-close");
+      let reminderDismissed = false;
 
       const calcButton = document.getElementById("calc-btn");
       const saveButton = document.getElementById("save-btn");
@@ -1134,8 +1864,15 @@
       const historyButton = document.getElementById("history-btn");
       const backMainButton = document.getElementById("back-main-btn");
       const navButtons = document.querySelectorAll(".nav-btn");
+      const topbarTitle = document.getElementById("topbar-title");
+      const topbarMenuBtn = document.getElementById("topbar-menu-btn");
+      const topbarDropdown = document.getElementById("topbar-dropdown");
       const viewMain = document.getElementById("view-main");
       const viewHistory = document.getElementById("view-history");
+      const viewGoals = document.getElementById("view-goals");
+      const goalsDriverFilterInput = document.getElementById(
+        "goals-driver-filter"
+      );
 
       const historyKey = "uber-daily-history";
       const goalsKey = "uber-daily-goals";
@@ -1194,7 +1931,9 @@
         DRIVER_LABELS[driverId] || driverId || "Conductor";
 
       const normalizeEmail = (value) =>
-        String(value || "").trim().toLowerCase();
+        String(value || "")
+          .trim()
+          .toLowerCase();
       const resolveDriverFromEmail = (email) =>
         DRIVER_BY_EMAIL[normalizeEmail(email)] || "";
 
@@ -1202,7 +1941,8 @@
         new Intl.NumberFormat("es-AR", {
           style: "currency",
           currency: "ARS",
-          maximumFractionDigits: 2,
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
         });
 
       const loadGoals = () => {
@@ -1339,7 +2079,9 @@
           goalDailyStatusEl.textContent = "Meta diaria: cumplida.";
         } else {
           goalDailyStatusEl.textContent =
-            "Meta diaria: faltan " + fmt.format(hourly - avgGross) + " por hora.";
+            "Meta diaria: faltan " +
+            fmt.format(hourly - avgGross) +
+            " por hora.";
         }
       };
 
@@ -1355,33 +2097,415 @@
       };
 
       const updateWeeklyGoalStatus = () => {
-        if (!weekGoalStatusEl) {
-          return;
-        }
         const { weekly } = getGoals();
-        if (weekly <= 0) {
-          weekGoalStatusEl.textContent = "Definí una meta semanal.";
-          return;
-        }
         const { start, end } = getWeekRange(today);
         const items = filterByDriver(getHistory());
         const weekTotal = items.reduce((acc, entry) => {
-          if (!entry.date) {
-            return acc;
-          }
-          const entryDate = new Date(entry.date + "T00:00:00");
-          if (entryDate >= start && entryDate <= end) {
-            acc += entry.income || 0;
-          }
+          if (!entry.date) return acc;
+          const d = new Date(entry.date + "T00:00:00");
+          if (d >= start && d <= end) acc += entry.income || 0;
           return acc;
         }, 0);
         const fmt = formatter();
-        if (weekTotal >= weekly) {
-          weekGoalStatusEl.textContent = "Cumplida.";
-        } else {
-          weekGoalStatusEl.textContent =
-            "Faltan " + fmt.format(weekly - weekTotal) + ".";
+        if (weekGoalInlineEl) {
+          if (weekly <= 0) {
+            weekGoalInlineEl.textContent = "";
+          } else if (weekTotal >= weekly) {
+            weekGoalInlineEl.textContent = "✔ Meta semanal cumplida.";
+          } else {
+            weekGoalInlineEl.textContent =
+              "Semana: " +
+              fmt.format(weekTotal) +
+              " / " +
+              fmt.format(weekly) +
+              " — faltan " +
+              fmt.format(weekly - weekTotal) +
+              ".";
+          }
         }
+      };
+
+      const formatDateShort = (dateStr) => {
+        if (!dateStr) return "";
+        const [y, m, d] = dateStr.split("-");
+        return d + "/" + m + "/" + y.slice(2);
+      };
+
+      // Interpola color de la barra según porcentaje: amarillo (0%) → verde pastel (100%)
+      const barColor = (pct) => {
+        const t = Math.max(0, Math.min(1, pct / 100));
+        // amarillo #e8c519 → verde pastel #a8e6c1
+        const r = Math.round(232 + (168 - 232) * t);
+        const g = Math.round(197 + (230 - 197) * t);
+        const b = Math.round(25 + (193 - 25) * t);
+        return "rgb(" + r + "," + g + "," + b + ")";
+      };
+
+      const ALL_DRIVERS = Object.keys(DRIVER_LABELS);
+
+      // Calcula la meta efectiva según filtro y cantidad de conductores
+      const getEffectiveWeeklyMeta = (driverFilter) => {
+        const { weekly } = getGoals();
+        if (!weekly || weekly <= 0) return 0;
+        if (driverFilter === "all") return weekly;
+        // dividir en partes iguales entre todos los conductores conocidos
+        return weekly / ALL_DRIVERS.length;
+      };
+
+      const getDriverLabel2 = (id) => getDriverLabel(id);
+
+      const renderGoalsView = () => {
+        const fmt = formatter();
+        const { weekly, hourly } = getGoals();
+        const driverFilter = goalsDriverFilterInput
+          ? goalsDriverFilterInput.value
+          : "all";
+        const allItems = getHistory();
+        const items =
+          driverFilter === "all"
+            ? allItems
+            : allItems.filter((e) => e.driver === driverFilter);
+
+        const effectiveMeta = getEffectiveWeeklyMeta(driverFilter);
+
+        // ── Semana actual ──
+        const { start, end } = getWeekRange(today);
+        const weekItems = items.filter((e) => {
+          if (!e.date) return false;
+          const dd = new Date(e.date + "T00:00:00");
+          return dd >= start && dd <= end;
+        });
+        const weekEarned = weekItems.reduce((a, e) => a + (e.income || 0), 0);
+        const weekHours = weekItems.reduce(
+          (a, e) =>
+            a +
+            (e.time
+              ? (() => {
+                  const p = e.time.split(":");
+                  return (parseInt(p[0]) || 0) + (parseInt(p[1]) || 0) / 60;
+                })()
+              : 0),
+          0
+        );
+
+        const rangeText =
+          formatDateShort(start.toISOString().slice(0, 10)) +
+          " – " +
+          formatDateShort(
+            new Date(start.getTime() + 6 * 86400000).toISOString().slice(0, 10)
+          );
+        if (goalsWeekRangeEl) goalsWeekRangeEl.textContent = rangeText;
+
+        const pct =
+          effectiveMeta > 0
+            ? Math.min((weekEarned / effectiveMeta) * 100, 100)
+            : 0;
+        const over = effectiveMeta > 0 && weekEarned >= effectiveMeta;
+        if (goalsProgressBar) {
+          goalsProgressBar.style.width = (effectiveMeta > 0 ? pct : 0) + "%";
+          goalsProgressBar.style.background =
+            effectiveMeta > 0 ? barColor(pct) : "#4caf84";
+          goalsProgressBar.classList.toggle("over", over);
+        }
+        if (goalsWeekEarnedEl)
+          goalsWeekEarnedEl.textContent = fmt.format(weekEarned);
+        if (goalsWeekTargetEl)
+          goalsWeekTargetEl.textContent =
+            effectiveMeta > 0
+              ? "Meta" +
+                (driverFilter !== "all"
+                  ? " " + getDriverLabel2(driverFilter)
+                  : "") +
+                ": " +
+                fmt.format(effectiveMeta)
+              : "Sin meta definida";
+
+        if (goalsWeekBadgeEl) {
+          if (effectiveMeta <= 0) {
+            goalsWeekBadgeEl.textContent = "Sin meta";
+            goalsWeekBadgeEl.style.background = "";
+            goalsWeekBadgeEl.style.color = "";
+          } else if (over) {
+            goalsWeekBadgeEl.textContent = "¡Meta cumplida!";
+            goalsWeekBadgeEl.style.background = "rgba(212,160,23,0.15)";
+            goalsWeekBadgeEl.style.color = "#a07010";
+          } else {
+            goalsWeekBadgeEl.textContent =
+              "Faltan " + fmt.format(effectiveMeta - weekEarned);
+            goalsWeekBadgeEl.style.background = "";
+            goalsWeekBadgeEl.style.color = "";
+          }
+        }
+
+        if (goalsDaysWorkedEl) goalsDaysWorkedEl.textContent = weekItems.length;
+        if (goalsHoursWeekEl)
+          goalsHoursWeekEl.textContent = formatHours(weekHours);
+        if (goalsAvgHourEl)
+          goalsAvgHourEl.textContent =
+            weekHours > 0 ? fmt.format(weekEarned / weekHours) : "—";
+        const mondayBased = (today.getDay() + 6) % 7;
+        const daysLeft = 6 - mondayBased;
+        if (goalsDaysLeftEl)
+          goalsDaysLeftEl.textContent =
+            daysLeft === 0 ? "Último día" : daysLeft;
+
+        // ── Historial de semanas anteriores ──
+        if (!goalsWeeksListEl) return;
+
+        const weekMap = new Map();
+        allItems.forEach((entry) => {
+          if (!entry.date) return;
+          const dd = new Date(entry.date + "T00:00:00");
+          const { start: ws } = getWeekRange(dd);
+          const key = ws.toISOString().slice(0, 10);
+          if (!weekMap.has(key)) weekMap.set(key, { start: ws, entries: [] });
+          weekMap.get(key).entries.push(entry);
+        });
+
+        const currentWeekKey = start.toISOString().slice(0, 10);
+        const pastWeeks = Array.from(weekMap.entries())
+          .filter(([k]) => k !== currentWeekKey)
+          .sort(([a], [b]) => b.localeCompare(a));
+
+        if (pastWeeks.length === 0) {
+          goalsWeeksListEl.innerHTML =
+            "<p class='note'>No hay semanas anteriores con registros.</p>";
+          return;
+        }
+
+        goalsWeeksListEl.innerHTML = pastWeeks
+          .map(([weekKey, { start: ws, entries: we }]) => {
+            // filtrar por conductor si aplica
+            const filteredWe =
+              driverFilter === "all"
+                ? we
+                : we.filter((e) => e.driver === driverFilter);
+            if (filteredWe.length === 0) return "";
+
+            const we_end = new Date(ws.getTime() + 6 * 86400000);
+            const earned = filteredWe.reduce((a, e) => a + (e.income || 0), 0);
+            const meta = getEffectiveWeeklyMeta(driverFilter);
+            const pctW = meta > 0 ? Math.min((earned / meta) * 100, 100) : 0;
+            const overW = meta > 0 && earned >= meta;
+            const dateLabel =
+              formatDateShort(ws.toISOString().slice(0, 10)) +
+              " – " +
+              formatDateShort(we_end.toISOString().slice(0, 10));
+            const pctLabel =
+              meta > 0 ? Math.round((earned / meta) * 100) + "%" : "—";
+            const dotClass = overW
+              ? "over"
+              : meta > 0 && earned > 0
+              ? "hit"
+              : "";
+            const daysText =
+              filteredWe.length +
+              " día" +
+              (filteredWe.length !== 1 ? "s" : "") +
+              " trabajado" +
+              (filteredWe.length !== 1 ? "s" : "");
+            const barW = meta > 0 ? pctW : 100;
+            const barOp = meta > 0 ? 1 : 0.25;
+
+            return (
+              '<div class="goals-week-row" data-week-key="' +
+              weekKey +
+              '">' +
+              '<div class="goals-week-dates">' +
+              '<div class="goals-week-badge-dot ' +
+              dotClass +
+              '"></div>' +
+              "<span>" +
+              dateLabel +
+              "</span>" +
+              "</div>" +
+              '<div class="goals-week-mini-bar-wrap">' +
+              '<div class="goals-week-mini-track">' +
+              '<div class="goals-week-mini-bar ' +
+              (overW ? "over" : "") +
+              '" style="width:' +
+              barW +
+              "%;opacity:" +
+              barOp +
+              ";background:" +
+              (meta > 0 ? barColor(pctW) : "#4caf84") +
+              '"></div>' +
+              "</div>" +
+              '<span class="goals-week-mini-label">' +
+              daysText +
+              "</span>" +
+              "</div>" +
+              '<div class="goals-week-amount">' +
+              fmt.format(earned) +
+              '<span class="goals-week-pct">' +
+              pctLabel +
+              "</span>" +
+              "</div>" +
+              "</div>"
+            );
+          })
+          .filter(Boolean)
+          .join("");
+
+        // Attach click listeners to week rows
+        goalsWeeksListEl.querySelectorAll(".goals-week-row").forEach((row) => {
+          row.addEventListener("click", () => {
+            const weekKey = row.getAttribute("data-week-key");
+            openWeekDetail(weekKey, weekMap);
+          });
+        });
+      };
+
+      const openWeekDetail = (weekKey, weekMap) => {
+        const fmt = formatter();
+        const { weekly } = getGoals();
+        const panel = document.getElementById("goals-week-detail-panel");
+        const titleEl = document.getElementById("goals-detail-title");
+        const rangeEl = document.getElementById("goals-detail-range");
+        const splitsEl = document.getElementById("goals-detail-splits");
+        const summaryEl = document.getElementById("goals-detail-summary");
+        const entriesEl = document.getElementById("goals-detail-entries");
+        if (!panel || !weekMap.has(weekKey)) return;
+
+        const { start: ws, entries: allWe } = weekMap.get(weekKey);
+        const we_end = new Date(ws.getTime() + 6 * 86400000);
+        const dateLabel =
+          formatDateShort(ws.toISOString().slice(0, 10)) +
+          " – " +
+          formatDateShort(we_end.toISOString().slice(0, 10));
+
+        if (titleEl)
+          titleEl.textContent =
+            "Semana del " + formatDateShort(ws.toISOString().slice(0, 10));
+        if (rangeEl) rangeEl.textContent = dateLabel;
+
+        // ── Barras por conductor ──
+        const driverMeta = weekly > 0 ? weekly / ALL_DRIVERS.length : 0;
+        if (splitsEl) {
+          splitsEl.innerHTML = ALL_DRIVERS.map((drv) => {
+            const drvItems = allWe.filter((e) => e.driver === drv);
+            const drvEarned = drvItems.reduce((a, e) => a + (e.income || 0), 0);
+            const drvPct =
+              driverMeta > 0
+                ? Math.min((drvEarned / driverMeta) * 100, 100)
+                : 0;
+            const drvOver = driverMeta > 0 && drvEarned >= driverMeta;
+            const pctLabel =
+              driverMeta > 0
+                ? Math.round((drvEarned / driverMeta) * 100) + "%"
+                : "—";
+            return (
+              '<div class="goals-driver-split-bar">' +
+              '<div class="split-name">' +
+              getDriverLabel2(drv) +
+              "</div>" +
+              '<div class="split-track"><div class="split-fill' +
+              (drvOver ? " over" : "") +
+              '" style="width:' +
+              (driverMeta > 0 ? drvPct : 0) +
+              "%;background:" +
+              (driverMeta > 0 ? barColor(drvPct) : "#4caf84") +
+              '"></div></div>' +
+              '<div class="split-labels"><span>' +
+              fmt.format(drvEarned) +
+              "</span><span>" +
+              (driverMeta > 0
+                ? "Meta: " + fmt.format(driverMeta)
+                : "Sin meta") +
+              " · " +
+              pctLabel +
+              "</span></div>" +
+              "</div>"
+            );
+          }).join("");
+        }
+
+        // ── Resumen total ──
+        const totalEarned = allWe.reduce((a, e) => a + (e.income || 0), 0);
+        const totalFuel = allWe.reduce((a, e) => a + (e.fuel || 0), 0);
+        const totalHrs = allWe.reduce(
+          (a, e) =>
+            a +
+            (e.time
+              ? (() => {
+                  const p = e.time.split(":");
+                  return (parseInt(p[0]) || 0) + (parseInt(p[1]) || 0) / 60;
+                })()
+              : 0),
+          0
+        );
+        const totalNet = allWe.reduce(
+          (a, e) =>
+            a +
+            (e.income || 0) -
+            (e.fuel || 0) -
+            (e.tolls || 0) -
+            (e.parking || 0) -
+            (e.otherExpenses || 0),
+          0
+        );
+        if (summaryEl) {
+          summaryEl.innerHTML =
+            "<span>Total bruto: <strong>" +
+            fmt.format(totalEarned) +
+            "</strong></span>" +
+            "<span>Neto: <strong>" +
+            fmt.format(totalNet) +
+            "</strong></span>" +
+            "<span>Combustible: <strong>" +
+            fmt.format(totalFuel) +
+            "</strong></span>" +
+            "<span>Horas: <strong>" +
+            formatHours(totalHrs) +
+            "</strong></span>" +
+            "<span>Días: <strong>" +
+            allWe.length +
+            "</strong></span>";
+        }
+
+        // ── Entradas individuales agrupadas por fecha ──
+        const sorted = [...allWe].sort((a, b) => a.date.localeCompare(b.date));
+
+        // Agrupar por fecha
+        const byDate = new Map();
+        sorted.forEach((e) => {
+          if (!byDate.has(e.date)) byDate.set(e.date, []);
+          byDate.get(e.date).push(e);
+        });
+
+        if (entriesEl) {
+          entriesEl.innerHTML = Array.from(byDate.entries())
+            .map(([date, dayEntries]) => {
+              const rows = dayEntries
+                .map((e) => {
+                  return (
+                    '<div class="entry-driver-row">' +
+                    '<div class="entry-driver">' +
+                    getDriverLabel2(e.driver) +
+                    " · " +
+                    (e.time || "—") +
+                    " hs</div>" +
+                    '<div class="entry-income">' +
+                    fmt.format(e.income || 0) +
+                    "</div>" +
+                    "</div>"
+                  );
+                })
+                .join("");
+              return (
+                '<div class="goals-week-detail-entry">' +
+                '<div class="entry-date-header">' +
+                formatDateShort(date) +
+                "</div>" +
+                rows +
+                "</div>"
+              );
+            })
+            .join("");
+        }
+
+        panel.classList.remove("hidden");
+        panel.scrollIntoView({ behavior: "smooth", block: "start" });
       };
 
       const updateReminderBanner = () => {
@@ -1391,16 +2515,19 @@
         const driver = isAutoDriverActive()
           ? currentDriverId
           : driverInput
-            ? driverInput.value
-            : "";
+          ? driverInput.value
+          : "";
         const items = getHistory();
         const hasToday = items.some(
           (entry) =>
-            entry.date === todayString &&
-            (!driver || entry.driver === driver)
+            entry.date === todayString && (!driver || entry.driver === driver)
         );
         if (hasToday) {
           reminderCard.classList.add("hidden");
+          reminderDismissed = false;
+          return;
+        }
+        if (reminderDismissed) {
           return;
         }
         reminderCard.classList.remove("hidden");
@@ -1489,8 +2616,15 @@
       };
 
       const calculate = () => {
-        const { hours, minutes, totalHours, net, avgGross, avgNet, extraCosts } =
-          compute();
+        const {
+          hours,
+          minutes,
+          totalHours,
+          net,
+          avgGross,
+          avgNet,
+          extraCosts,
+        } = compute();
         const fmt = formatter();
         avgGrossEl.textContent = totalHours > 0 ? fmt.format(avgGross) : "—";
         netTotalEl.textContent = fmt.format(net);
@@ -1513,8 +2647,7 @@
             minuteLabel +
             ".";
         } else {
-          noteEl.textContent =
-            "Ingresá las horas y minutos trabajados para ver los promedios.";
+          noteEl.textContent = "";
         }
 
         updateDailyGoalStatus(avgGross, totalHours);
@@ -1789,8 +2922,9 @@
         monthHoursEl.textContent = formatHours(totals.hours);
         monthAvgGrossEl.textContent =
           totals.hours > 0 ? fmt.format(totals.income / totals.hours) : "—";
-        monthAvgNetEl.textContent =
-          totals.hours > 0 ? fmt.format(totals.net / totals.hours) : "—";
+        if (monthAvgNetEl)
+          monthAvgNetEl.textContent =
+            totals.hours > 0 ? fmt.format(totals.net / totals.hours) : "—";
 
         const driverLabel =
           driverFilterInput && driverFilterInput.value !== "all"
@@ -1820,7 +2954,7 @@
         }
 
         calendarTitle.textContent =
-          MONTHS_ES[Math.max(0, Math.min(11, monthIndex))] + " " + year;
+          MONTHS_ES[Math.max(0, Math.min(11, monthIndex))];
 
         const firstDay = new Date(year, monthIndex, 1);
         const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
@@ -1901,24 +3035,31 @@
         historyStatus.textContent = "";
 
         if (!date) {
-          dayDetailTitle.textContent = "Detalle del día";
-          dayDetailEmpty.textContent = "Seleccioná un día del calendario.";
-          dayDetailEmpty.style.display = "block";
+          if (dayDetailCard) dayDetailCard.classList.add("hidden");
           return;
         }
 
         const items = filterByDriver(getHistory()).filter(
           (entry) => entry.date === date
         );
-        dayDetailTitle.textContent = "Detalle del " + date;
 
         if (!items.length) {
-          dayDetailEmpty.textContent = "No hay registros para este día.";
-          dayDetailEmpty.style.display = "block";
+          if (dayDetailCard) dayDetailCard.classList.add("hidden");
           return;
         }
 
-        dayDetailEmpty.style.display = "none";
+        if (dayDetailCard) dayDetailCard.classList.remove("hidden");
+
+        // Fecha en español: "13 de marzo de 2026"
+        const [y, m, d] = date.split("-");
+        const dateObj = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
+        const dateLabel = dateObj.toLocaleDateString("es-AR", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        });
+        dayDetailTitle.textContent = "Detalle del " + dateLabel;
+
         const fmt = formatter();
         items.sort((a, b) => (a.time || "").localeCompare(b.time || ""));
 
@@ -1951,15 +3092,19 @@
             "<span>Combustible: " +
             fmt.format(entry.fuel) +
             "</span>" +
-            "<span>Peajes: " +
-            fmt.format(entry.tolls || 0) +
-            "</span>" +
-            "<span>Estacionamiento: " +
-            fmt.format(entry.parking || 0) +
-            "</span>" +
-            "<span>Otros gastos: " +
-            fmt.format(entry.otherExpenses || 0) +
-            "</span>" +
+            (entry.tolls > 0
+              ? "<span>Peajes: " + fmt.format(entry.tolls) + "</span>"
+              : "") +
+            (entry.parking > 0
+              ? "<span>Estacionamiento: " +
+                fmt.format(entry.parking) +
+                "</span>"
+              : "") +
+            (entry.otherExpenses > 0
+              ? "<span>Otros gastos: " +
+                fmt.format(entry.otherExpenses) +
+                "</span>"
+              : "") +
             "<span>Conductor: " +
             getDriverLabel(entry.driver) +
             "</span>" +
@@ -1979,17 +3124,34 @@
         updateReminderBanner();
       };
 
+      const VIEW_TITLES = {
+        main: "Cargar jornada",
+        history: "Ver historial",
+        goals: "Metas",
+      };
+
+      const closeTopbarMenu = () => {
+        if (topbarDropdown) topbarDropdown.classList.add("hidden");
+        if (topbarMenuBtn) topbarMenuBtn.classList.remove("open");
+      };
+
       const setView = (view) => {
         const isMain = view === "main";
+        const isGoals = view === "goals";
+        const isHistory = view === "history";
         viewMain.classList.toggle("hidden", !isMain);
-        viewHistory.classList.toggle("hidden", isMain);
+        viewHistory.classList.toggle("hidden", !isHistory);
+        if (viewGoals) viewGoals.classList.toggle("hidden", !isGoals);
         navButtons.forEach((btn) => {
           btn.classList.toggle(
             "active",
             btn.getAttribute("data-view") === view
           );
         });
-        if (!isMain) {
+        if (topbarTitle)
+          topbarTitle.textContent = VIEW_TITLES[view] || "Panel Uber";
+        closeTopbarMenu();
+        if (isHistory) {
           const currentMonth = today.toISOString().slice(0, 7);
           if (monthFilterInput) {
             monthFilterInput.value = currentMonth;
@@ -2003,6 +3165,9 @@
           } else {
             renderHistoryView();
           }
+        }
+        if (isGoals) {
+          renderGoalsView();
         }
       };
 
@@ -2078,7 +3243,12 @@
           items.find((item) => item.date === date && item.driver === driver);
         const merged = Boolean(existing);
 
-        if (income === 0 && fuel === 0 && extraCosts === 0 && totalHours === 0) {
+        if (
+          income === 0 &&
+          fuel === 0 &&
+          extraCosts === 0 &&
+          totalHours === 0
+        ) {
           historyStatus.textContent = "Completá los datos antes de guardar.";
           return;
         }
@@ -2113,7 +3283,8 @@
           const mergedParking = (existing.parking || 0) + parking;
           const mergedOtherExpenses =
             (existing.otherExpenses || 0) + otherExpenses;
-          const mergedExtras = mergedTolls + mergedParking + mergedOtherExpenses;
+          const mergedExtras =
+            mergedTolls + mergedParking + mergedOtherExpenses;
           const mergedHours = (existing.totalHours || 0) + totalHours;
           const mergedNet = mergedIncome - mergedFuel - mergedExtras;
           entry = {
@@ -2151,8 +3322,8 @@
             const successMessage = wasEditing
               ? "Edición guardada."
               : merged
-                ? "Registro del día actualizado."
-                : "Registro guardado.";
+              ? "Registro del día actualizado."
+              : "Registro guardado.";
             resetEditState(successMessage);
             clearForm();
             return;
@@ -2173,8 +3344,8 @@
         const successMessage = wasEditing
           ? "Edición guardada."
           : merged
-            ? "Registro del día actualizado."
-            : "Registro guardado.";
+          ? "Registro del día actualizado."
+          : "Registro guardado.";
         resetEditState(successMessage);
         clearForm();
       };
@@ -2203,7 +3374,7 @@
         if (extraCostsEl) {
           extraCostsEl.textContent = "—";
         }
-        noteEl.textContent = "Completá los campos para ver los cálculos.";
+        noteEl.textContent = "";
         updateDailyGoalStatus(0, 0);
       };
 
@@ -2353,7 +3524,49 @@
         const { avgGross, totalHours } = compute();
         updateDailyGoalStatus(avgGross, totalHours);
         updateWeeklyGoalStatus();
+        if (viewGoals && !viewGoals.classList.contains("hidden")) {
+          renderGoalsView();
+        }
       };
+
+      if (goalsDriverFilterInput) {
+        goalsDriverFilterInput.addEventListener("change", renderGoalsView);
+      }
+
+      const goalsDetailCloseBtn = document.getElementById("goals-detail-close");
+      if (goalsDetailCloseBtn) {
+        goalsDetailCloseBtn.addEventListener("click", () => {
+          const panel = document.getElementById("goals-week-detail-panel");
+          if (panel) panel.classList.add("hidden");
+        });
+      }
+
+      if (topbarMenuBtn && topbarDropdown) {
+        topbarMenuBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const isOpen = !topbarDropdown.classList.contains("hidden");
+          topbarDropdown.classList.toggle("hidden", isOpen);
+          topbarMenuBtn.classList.toggle("open", !isOpen);
+        });
+        document.addEventListener("click", (e) => {
+          if (
+            !topbarMenuBtn.contains(e.target) &&
+            !topbarDropdown.contains(e.target)
+          ) {
+            closeTopbarMenu();
+          }
+        });
+      }
+
+      const goalsConfigToggle = document.getElementById("goals-config-toggle");
+      const goalsConfigPanel = document.getElementById("goals-config-panel");
+      if (goalsConfigToggle && goalsConfigPanel) {
+        goalsConfigToggle.addEventListener("click", () => {
+          const isOpen = goalsConfigPanel.classList.contains("open");
+          goalsConfigPanel.classList.toggle("open", !isOpen);
+          goalsConfigToggle.classList.toggle("open", !isOpen);
+        });
+      }
 
       ["input", "change"].forEach((evt) => {
         incomeInput.addEventListener(evt, calculate);
@@ -2377,6 +3590,13 @@
         goalWeeklyInput.addEventListener("input", handleGoalsChange);
       }
 
+      if (reminderCloseButton) {
+        reminderCloseButton.addEventListener("click", () => {
+          reminderDismissed = true;
+          reminderCard.classList.add("hidden");
+        });
+      }
+
       monthFilterInput.addEventListener("change", renderHistoryView);
       if (driverFilterInput) {
         driverFilterInput.addEventListener("change", renderHistoryView);
@@ -2395,26 +3615,261 @@
         syncLogoutButton.addEventListener("click", handleSignOut);
       }
 
-      calcButton.addEventListener("click", calculate);
+      if (calcButton) calcButton.addEventListener("click", calculate);
       saveButton.addEventListener("click", saveEntry);
       cancelEditButton.addEventListener("click", () =>
         stopEdit("Edición cancelada.")
       );
       clearButton.addEventListener("click", clearForm);
-      clearHistoryButton.addEventListener("click", clearHistory);
+      if (clearHistoryButton)
+        clearHistoryButton.addEventListener("click", clearHistory);
 
-      historyButton.addEventListener("click", () => setView("history"));
-      backMainButton.addEventListener("click", () => setView("main"));
+      if (historyButton)
+        historyButton.addEventListener("click", () => setView("history"));
+      if (backMainButton)
+        backMainButton.addEventListener("click", () => setView("main"));
       navButtons.forEach((btn) => {
         btn.addEventListener("click", () =>
           setView(btn.getAttribute("data-view"))
         );
       });
 
+      const seedDemoData = () => {
+        const existing = getLocalHistory();
+        const allDemo =
+          existing.length > 0 &&
+          existing.every((e) => String(e.id).startsWith("demo-"));
+        if (existing.length > 0 && !allDemo) return; // no pisar datos reales del usuario
+
+        const entries = [
+          // Martín - días impares
+          {
+            date: "2026-03-03",
+            income: 58000,
+            time: "06:00",
+            fuel: 8500,
+            tolls: 0,
+            parking: 0,
+            otherExpenses: 0,
+            driver: "martin",
+          },
+          {
+            date: "2026-03-05",
+            income: 72000,
+            time: "07:30",
+            fuel: 10000,
+            tolls: 800,
+            parking: 0,
+            otherExpenses: 0,
+            driver: "martin",
+          },
+          {
+            date: "2026-03-07",
+            income: 44000,
+            time: "04:30",
+            fuel: 6500,
+            tolls: 0,
+            parking: 0,
+            otherExpenses: 0,
+            driver: "martin",
+          },
+          {
+            date: "2026-03-10",
+            income: 81000,
+            time: "08:00",
+            fuel: 11000,
+            tolls: 800,
+            parking: 500,
+            otherExpenses: 0,
+            driver: "martin",
+          },
+          {
+            date: "2026-03-12",
+            income: 53000,
+            time: "05:30",
+            fuel: 7500,
+            tolls: 0,
+            parking: 0,
+            otherExpenses: 800,
+            driver: "martin",
+          },
+          {
+            date: "2026-03-13",
+            income: 67000,
+            time: "07:00",
+            fuel: 9500,
+            tolls: 800,
+            parking: 0,
+            otherExpenses: 0,
+            driver: "martin",
+          },
+          {
+            date: "2026-03-17",
+            income: 55000,
+            time: "05:45",
+            fuel: 7800,
+            tolls: 0,
+            parking: 0,
+            otherExpenses: 0,
+            driver: "martin",
+          },
+          {
+            date: "2026-03-19",
+            income: 74000,
+            time: "07:30",
+            fuel: 10200,
+            tolls: 800,
+            parking: 0,
+            otherExpenses: 0,
+            driver: "martin",
+          },
+          {
+            date: "2026-03-24",
+            income: 48000,
+            time: "05:00",
+            fuel: 6800,
+            tolls: 0,
+            parking: 0,
+            otherExpenses: 1500,
+            driver: "martin",
+          },
+          {
+            date: "2026-03-26",
+            income: 65000,
+            time: "06:30",
+            fuel: 9200,
+            tolls: 0,
+            parking: 600,
+            otherExpenses: 0,
+            driver: "martin",
+          },
+
+          // Osvaldo - días pares
+          {
+            date: "2026-03-04",
+            income: 49000,
+            time: "05:00",
+            fuel: 7000,
+            tolls: 0,
+            parking: 0,
+            otherExpenses: 1200,
+            driver: "osvaldo",
+          },
+          {
+            date: "2026-03-06",
+            income: 63000,
+            time: "06:30",
+            fuel: 9000,
+            tolls: 0,
+            parking: 0,
+            otherExpenses: 0,
+            driver: "osvaldo",
+          },
+          {
+            date: "2026-03-09",
+            income: 77000,
+            time: "07:45",
+            fuel: 10500,
+            tolls: 800,
+            parking: 0,
+            otherExpenses: 0,
+            driver: "osvaldo",
+          },
+          {
+            date: "2026-03-11",
+            income: 41000,
+            time: "04:15",
+            fuel: 6000,
+            tolls: 0,
+            parking: 0,
+            otherExpenses: 0,
+            driver: "osvaldo",
+          },
+          {
+            date: "2026-03-14",
+            income: 59000,
+            time: "06:00",
+            fuel: 8300,
+            tolls: 0,
+            parking: 0,
+            otherExpenses: 0,
+            driver: "osvaldo",
+          },
+          {
+            date: "2026-03-18",
+            income: 70000,
+            time: "07:00",
+            fuel: 9800,
+            tolls: 800,
+            parking: 0,
+            otherExpenses: 0,
+            driver: "osvaldo",
+          },
+          {
+            date: "2026-03-20",
+            income: 42000,
+            time: "04:30",
+            fuel: 6200,
+            tolls: 0,
+            parking: 500,
+            otherExpenses: 0,
+            driver: "osvaldo",
+          },
+          {
+            date: "2026-03-21",
+            income: 60000,
+            time: "06:15",
+            fuel: 8800,
+            tolls: 0,
+            parking: 0,
+            otherExpenses: 0,
+            driver: "osvaldo",
+          },
+          {
+            date: "2026-03-25",
+            income: 68000,
+            time: "07:00",
+            fuel: 9600,
+            tolls: 0,
+            parking: 0,
+            otherExpenses: 0,
+            driver: "osvaldo",
+          },
+          {
+            date: "2026-03-27",
+            income: 52000,
+            time: "05:30",
+            fuel: 8000,
+            tolls: 0,
+            parking: 0,
+            otherExpenses: 0,
+            driver: "osvaldo",
+          },
+        ];
+
+        const seeded = entries.map((e, i) => ({
+          ...e,
+          id: "demo-" + i,
+          tolls: e.tolls || 0,
+          parking: e.parking || 0,
+          otherExpenses: e.otherExpenses || 0,
+        }));
+
+        saveLocalHistory(seeded);
+        setHistory(seeded);
+
+        // Meta de demo si no hay
+        const goals = loadGoals();
+        if (!goals.weekly && !goals.hourly) {
+          saveGoals({ hourly: 9000, weekly: 280000 });
+          applySavedGoals();
+        }
+      };
+
       const init = async () => {
         setHistory(getLocalHistory());
         applySavedGoals();
-        renderHistoryView();
+        seedDemoData();
         calculate();
         updateWeeklyGoalStatus();
         updateReminderBanner();
@@ -2425,8 +3880,3 @@
     </script>
   </body>
 </html>
-
-
-
-
-
