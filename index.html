@@ -2341,8 +2341,39 @@
               </div>
 
               <div>
-                <label for="time-worked">Horas y minutos trabajados</label>
-                <input type="time" id="time-worked" step="60" value="00:00" />
+                <label>Horas y minutos trabajados</label>
+                <div style="display: flex; gap: 8px; align-items: center">
+                  <select id="time-hours" style="flex: 1; text-align: center">
+                    <option value="0">0 h</option>
+                    <option value="1">1 h</option>
+                    <option value="2">2 h</option>
+                    <option value="3">3 h</option>
+                    <option value="4">4 h</option>
+                    <option value="5">5 h</option>
+                    <option value="6">6 h</option>
+                    <option value="7">7 h</option>
+                    <option value="8">8 h</option>
+                    <option value="9">9 h</option>
+                    <option value="10">10 h</option>
+                    <option value="11">11 h</option>
+                    <option value="12">12 h</option>
+                  </select>
+                  <select id="time-minutes" style="flex: 1; text-align: center">
+                    <option value="0">00 min</option>
+                    <option value="5">05 min</option>
+                    <option value="10">10 min</option>
+                    <option value="15">15 min</option>
+                    <option value="20">20 min</option>
+                    <option value="25">25 min</option>
+                    <option value="30">30 min</option>
+                    <option value="35">35 min</option>
+                    <option value="40">40 min</option>
+                    <option value="45">45 min</option>
+                    <option value="50">50 min</option>
+                    <option value="55">55 min</option>
+                  </select>
+                </div>
+                <input type="hidden" id="time-worked" value="00:00" />
               </div>
 
               <div>
@@ -2748,8 +2779,42 @@
               />
             </div>
             <div>
-              <label for="qe-time">Horas trabajadas</label>
-              <input type="time" id="qe-time" step="60" value="00:00" />
+              <label>Horas trabajadas</label>
+              <div style="display: flex; gap: 8px; align-items: center">
+                <select id="qe-time-hours" style="flex: 1; text-align: center">
+                  <option value="0">0 h</option>
+                  <option value="1">1 h</option>
+                  <option value="2">2 h</option>
+                  <option value="3">3 h</option>
+                  <option value="4">4 h</option>
+                  <option value="5">5 h</option>
+                  <option value="6">6 h</option>
+                  <option value="7">7 h</option>
+                  <option value="8">8 h</option>
+                  <option value="9">9 h</option>
+                  <option value="10">10 h</option>
+                  <option value="11">11 h</option>
+                  <option value="12">12 h</option>
+                </select>
+                <select
+                  id="qe-time-minutes"
+                  style="flex: 1; text-align: center"
+                >
+                  <option value="0">00 min</option>
+                  <option value="5">05 min</option>
+                  <option value="10">10 min</option>
+                  <option value="15">15 min</option>
+                  <option value="20">20 min</option>
+                  <option value="25">25 min</option>
+                  <option value="30">30 min</option>
+                  <option value="35">35 min</option>
+                  <option value="40">40 min</option>
+                  <option value="45">45 min</option>
+                  <option value="50">50 min</option>
+                  <option value="55">55 min</option>
+                </select>
+              </div>
+              <input type="hidden" id="qe-time" value="00:00" />
             </div>
             <div>
               <label for="qe-fuel">Combustible</label>
@@ -2788,6 +2853,45 @@
     <script>
       const incomeInput = document.getElementById("income");
       const timeWorkedInput = document.getElementById("time-worked");
+      const timeHoursSelect = document.getElementById("time-hours");
+      const timeMinutesSelect = document.getElementById("time-minutes");
+      const qeTimeInput = document.getElementById("qe-time");
+      const qeTimeHoursSelect = document.getElementById("qe-time-hours");
+      const qeTimeMinutesSelect = document.getElementById("qe-time-minutes");
+
+      // Sync selects → hidden input
+      const syncTimeSelects = () => {
+        const h = pad2(parseInt(timeHoursSelect.value) || 0);
+        const m = pad2(parseInt(timeMinutesSelect.value) || 0);
+        timeWorkedInput.value = h + ":" + m;
+        calculate();
+      };
+      if (timeHoursSelect)
+        timeHoursSelect.addEventListener("change", syncTimeSelects);
+      if (timeMinutesSelect)
+        timeMinutesSelect.addEventListener("change", syncTimeSelects);
+
+      const syncQeTimeSelects = () => {
+        const h = pad2(parseInt(qeTimeHoursSelect.value) || 0);
+        const m = pad2(parseInt(qeTimeMinutesSelect.value) || 0);
+        if (qeTimeInput) qeTimeInput.value = h + ":" + m;
+      };
+      if (qeTimeHoursSelect)
+        qeTimeHoursSelect.addEventListener("change", syncQeTimeSelects);
+      if (qeTimeMinutesSelect)
+        qeTimeMinutesSelect.addEventListener("change", syncQeTimeSelects);
+
+      // Set selects from a "HH:MM" string
+      const setTimeSelects = (val, hSel, mSel) => {
+        if (!hSel || !mSel) return;
+        const parts = (val || "00:00").split(":");
+        const h = Math.min(12, parseInt(parts[0]) || 0);
+        const rawMin = parseInt(parts[1]) || 0;
+        const m = Math.floor(rawMin / 5) * 5; // redondear a múltiplo de 5
+        hSel.value = String(h);
+        mSel.value = String(m);
+      };
+
       const fuelInput = document.getElementById("fuel");
       const tollsInput = document.getElementById("tolls");
       const parkingInput = document.getElementById("parking");
@@ -4317,6 +4421,11 @@
             "Editar · " + getDriverLabel(entry.driver) + " · " + dateLabel;
         if (qeIncome) qeIncome.value = entry.income || "";
         if (qeTime) qeTime.value = formatTimeValue(entry.time);
+        setTimeSelects(
+          formatTimeValue(entry.time),
+          qeTimeHoursSelect,
+          qeTimeMinutesSelect
+        );
         if (qeFuel) qeFuel.value = entry.fuel || "";
         if (qeTolls) qeTolls.value = entry.tolls || "";
         if (qeParking) qeParking.value = entry.parking || "";
@@ -4547,6 +4656,8 @@
       const clearForm = () => {
         incomeInput.value = "";
         timeWorkedInput.value = "00:00";
+        if (timeHoursSelect) timeHoursSelect.value = "0";
+        if (timeMinutesSelect) timeMinutesSelect.value = "0";
         fuelInput.value = "";
         if (tollsInput) {
           tollsInput.value = "";
