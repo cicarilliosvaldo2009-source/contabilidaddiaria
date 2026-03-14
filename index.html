@@ -2907,10 +2907,6 @@
           syncStatusEl.textContent = message;
           syncStatusEl.style.color = isError ? "#b23b3b" : "";
         }
-        if (syncFooterStatus) {
-          syncFooterStatus.textContent = message;
-          syncFooterStatus.style.color = isError ? "#b23b3b" : "";
-        }
         // Actualizar dot del ícono de nube
         const dot = document.getElementById("sync-status-dot");
         const btn = document.getElementById("topbar-sync-btn");
@@ -2939,7 +2935,8 @@
             session.user && session.user.email
               ? session.user.email
               : "tu cuenta";
-          setSyncStatus("Sincronización activa con " + email + ".");
+          setSyncStatus("Sincronización activa.");
+          if (syncFooterStatus) syncFooterStatus.textContent = email;
           if (syncForm) syncForm.classList.add("hidden");
           if (syncFooter) syncFooter.classList.remove("hidden");
           if (syncLogoutButton) syncLogoutButton.classList.remove("hidden");
