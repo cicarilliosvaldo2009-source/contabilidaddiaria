@@ -1273,9 +1273,9 @@
           width: 100%;
           min-width: 0;
         }
-        input[type=\"date\"],
-        input[type=\"time\"],
-        input[type=\"month\"] {
+        input[type="date"],
+        input[type="time"],
+        input[type="month"] {
           padding: 10px 12px;
           font-size: 15px;
         }
@@ -2345,6 +2345,9 @@
             >
               Iniciar sesión
             </button>
+            <button type="button" class="sync-signup-link" id="sync-signup-btn">
+              ¿No tenés cuenta? Registrarse
+            </button>
           </form>
 
           <!-- Sesión activa -->
@@ -3253,10 +3256,8 @@
         return d + "/" + m + "/" + y.slice(2);
       };
 
-      // Interpola color de la barra según porcentaje: amarillo (0%) → verde pastel (100%)
       const barColor = (pct) => {
         const t = Math.max(0, Math.min(1, pct / 100));
-        // amarillo #e8c519 → verde pastel #a8e6c1
         const r = Math.round(232 + (168 - 232) * t);
         const g = Math.round(197 + (230 - 197) * t);
         const b = Math.round(25 + (193 - 25) * t);
@@ -3265,12 +3266,10 @@
 
       const ALL_DRIVERS = Object.keys(DRIVER_LABELS);
 
-      // Calcula la meta efectiva según filtro y cantidad de conductores
       const getEffectiveWeeklyMeta = (driverFilter) => {
         const { weekly } = getGoals();
         if (!weekly || weekly <= 0) return 0;
         if (driverFilter === "all") return weekly;
-        // dividir en partes iguales entre todos los conductores conocidos
         return weekly / ALL_DRIVERS.length;
       };
 
@@ -3290,7 +3289,6 @@
 
         const effectiveMeta = getEffectiveWeeklyMeta(driverFilter);
 
-        // ── Semana actual ──
         const { start, end } = getWeekRange(today);
         const weekItems = items.filter((e) => {
           if (!e.date) return false;
@@ -3371,7 +3369,6 @@
           goalsDaysLeftEl.textContent =
             daysLeft === 0 ? "Último día" : daysLeft;
 
-        // ── Historial de semanas por mes (carrusel) ──
         if (!goalsWeeksListEl) return;
 
         const weekMap = new Map();
@@ -3386,7 +3383,6 @@
 
         const currentWeekKey = start.toISOString().slice(0, 10);
 
-        // Obtener todos los meses con datos (o el mes actual como mínimo)
         const monthsWithData = new Set();
         weekMap.forEach(({ start: ws }) => {
           monthsWithData.add(ws.getFullYear() + "-" + pad2(ws.getMonth() + 1));
@@ -3396,12 +3392,10 @@
         );
         const sortedMonths = Array.from(monthsWithData).sort();
 
-        // Estado del mes visible — inicializar al mes actual si no existe
         if (!window._weeksCarouselMonth) {
           window._weeksCarouselMonth =
             today.getFullYear() + "-" + pad2(today.getMonth() + 1);
         }
-        // Asegurar que el mes activo esté en la lista
         if (!sortedMonths.includes(window._weeksCarouselMonth)) {
           window._weeksCarouselMonth = sortedMonths[sortedMonths.length - 1];
         }
@@ -3410,25 +3404,19 @@
         const activeIdx = sortedMonths.indexOf(activeMonth);
         const [activeYear, activeMonthNum] = activeMonth.split("-").map(Number);
 
-        // Título del mes
         const monthTitleEl = document.getElementById("weeks-month-title");
         if (monthTitleEl) {
           monthTitleEl.textContent =
             "Semanas de " + MONTHS_ES[activeMonthNum - 1] + " " + activeYear;
         }
 
-        // Botones nav
         const prevBtn = document.getElementById("weeks-prev-btn");
         const nextBtn = document.getElementById("weeks-next-btn");
         if (prevBtn) prevBtn.disabled = activeIdx <= 0;
         if (nextBtn) nextBtn.disabled = activeIdx >= sortedMonths.length - 1;
 
-        // Semanas del mes activo: una semana pertenece al mes si su lunes cae en ese mes
-        // O si alguno de sus días cae en ese mes
         const weeksThisMonth = Array.from(weekMap.entries())
           .filter(([k, { start: ws }]) => {
-            const we = new Date(ws.getTime() + 6 * 86400000);
-            // La semana "pertenece" al mes si su lunes está en ese mes
             return (
               ws.getFullYear() === activeYear &&
               ws.getMonth() + 1 === activeMonthNum
@@ -3439,7 +3427,6 @@
         if (weeksThisMonth.length === 0) {
           goalsWeeksListEl.innerHTML =
             "<p class='note'>Sin registros en este mes.</p>";
-          // Registrar listeners de nav igualmente
           if (prevBtn) {
             prevBtn.onclick = () => {
               if (activeIdx > 0) {
@@ -3519,7 +3506,6 @@
           .filter(Boolean)
           .join("");
 
-        // Click en semana
         goalsWeeksListEl.querySelectorAll(".goals-week-row").forEach((row) => {
           row.addEventListener("click", () => {
             const weekKey = row.getAttribute("data-week-key");
@@ -3527,7 +3513,6 @@
           });
         });
 
-        // Nav buttons
         if (prevBtn) {
           prevBtn.onclick = () => {
             if (activeIdx > 0) {
@@ -3545,7 +3530,6 @@
           };
         }
 
-        // Swipe touch support
         const listEl = goalsWeeksListEl.parentElement;
         if (listEl && !listEl._swipeInit) {
           listEl._swipeInit = true;
@@ -3589,7 +3573,6 @@
 
         const { start: ws, entries: allWe } = weekMap.get(weekKey);
         const we_end = new Date(ws.getTime() + 6 * 86400000);
-        // Subtítulo sin año: "23/03 – 29/03"
         const rangeShort =
           formatDateShort(ws.toISOString().slice(0, 10)).slice(0, 5) +
           " – " +
@@ -3600,7 +3583,6 @@
             "Semana del " + rangeShort.replace(" – ", " al ");
         if (rangeEl) rangeEl.textContent = "";
 
-        // ── Barras por conductor ──
         const driverMeta = weekly > 0 ? weekly / ALL_DRIVERS.length : 0;
         if (splitsEl) {
           splitsEl.innerHTML = ALL_DRIVERS.map((drv) => {
@@ -3644,7 +3626,6 @@
           }).join("");
         }
 
-        // ── Resumen total ──
         const totalEarned = allWe.reduce((a, e) => a + (e.income || 0), 0);
         const totalFuel = allWe.reduce((a, e) => a + (e.fuel || 0), 0);
         const totalHrs = allWe.reduce(
@@ -3681,10 +3662,8 @@
             "</strong></span>";
         }
 
-        // ── Entradas individuales agrupadas por fecha ──
         const sorted = [...allWe].sort((a, b) => a.date.localeCompare(b.date));
 
-        // Agrupar por fecha
         const byDate = new Map();
         sorted.forEach((e) => {
           if (!byDate.has(e.date)) byDate.set(e.date, []);
@@ -3993,15 +3972,14 @@
           syncStatusEl.textContent = message;
           syncStatusEl.style.color = isError ? "#b23b3b" : "";
         }
-        // Actualizar dot del ícono de nube
         const dot = document.getElementById("sync-status-dot");
         const btn = document.getElementById("topbar-sync-btn");
         if (dot) {
-          dot.className = "sync-status-dot"; // rojo por defecto
+          dot.className = "sync-status-dot";
           if (isError) {
-            dot.classList.add("error"); // naranja en error
+            dot.classList.add("error");
           } else if (message === "Activa") {
-            dot.classList.add("active"); // verde cuando hay sesión
+            dot.classList.add("active");
             if (btn) btn.classList.add("synced");
           } else {
             if (btn) btn.classList.remove("synced");
@@ -4042,7 +4020,6 @@
 
       const syncLocalToCloud = async (userId) => {
         const localItems = getLocalHistory();
-        // No subir datos de demo a la nube
         const realItems = localItems.filter(
           (e) => !String(e.id).startsWith("demo-")
         );
@@ -4171,13 +4148,8 @@
           monthAvgNetEl.textContent =
             totals.hours > 0 ? fmt.format(totals.net / totals.hours) : "—";
 
-        const driverLabel =
-          driverFilterInput && driverFilterInput.value !== "all"
-            ? getDriverLabel(driverFilterInput.value)
-            : "Todos";
         monthNoteEl.textContent = "";
 
-        // Barra de meta mensual (4 semanas * meta semanal / conductores)
         const { weekly } = getGoals();
         const monthGoalWrap = document.getElementById("month-goal-wrap");
         const monthGoalBar = document.getElementById("month-goal-bar");
@@ -4248,8 +4220,6 @@
           const data = dailyMap[dateString];
           const avgGross =
             data && data.hours > 0 ? data.income / data.hours : 0;
-          const netDisplay = data ? fmt.format(data.net) : "—";
-          const avgDisplay = avgGross > 0 ? fmt.format(avgGross) : "—";
           const weekday = new Date(year, monthIndex, day).getDay();
           const colors = getHeatColors(avgGross, weekday);
 
@@ -4319,7 +4289,6 @@
 
         if (dayDetailCard) dayDetailCard.classList.remove("hidden");
 
-        // Scroll automático al detalle
         setTimeout(() => {
           if (dayDetailCard)
             dayDetailCard.scrollIntoView({
@@ -4328,7 +4297,6 @@
             });
         }, 50);
 
-        // Fecha en español sin año: "día 4 de marzo"
         const [y, m, d] = date.split("-");
         const dateObj = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
         const dateLabel = dateObj.toLocaleDateString("es-AR", {
@@ -4344,7 +4312,6 @@
             (a.time || "").localeCompare(b.time || "")
         );
 
-        // Agrupar por fecha (puede haber varios conductores el mismo día)
         const byDate = new Map();
         items.forEach((e) => {
           if (!byDate.has(e.date)) byDate.set(e.date, []);
@@ -4353,14 +4320,6 @@
 
         dayDetailList.innerHTML = Array.from(byDate.entries())
           .map(([date, dayEntries]) => {
-            const [yy, mm, dd] = date.split("-");
-            const dObj = new Date(parseInt(yy), parseInt(mm) - 1, parseInt(dd));
-            const dLabel = dObj.toLocaleDateString("es-AR", {
-              weekday: "long",
-              day: "numeric",
-              month: "long",
-            });
-
             const rows = dayEntries
               .map((e) => {
                 const avgGross = e.totalHours > 0 ? e.income / e.totalHours : 0;
@@ -4412,7 +4371,6 @@
           })
           .join("");
 
-        // Re-attach click listeners for edit/delete on new elements
         dayDetailList.querySelectorAll("button[data-action]").forEach((btn) => {
           btn.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -4456,7 +4414,6 @@
         const isGoals = view === "goals";
         const isHistory = view === "history";
 
-        // Fade out current visible view, then switch
         const allViews = [viewMain, viewHistory, viewGoals].filter(Boolean);
         const currentView = allViews.find(
           (v) => !v.classList.contains("hidden")
@@ -4467,7 +4424,6 @@
           viewHistory.classList.toggle("hidden", !isHistory);
           if (viewGoals) viewGoals.classList.toggle("hidden", !isGoals);
 
-          // Retrigger animation on incoming view
           const incoming = isMain
             ? viewMain
             : isHistory
@@ -4475,7 +4431,7 @@
             : viewGoals;
           if (incoming) {
             incoming.style.animation = "none";
-            incoming.offsetHeight; // reflow
+            incoming.offsetHeight;
             incoming.style.animation = "";
           }
 
@@ -5005,7 +4961,6 @@
         });
       }
 
-      // Restaurar preferencia guardada
       applyDarkMode(localStorage.getItem("darkmode") === "1");
 
       const topbarSyncBtn = document.getElementById("topbar-sync-btn");
@@ -5136,10 +5091,9 @@
         const allDemo =
           existing.length > 0 &&
           existing.every((e) => String(e.id).startsWith("demo-"));
-        if (existing.length > 0 && !allDemo) return; // no pisar datos reales del usuario
+        if (existing.length > 0 && !allDemo) return;
 
         const entries = [
-          // ── Racha de 6 días consecutivos (09/03 al 14/03) ──
           {
             date: "2026-03-09",
             income: 77000,
@@ -5200,8 +5154,6 @@
             otherExpenses: 0,
             driver: "osvaldo",
           },
-
-          // Martín - otros días de marzo
           {
             date: "2026-03-03",
             income: 58000,
@@ -5272,8 +5224,6 @@
             otherExpenses: 0,
             driver: "martin",
           },
-
-          // Osvaldo - otros días de marzo
           {
             date: "2026-03-04",
             income: 49000,
@@ -5357,7 +5307,6 @@
         saveLocalHistory(seeded);
         setHistory(seeded);
 
-        // Meta de demo si no hay
         const goals = loadGoals();
         if (!goals.weekly && !goals.hourly) {
           saveGoals({ hourly: 9000, weekly: 280000 });
