@@ -2176,6 +2176,57 @@
         border-color: var(--line);
         color: var(--accent);
       }
+
+      /* ── Repairs table ── */
+      #repairs-table tbody tr {
+        border-bottom: 1px solid var(--line);
+        transition: background 0.12s;
+      }
+      #repairs-table tbody tr:last-child {
+        border-bottom: none;
+      }
+      #repairs-table tbody tr:hover {
+        background: rgba(217, 95, 30, 0.04);
+      }
+      body.dark #repairs-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.04);
+      }
+      #repairs-table td {
+        padding: 11px 14px;
+        color: var(--ink);
+        vertical-align: middle;
+      }
+      .repair-category-badge {
+        display: inline-block;
+        padding: 3px 9px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        background: rgba(11, 79, 72, 0.09);
+        color: var(--accent-2);
+        white-space: nowrap;
+      }
+      .repair-action-btn {
+        background: transparent;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        padding: 5px 8px;
+        font-size: 12px;
+        color: var(--muted);
+        cursor: pointer;
+        transition: background 0.13s, color 0.13s, border-color 0.13s;
+        line-height: 1;
+      }
+      .repair-action-btn:hover {
+        background: rgba(217, 95, 30, 0.08);
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .repair-action-btn.del:hover {
+        background: rgba(200, 40, 40, 0.08);
+        border-color: #c82828;
+        color: #c82828;
+      }
     </style>
   </head>
   <body>
@@ -2271,6 +2322,9 @@
               </button>
               <button type="button" class="nav-btn" data-view="goals">
                 Metas
+              </button>
+              <button type="button" class="nav-btn" data-view="repairs">
+                Reparaciones
               </button>
             </div>
           </div>
@@ -2799,6 +2853,350 @@
           </button>
         </div>
       </section>
+
+      <!-- Vista Reparaciones -->
+      <section id="view-repairs" class="view hidden">
+        <div class="view-grid" style="grid-template-columns: 1fr">
+          <!-- Header + botón agregar -->
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              flex-wrap: wrap;
+              gap: 12px;
+            "
+          >
+            <div>
+              <h2 style="margin: 0 0 4px">Historial de Reparaciones</h2>
+              <p class="note" style="margin: 0">
+                Registros de mantenimiento y reparaciones del vehículo
+              </p>
+            </div>
+            <button type="button" class="secondary" id="repair-add-btn">
+              + Nueva reparación
+            </button>
+          </div>
+
+          <!-- Totales -->
+          <section class="card" style="padding: 16px 20px">
+            <div class="results">
+              <div class="result-row">
+                <span>Total repuestos</span>
+                <strong id="repair-total-parts">$0</strong>
+              </div>
+              <div class="result-row">
+                <span>Total mano de obra</span>
+                <strong id="repair-total-labor">$0</strong>
+              </div>
+              <div class="result-row">
+                <span>Costo total acumulado</span>
+                <strong
+                  id="repair-total-all"
+                  style="color: var(--accent); font-size: 17px"
+                  >$0</strong
+                >
+              </div>
+            </div>
+          </section>
+
+          <!-- Tabla de reparaciones -->
+          <section class="card" style="padding: 0; overflow: hidden">
+            <div style="overflow-x: auto">
+              <table
+                id="repairs-table"
+                style="
+                  width: 100%;
+                  border-collapse: collapse;
+                  font-size: 13px;
+                  min-width: 680px;
+                "
+              >
+                <thead>
+                  <tr
+                    style="
+                      background: var(--bg-2);
+                      border-bottom: 1.5px solid var(--line);
+                    "
+                  >
+                    <th
+                      style="
+                        padding: 12px 14px;
+                        text-align: left;
+                        font-weight: 700;
+                        color: var(--muted);
+                        text-transform: uppercase;
+                        font-size: 11px;
+                        letter-spacing: 0.06em;
+                        white-space: nowrap;
+                      "
+                    >
+                      Fecha
+                    </th>
+                    <th
+                      style="
+                        padding: 12px 14px;
+                        text-align: right;
+                        font-weight: 700;
+                        color: var(--muted);
+                        text-transform: uppercase;
+                        font-size: 11px;
+                        letter-spacing: 0.06em;
+                        white-space: nowrap;
+                      "
+                    >
+                      Km
+                    </th>
+                    <th
+                      style="
+                        padding: 12px 14px;
+                        text-align: left;
+                        font-weight: 700;
+                        color: var(--muted);
+                        text-transform: uppercase;
+                        font-size: 11px;
+                        letter-spacing: 0.06em;
+                      "
+                    >
+                      Categoría
+                    </th>
+                    <th
+                      style="
+                        padding: 12px 14px;
+                        text-align: left;
+                        font-weight: 700;
+                        color: var(--muted);
+                        text-transform: uppercase;
+                        font-size: 11px;
+                        letter-spacing: 0.06em;
+                      "
+                    >
+                      Descripción
+                    </th>
+                    <th
+                      style="
+                        padding: 12px 14px;
+                        text-align: left;
+                        font-weight: 700;
+                        color: var(--muted);
+                        text-transform: uppercase;
+                        font-size: 11px;
+                        letter-spacing: 0.06em;
+                      "
+                    >
+                      Repuesto / Marca
+                    </th>
+                    <th
+                      style="
+                        padding: 12px 14px;
+                        text-align: left;
+                        font-weight: 700;
+                        color: var(--muted);
+                        text-transform: uppercase;
+                        font-size: 11px;
+                        letter-spacing: 0.06em;
+                      "
+                    >
+                      Taller / Lugar
+                    </th>
+                    <th
+                      style="
+                        padding: 12px 14px;
+                        text-align: right;
+                        font-weight: 700;
+                        color: var(--muted);
+                        text-transform: uppercase;
+                        font-size: 11px;
+                        letter-spacing: 0.06em;
+                        white-space: nowrap;
+                      "
+                    >
+                      Repuesto ($)
+                    </th>
+                    <th
+                      style="
+                        padding: 12px 14px;
+                        text-align: right;
+                        font-weight: 700;
+                        color: var(--muted);
+                        text-transform: uppercase;
+                        font-size: 11px;
+                        letter-spacing: 0.06em;
+                        white-space: nowrap;
+                      "
+                    >
+                      M.O. ($)
+                    </th>
+                    <th
+                      style="
+                        padding: 12px 14px;
+                        text-align: right;
+                        font-weight: 700;
+                        color: var(--muted);
+                        text-transform: uppercase;
+                        font-size: 11px;
+                        letter-spacing: 0.06em;
+                        white-space: nowrap;
+                      "
+                    >
+                      Total ($)
+                    </th>
+                    <th
+                      style="
+                        padding: 12px 14px;
+                        text-align: center;
+                        font-weight: 700;
+                        color: var(--muted);
+                        text-transform: uppercase;
+                        font-size: 11px;
+                        letter-spacing: 0.06em;
+                      "
+                    ></th>
+                  </tr>
+                </thead>
+                <tbody id="repairs-tbody">
+                  <!-- rows injected by JS -->
+                </tbody>
+              </table>
+              <p
+                class="note"
+                id="repairs-empty"
+                style="padding: 20px; text-align: center"
+              >
+                Sin reparaciones registradas aún.
+              </p>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- Modal nueva/editar reparación -->
+      <div class="quick-edit-overlay hidden" id="repair-modal-overlay">
+        <div class="quick-edit-modal" style="max-width: 500px; width: 100%">
+          <div class="quick-edit-header">
+            <h3 id="repair-modal-title">Nueva reparación</h3>
+            <button
+              type="button"
+              class="reminder-alert-close"
+              id="repair-modal-close"
+            >
+              ✕
+            </button>
+          </div>
+          <div
+            class="quick-edit-body"
+            style="grid-template-columns: 1fr 1fr; gap: 12px"
+          >
+            <div>
+              <label for="repair-date">Fecha</label>
+              <input type="date" id="repair-date" />
+            </div>
+            <div>
+              <label for="repair-km">Kilometraje</label>
+              <input
+                type="number"
+                id="repair-km"
+                min="0"
+                step="1"
+                placeholder="Ej: 25000"
+              />
+            </div>
+            <div>
+              <label for="repair-category">Categoría</label>
+              <select id="repair-category">
+                <option value="Reparación">Reparación</option>
+                <option value="Mantenimiento">Mantenimiento</option>
+                <option value="Service">Service</option>
+                <option value="Eléctrico">Eléctrico</option>
+                <option value="Neumáticos">Neumáticos</option>
+                <option value="Otros">Otros</option>
+              </select>
+            </div>
+            <div>
+              <label for="repair-workshop">Taller / Lugar</label>
+              <input
+                type="text"
+                id="repair-workshop"
+                placeholder="Ej: L&G lubricentro"
+              />
+            </div>
+            <div style="grid-column: 1/-1">
+              <label for="repair-desc">Descripción</label>
+              <input
+                type="text"
+                id="repair-desc"
+                placeholder="Ej: Cambio de pastillas de freno"
+              />
+            </div>
+            <div style="grid-column: 1/-1">
+              <label for="repair-brand">Repuesto / Marca</label>
+              <input
+                type="text"
+                id="repair-brand"
+                placeholder="Ej: Ferodo (opcional)"
+              />
+            </div>
+            <div>
+              <label for="repair-cost-parts">Costo repuesto ($)</label>
+              <input
+                type="number"
+                id="repair-cost-parts"
+                min="0"
+                step="0.01"
+                placeholder="0"
+              />
+            </div>
+            <div>
+              <label for="repair-cost-labor">Mano de obra ($)</label>
+              <input
+                type="number"
+                id="repair-cost-labor"
+                min="0"
+                step="0.01"
+                placeholder="0"
+              />
+            </div>
+          </div>
+          <div class="quick-edit-footer">
+            <button type="button" class="ghost" id="repair-modal-cancel">
+              Cancelar
+            </button>
+            <button type="button" class="secondary" id="repair-modal-save">
+              Guardar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal confirmar borrado reparación -->
+      <div class="quick-edit-overlay hidden" id="repair-delete-overlay">
+        <div class="quick-edit-modal" style="max-width: 360px; width: 100%">
+          <div class="quick-edit-header">
+            <h3>Eliminar reparación</h3>
+            <button
+              type="button"
+              class="reminder-alert-close"
+              id="repair-delete-close"
+            >
+              ✕
+            </button>
+          </div>
+          <div
+            style="padding: 0 20px 4px; color: var(--muted); font-size: 14px"
+          >
+            ¿Estás seguro que querés eliminar este registro? Esta acción no se
+            puede deshacer.
+          </div>
+          <div class="quick-edit-footer">
+            <button type="button" class="ghost" id="repair-delete-cancel">
+              Cancelar
+            </button>
+            <button type="button" class="primary" id="repair-delete-confirm">
+              Eliminar
+            </button>
+          </div>
+        </div>
+      </div>
 
       <!-- Modal configurar metas -->
       <div class="quick-edit-overlay hidden" id="goals-config-overlay">
@@ -4402,6 +4800,7 @@
         main: "Cargar jornada",
         history: "Ver historial",
         goals: "Metas",
+        repairs: "Reparaciones",
       };
 
       const closeTopbarMenu = () => {
@@ -4413,8 +4812,12 @@
         const isMain = view === "main";
         const isGoals = view === "goals";
         const isHistory = view === "history";
+        const isRepairs = view === "repairs";
 
-        const allViews = [viewMain, viewHistory, viewGoals].filter(Boolean);
+        const viewRepairs = document.getElementById("view-repairs");
+        const allViews = [viewMain, viewHistory, viewGoals, viewRepairs].filter(
+          Boolean
+        );
         const currentView = allViews.find(
           (v) => !v.classList.contains("hidden")
         );
@@ -4423,12 +4826,15 @@
           viewMain.classList.toggle("hidden", !isMain);
           viewHistory.classList.toggle("hidden", !isHistory);
           if (viewGoals) viewGoals.classList.toggle("hidden", !isGoals);
+          if (viewRepairs) viewRepairs.classList.toggle("hidden", !isRepairs);
 
           const incoming = isMain
             ? viewMain
             : isHistory
             ? viewHistory
-            : viewGoals;
+            : isGoals
+            ? viewGoals
+            : viewRepairs;
           if (incoming) {
             incoming.style.animation = "none";
             incoming.offsetHeight;
@@ -4458,6 +4864,9 @@
           }
           if (isGoals) {
             renderGoalsView();
+          }
+          if (isRepairs) {
+            renderRepairs();
           }
         };
 
@@ -5326,6 +5735,268 @@
       };
 
       init();
+
+      // ─────────────────────────────────────────
+      // REPARACIONES
+      // ─────────────────────────────────────────
+      const REPAIRS_KEY = "uber_repairs_v1";
+
+      const loadRepairs = () => {
+        try {
+          return JSON.parse(localStorage.getItem(REPAIRS_KEY)) || [];
+        } catch {
+          return [];
+        }
+      };
+      const saveRepairs = (arr) =>
+        localStorage.setItem(REPAIRS_KEY, JSON.stringify(arr));
+
+      const fmtMoney = (n) =>
+        "$" +
+        Number(n || 0).toLocaleString("es-AR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+
+      const fmtDate = (iso) => {
+        if (!iso) return "—";
+        const [y, m, d] = iso.split("-");
+        return `${d}/${m}/${y}`;
+      };
+
+      const renderRepairs = () => {
+        const repairs = loadRepairs();
+        const tbody = document.getElementById("repairs-tbody");
+        const empty = document.getElementById("repairs-empty");
+
+        let totalParts = 0,
+          totalLabor = 0;
+        repairs.forEach((r) => {
+          totalParts += Number(r.costParts || 0);
+          totalLabor += Number(r.costLabor || 0);
+        });
+
+        document.getElementById("repair-total-parts").textContent =
+          fmtMoney(totalParts);
+        document.getElementById("repair-total-labor").textContent =
+          fmtMoney(totalLabor);
+        document.getElementById("repair-total-all").textContent = fmtMoney(
+          totalParts + totalLabor
+        );
+
+        if (!repairs.length) {
+          tbody.innerHTML = "";
+          empty.style.display = "";
+          return;
+        }
+        empty.style.display = "none";
+
+        // Sort newest first
+        const sorted = [...repairs].sort((a, b) =>
+          b.date.localeCompare(a.date)
+        );
+        tbody.innerHTML = sorted
+          .map((r) => {
+            const total = Number(r.costParts || 0) + Number(r.costLabor || 0);
+            return `<tr>
+            <td style="white-space:nowrap">${fmtDate(r.date)}</td>
+            <td style="text-align:right; white-space:nowrap">${Number(
+              r.km || 0
+            ).toLocaleString("es-AR")} km</td>
+            <td><span class="repair-category-badge">${
+              r.category || "—"
+            }</span></td>
+            <td style="max-width:200px">${r.desc || "—"}</td>
+            <td style="color:var(--muted)">${r.brand || "—"}</td>
+            <td style="color:var(--muted)">${r.workshop || "—"}</td>
+            <td style="text-align:right; white-space:nowrap">${
+              r.costParts > 0 ? fmtMoney(r.costParts) : "—"
+            }</td>
+            <td style="text-align:right; white-space:nowrap">${
+              r.costLabor > 0 ? fmtMoney(r.costLabor) : "—"
+            }</td>
+            <td style="text-align:right; white-space:nowrap; font-weight:700; color:var(--accent)">${fmtMoney(
+              total
+            )}</td>
+            <td style="text-align:center; white-space:nowrap">
+              <button class="repair-action-btn" onclick="repairEdit('${
+                r.id
+              }')">✏️</button>
+              <button class="repair-action-btn del" onclick="repairDelete('${
+                r.id
+              }')">🗑️</button>
+            </td>
+          </tr>`;
+          })
+          .join("");
+      };
+
+      // Modal state
+      let repairEditId = null;
+      let repairDeleteId = null;
+
+      const repairModalOpen = (id = null) => {
+        repairEditId = id;
+        const modal = document.getElementById("repair-modal-overlay");
+        document.getElementById("repair-modal-title").textContent = id
+          ? "Editar reparación"
+          : "Nueva reparación";
+        if (id) {
+          const r = loadRepairs().find((x) => x.id === id);
+          if (r) {
+            document.getElementById("repair-date").value = r.date || "";
+            document.getElementById("repair-km").value = r.km || "";
+            document.getElementById("repair-category").value =
+              r.category || "Reparación";
+            document.getElementById("repair-desc").value = r.desc || "";
+            document.getElementById("repair-brand").value = r.brand || "";
+            document.getElementById("repair-workshop").value = r.workshop || "";
+            document.getElementById("repair-cost-parts").value =
+              r.costParts || "";
+            document.getElementById("repair-cost-labor").value =
+              r.costLabor || "";
+          }
+        } else {
+          document.getElementById("repair-date").value = new Date()
+            .toISOString()
+            .slice(0, 10);
+          document.getElementById("repair-km").value = "";
+          document.getElementById("repair-category").value = "Reparación";
+          document.getElementById("repair-desc").value = "";
+          document.getElementById("repair-brand").value = "";
+          document.getElementById("repair-workshop").value = "";
+          document.getElementById("repair-cost-parts").value = "";
+          document.getElementById("repair-cost-labor").value = "";
+        }
+        modal.classList.remove("hidden");
+      };
+
+      const repairModalClose = () => {
+        document.getElementById("repair-modal-overlay").classList.add("hidden");
+        repairEditId = null;
+      };
+
+      const repairModalSave = () => {
+        const repairs = loadRepairs();
+        const entry = {
+          id: repairEditId || "r-" + Date.now(),
+          date: document.getElementById("repair-date").value,
+          km: Number(document.getElementById("repair-km").value) || 0,
+          category: document.getElementById("repair-category").value,
+          desc: document.getElementById("repair-desc").value.trim(),
+          brand: document.getElementById("repair-brand").value.trim(),
+          workshop: document.getElementById("repair-workshop").value.trim(),
+          costParts:
+            Number(document.getElementById("repair-cost-parts").value) || 0,
+          costLabor:
+            Number(document.getElementById("repair-cost-labor").value) || 0,
+        };
+        if (repairEditId) {
+          const idx = repairs.findIndex((x) => x.id === repairEditId);
+          if (idx !== -1) repairs[idx] = entry;
+        } else {
+          repairs.push(entry);
+        }
+        saveRepairs(repairs);
+        renderRepairs();
+        repairModalClose();
+      };
+
+      window.repairEdit = (id) => repairModalOpen(id);
+      window.repairDelete = (id) => {
+        repairDeleteId = id;
+        document
+          .getElementById("repair-delete-overlay")
+          .classList.remove("hidden");
+      };
+
+      // Wire up modal buttons
+      document
+        .getElementById("repair-add-btn")
+        .addEventListener("click", () => repairModalOpen());
+      document
+        .getElementById("repair-modal-close")
+        .addEventListener("click", repairModalClose);
+      document
+        .getElementById("repair-modal-cancel")
+        .addEventListener("click", repairModalClose);
+      document
+        .getElementById("repair-modal-save")
+        .addEventListener("click", repairModalSave);
+      document
+        .getElementById("repair-delete-close")
+        .addEventListener("click", () =>
+          document
+            .getElementById("repair-delete-overlay")
+            .classList.add("hidden")
+        );
+      document
+        .getElementById("repair-delete-cancel")
+        .addEventListener("click", () =>
+          document
+            .getElementById("repair-delete-overlay")
+            .classList.add("hidden")
+        );
+      document
+        .getElementById("repair-delete-confirm")
+        .addEventListener("click", () => {
+          if (!repairDeleteId) return;
+          const repairs = loadRepairs().filter((x) => x.id !== repairDeleteId);
+          saveRepairs(repairs);
+          renderRepairs();
+          repairDeleteId = null;
+          document
+            .getElementById("repair-delete-overlay")
+            .classList.add("hidden");
+        });
+
+      // Close modals on overlay click
+      document
+        .getElementById("repair-modal-overlay")
+        .addEventListener("click", (e) => {
+          if (e.target === e.currentTarget) repairModalClose();
+        });
+      document
+        .getElementById("repair-delete-overlay")
+        .addEventListener("click", (e) => {
+          if (e.target === e.currentTarget)
+            document
+              .getElementById("repair-delete-overlay")
+              .classList.add("hidden");
+        });
+
+      // Seed the two initial repairs from the image
+      (() => {
+        if (loadRepairs().length > 0) return; // already seeded
+        const seed = [
+          {
+            id: "r-seed-1",
+            date: "2026-04-24",
+            km: 25000,
+            category: "Reparación",
+            desc: "Cambio luz baja delantera izquierda",
+            brand: "",
+            workshop: "L&G lubricentro",
+            costParts: 7000,
+            costLabor: 0,
+          },
+          {
+            id: "r-seed-2",
+            date: "2026-05-08",
+            km: 26500,
+            category: "Reparación",
+            desc: "Cambio de pastillas freno",
+            brand: "",
+            workshop: "Nicoletti",
+            costParts: 38000,
+            costLabor: 30000,
+          },
+        ];
+        saveRepairs(seed);
+      })();
+
+      // Render on load
+      renderRepairs();
     </script>
   </body>
 </html>
