@@ -2178,7 +2178,18 @@
       }
 
       /* ── Repairs table ── */
-      #repairs-table tbody tr {
+      .repair-list-item:hover {
+        background: rgba(217, 95, 30, 0.04);
+      }
+      .repair-list-item.active {
+        background: rgba(11, 79, 72, 0.06);
+      }
+      body.dark .repair-list-item:hover {
+        background: rgba(255,255,255,0.04);
+      }
+      body.dark .repair-list-item.active {
+        background: rgba(42,157,143,0.08);
+      }
         border-bottom: 1px solid var(--line);
         transition: background 0.12s;
       }
@@ -2189,7 +2200,7 @@
         background: rgba(217, 95, 30, 0.04);
       }
       body.dark #repairs-table tbody tr:hover {
-        background: rgba(255, 255, 255, 0.04);
+        background: rgba(255,255,255,0.04);
       }
       #repairs-table td {
         padding: 11px 14px;
@@ -2202,7 +2213,7 @@
         border-radius: 999px;
         font-size: 11px;
         font-weight: 700;
-        background: rgba(11, 79, 72, 0.09);
+        background: rgba(11,79,72,0.09);
         color: var(--accent-2);
         white-space: nowrap;
       }
@@ -2218,12 +2229,12 @@
         line-height: 1;
       }
       .repair-action-btn:hover {
-        background: rgba(217, 95, 30, 0.08);
+        background: rgba(217,95,30,0.08);
         border-color: var(--accent);
         color: var(--accent);
       }
       .repair-action-btn.del:hover {
-        background: rgba(200, 40, 40, 0.08);
+        background: rgba(200,40,40,0.08);
         border-color: #c82828;
         color: #c82828;
       }
@@ -2318,13 +2329,13 @@
                 Cargar jornada
               </button>
               <button type="button" class="nav-btn" data-view="history">
-                Ver historial
+                Historial
               </button>
               <button type="button" class="nav-btn" data-view="goals">
                 Metas
               </button>
               <button type="button" class="nav-btn" data-view="repairs">
-                Reparaciones
+                Mantenimiento
               </button>
             </div>
           </div>
@@ -2466,8 +2477,28 @@
               </div>
 
               <div>
-                <label for="time-worked">Horas y minutos trabajados</label>
-                <input type="time" id="time-worked" step="60" value="00:00" />
+                <label for="time-start">Hora de inicio</label>
+                <input type="time" id="time-start" step="60" />
+              </div>
+
+              <div>
+                <label for="time-end">Hora de fin</label>
+                <input type="time" id="time-end" step="60" />
+              </div>
+
+              <!-- hidden input keeps backward compat -->
+              <input type="hidden" id="time-worked" value="00:00" />
+
+              <div
+                id="time-worked-display"
+                style="display: none; grid-column: 1/-1"
+              >
+                <p class="note" style="margin: 0; text-align: center">
+                  Horas trabajadas:
+                  <strong id="time-worked-label" style="color: var(--accent)"
+                    >—</strong
+                  >
+                </p>
               </div>
 
               <div>
@@ -2745,6 +2776,71 @@
             </div>
           </section>
 
+          <!-- Este mes -->
+          <section class="card goals-hero">
+            <div class="goals-hero-header">
+              <div>
+                <h2 style="margin: 0 0 2px">Este mes</h2>
+                <p class="note" id="goals-month-range" style="margin: 0">—</p>
+              </div>
+              <span class="pill" id="goals-month-badge">Sin meta</span>
+            </div>
+            <div class="goals-progress-wrap">
+              <div class="goals-progress-track">
+                <div
+                  class="goals-progress-bar"
+                  id="goals-month-bar"
+                  style="width: 0%"
+                ></div>
+              </div>
+              <div class="goals-progress-labels">
+                <span id="goals-month-earned">$0</span>
+                <span id="goals-month-target">Meta: —</span>
+              </div>
+            </div>
+            <button
+              type="button"
+              class="goals-expand-btn"
+              id="goals-month-expand-btn"
+            >
+              <span>Ver detalles</span>
+              <svg
+                class="goals-expand-chevron"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div
+              class="goals-stats-row goals-stats-collapsible hidden"
+              id="goals-month-stats-row"
+            >
+              <div class="goals-stat">
+                <span class="goals-stat-label">Días trabajados</span>
+                <strong id="goals-month-days">0</strong>
+              </div>
+              <div class="goals-stat">
+                <span class="goals-stat-label">Horas totales</span>
+                <strong id="goals-month-hours">0 h</strong>
+              </div>
+              <div class="goals-stat">
+                <span class="goals-stat-label">Prom. por hora</span>
+                <strong id="goals-month-avg-hour">—</strong>
+              </div>
+              <div class="goals-stat">
+                <span class="goals-stat-label">Días restantes</span>
+                <strong id="goals-month-days-left">—</strong>
+              </div>
+            </div>
+          </section>
+
           <!-- Historial de semanas (carrusel por mes) -->
           <section class="card goals-history-card">
             <div
@@ -2854,30 +2950,9 @@
         </div>
       </section>
 
-      <!-- Vista Reparaciones -->
+      <!-- Vista Mantenimiento -->
       <section id="view-repairs" class="view hidden">
         <div class="view-grid" style="grid-template-columns: 1fr">
-          <!-- Header + botón agregar -->
-          <div
-            style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              flex-wrap: wrap;
-              gap: 12px;
-            "
-          >
-            <div>
-              <h2 style="margin: 0 0 4px">Historial de Reparaciones</h2>
-              <p class="note" style="margin: 0">
-                Registros de mantenimiento y reparaciones del vehículo
-              </p>
-            </div>
-            <button type="button" class="secondary" id="repair-add-btn">
-              + Nueva reparación
-            </button>
-          </div>
-
           <!-- Totales -->
           <section class="card" style="padding: 16px 20px">
             <div class="results">
@@ -2900,173 +2975,40 @@
             </div>
           </section>
 
-          <!-- Tabla de reparaciones -->
+          <!-- Lista de reparaciones -->
           <section class="card" style="padding: 0; overflow: hidden">
-            <div style="overflow-x: auto">
-              <table
-                id="repairs-table"
-                style="
-                  width: 100%;
-                  border-collapse: collapse;
-                  font-size: 13px;
-                  min-width: 680px;
-                "
-              >
-                <thead>
-                  <tr
-                    style="
-                      background: var(--bg-2);
-                      border-bottom: 1.5px solid var(--line);
-                    "
-                  >
-                    <th
-                      style="
-                        padding: 12px 14px;
-                        text-align: left;
-                        font-weight: 700;
-                        color: var(--muted);
-                        text-transform: uppercase;
-                        font-size: 11px;
-                        letter-spacing: 0.06em;
-                        white-space: nowrap;
-                      "
-                    >
-                      Fecha
-                    </th>
-                    <th
-                      style="
-                        padding: 12px 14px;
-                        text-align: right;
-                        font-weight: 700;
-                        color: var(--muted);
-                        text-transform: uppercase;
-                        font-size: 11px;
-                        letter-spacing: 0.06em;
-                        white-space: nowrap;
-                      "
-                    >
-                      Km
-                    </th>
-                    <th
-                      style="
-                        padding: 12px 14px;
-                        text-align: left;
-                        font-weight: 700;
-                        color: var(--muted);
-                        text-transform: uppercase;
-                        font-size: 11px;
-                        letter-spacing: 0.06em;
-                      "
-                    >
-                      Categoría
-                    </th>
-                    <th
-                      style="
-                        padding: 12px 14px;
-                        text-align: left;
-                        font-weight: 700;
-                        color: var(--muted);
-                        text-transform: uppercase;
-                        font-size: 11px;
-                        letter-spacing: 0.06em;
-                      "
-                    >
-                      Descripción
-                    </th>
-                    <th
-                      style="
-                        padding: 12px 14px;
-                        text-align: left;
-                        font-weight: 700;
-                        color: var(--muted);
-                        text-transform: uppercase;
-                        font-size: 11px;
-                        letter-spacing: 0.06em;
-                      "
-                    >
-                      Repuesto / Marca
-                    </th>
-                    <th
-                      style="
-                        padding: 12px 14px;
-                        text-align: left;
-                        font-weight: 700;
-                        color: var(--muted);
-                        text-transform: uppercase;
-                        font-size: 11px;
-                        letter-spacing: 0.06em;
-                      "
-                    >
-                      Taller / Lugar
-                    </th>
-                    <th
-                      style="
-                        padding: 12px 14px;
-                        text-align: right;
-                        font-weight: 700;
-                        color: var(--muted);
-                        text-transform: uppercase;
-                        font-size: 11px;
-                        letter-spacing: 0.06em;
-                        white-space: nowrap;
-                      "
-                    >
-                      Repuesto ($)
-                    </th>
-                    <th
-                      style="
-                        padding: 12px 14px;
-                        text-align: right;
-                        font-weight: 700;
-                        color: var(--muted);
-                        text-transform: uppercase;
-                        font-size: 11px;
-                        letter-spacing: 0.06em;
-                        white-space: nowrap;
-                      "
-                    >
-                      M.O. ($)
-                    </th>
-                    <th
-                      style="
-                        padding: 12px 14px;
-                        text-align: right;
-                        font-weight: 700;
-                        color: var(--muted);
-                        text-transform: uppercase;
-                        font-size: 11px;
-                        letter-spacing: 0.06em;
-                        white-space: nowrap;
-                      "
-                    >
-                      Total ($)
-                    </th>
-                    <th
-                      style="
-                        padding: 12px 14px;
-                        text-align: center;
-                        font-weight: 700;
-                        color: var(--muted);
-                        text-transform: uppercase;
-                        font-size: 11px;
-                        letter-spacing: 0.06em;
-                      "
-                    ></th>
-                  </tr>
-                </thead>
-                <tbody id="repairs-tbody">
-                  <!-- rows injected by JS -->
-                </tbody>
-              </table>
-              <p
-                class="note"
-                id="repairs-empty"
-                style="padding: 20px; text-align: center"
-              >
-                Sin reparaciones registradas aún.
-              </p>
-            </div>
+            <div id="repairs-list"></div>
+            <p
+              class="note"
+              id="repairs-empty"
+              style="padding: 20px; text-align: center; display: none"
+            >
+              Sin reparaciones registradas aun.
+            </p>
           </section>
+        </div>
+
+        <!-- Botón fijo en la parte inferior -->
+        <div
+          style="
+            padding: 12px 16px 20px;
+            background: var(--bg);
+            border-top: 1px solid var(--line);
+          "
+        >
+          <button
+            type="button"
+            class="secondary"
+            id="repair-add-btn"
+            style="
+              width: 100%;
+              padding: 14px;
+              font-size: 15px;
+              border-radius: 14px;
+            "
+          >
+            + Nueva reparación
+          </button>
         </div>
       </section>
 
@@ -3168,7 +3110,47 @@
         </div>
       </div>
 
-      <!-- Modal confirmar borrado reparación -->
+      <!-- Modal detalle reparacion -->
+      <div class="quick-edit-overlay hidden" id="repair-detail-overlay">
+        <div class="quick-edit-modal" style="max-width: 560px; width: 100%">
+          <div class="quick-edit-header">
+            <h3
+              id="repair-detail-title"
+              style="font-size: 15px; line-height: 1.3; padding-right: 8px"
+            ></h3>
+            <button
+              type="button"
+              class="reminder-alert-close"
+              id="repair-detail-close"
+            >
+              &#x2715;
+            </button>
+          </div>
+          <div style="padding: 16px 20px 4px">
+            <div id="repair-detail-body"></div>
+          </div>
+          <div class="quick-edit-footer">
+            <button
+              type="button"
+              class="ghost"
+              id="repair-detail-delete"
+              style="color: #c82828; border-color: #e8b0b0"
+            >
+              Eliminar
+            </button>
+            <button
+              type="button"
+              class="secondary"
+              id="repair-detail-edit"
+              style="flex: 1"
+            >
+              Editar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal confirmar borrado reparacion -->
       <div class="quick-edit-overlay hidden" id="repair-delete-overlay">
         <div class="quick-edit-modal" style="max-width: 360px; width: 100%">
           <div class="quick-edit-header">
@@ -3265,8 +3247,21 @@
               />
             </div>
             <div>
-              <label for="qe-time">Horas trabajadas</label>
-              <input type="time" id="qe-time" step="60" value="00:00" />
+              <label for="qe-time-start">Hora inicio</label>
+              <input type="time" id="qe-time-start" step="60" />
+            </div>
+            <div>
+              <label for="qe-time-end">Hora fin</label>
+              <input type="time" id="qe-time-end" step="60" />
+            </div>
+            <input type="hidden" id="qe-time" value="00:00" />
+            <div id="qe-time-display" style="display: none; grid-column: 1/-1">
+              <p class="note" style="margin: 0; text-align: center">
+                Horas trabajadas:
+                <strong id="qe-time-label" style="color: var(--accent)"
+                  >—</strong
+                >
+              </p>
             </div>
             <div>
               <label for="qe-fuel">Combustible</label>
@@ -3301,10 +3296,35 @@
       </div>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script>
+      // Load Supabase dynamically so we can handle failures gracefully
+      window.__supabaseReady = new Promise((resolve) => {
+        const CDN_URLS = [
+          "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js",
+          "https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js",
+        ];
+        let idx = 0;
+        const tryNext = () => {
+          if (idx >= CDN_URLS.length) {
+            resolve(false);
+            return;
+          }
+          const s = document.createElement("script");
+          s.src = CDN_URLS[idx++];
+          s.onload = () => resolve(true);
+          s.onerror = () => tryNext();
+          document.head.appendChild(s);
+        };
+        tryNext();
+      });
+    </script>
     <script>
       const incomeInput = document.getElementById("income");
       const timeWorkedInput = document.getElementById("time-worked");
+      const timeStartInput = document.getElementById("time-start");
+      const timeEndInput = document.getElementById("time-end");
+      const timeWorkedDisplay = document.getElementById("time-worked-display");
+      const timeWorkedLabel = document.getElementById("time-worked-label");
       const fuelInput = document.getElementById("fuel");
       const tollsInput = document.getElementById("tolls");
       const parkingInput = document.getElementById("parking");
@@ -3356,6 +3376,19 @@
       const goalsAvgHourEl = document.getElementById("goals-avg-hour");
       const goalsDaysLeftEl = document.getElementById("goals-days-left");
       const goalsWeeksListEl = document.getElementById("goals-weeks-list");
+      const goalsMonthRangeEl = document.getElementById("goals-month-range");
+      const goalsMonthBadgeEl = document.getElementById("goals-month-badge");
+      const goalsMonthBar = document.getElementById("goals-month-bar");
+      const goalsMonthEarnedEl = document.getElementById("goals-month-earned");
+      const goalsMonthTargetEl = document.getElementById("goals-month-target");
+      const goalsMonthDaysEl = document.getElementById("goals-month-days");
+      const goalsMonthHoursEl = document.getElementById("goals-month-hours");
+      const goalsMonthAvgHourEl = document.getElementById(
+        "goals-month-avg-hour"
+      );
+      const goalsMonthDaysLeftEl = document.getElementById(
+        "goals-month-days-left"
+      );
       const weekGoalInlineEl = document.getElementById("week-goal-inline");
       const calendarTitle = document.getElementById("calendar-title");
       const calendarGrid = document.getElementById("calendar-grid");
@@ -3395,13 +3428,29 @@
       const SUPABASE_URL = "https://dpsffmkoimzvqgwksoff.supabase.co";
       const SUPABASE_ANON_KEY =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwc2ZmbWtvaW16dnFnd2tzb2ZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyNjQ1MDksImV4cCI6MjA4ODg0MDUwOX0.Kms7i-avDF6g-EdjWQ7WygzIC93Xm2jaf4TnKZKLOKI";
-      const supabaseAvailable = typeof window.supabase !== "undefined";
-      const supabaseConfigured =
-        SUPABASE_URL.startsWith("https://") && SUPABASE_ANON_KEY.length > 20;
-      const supabaseClient =
-        supabaseAvailable && supabaseConfigured
-          ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-          : null;
+
+      // Will be set after Supabase loads
+      let supabaseClient = null;
+
+      // Inject a visible error area in the sync form
+      const syncFormErrorEl = (() => {
+        const el = document.createElement("p");
+        el.style.cssText =
+          "margin:8px 0 0; font-size:13px; color:#b23b3b; text-align:center; min-height:18px";
+        const form = document.getElementById("sync-form");
+        if (form) form.appendChild(el);
+        return el;
+      })();
+
+      const setSyncFormError = (msg) => {
+        if (syncFormErrorEl) syncFormErrorEl.textContent = msg || "";
+      };
+
+      const setAuthBtnLoading = (btn, loading, originalText) => {
+        if (!btn) return;
+        btn.disabled = loading;
+        btn.textContent = loading ? "Un momento..." : originalText;
+      };
 
       let syncMode = "local";
       let currentUserId = null;
@@ -3493,17 +3542,51 @@
         return String(Date.now()) + "-" + Math.random().toString(16).slice(2);
       };
 
+      const calcMinutesBetween = (start, end) => {
+        if (!start || !end) return 0;
+        const [sh, sm] = start.split(":").map(Number);
+        const [eh, em] = end.split(":").map(Number);
+        let mins = eh * 60 + em - (sh * 60 + sm);
+        if (mins < 0) mins += 24 * 60; // overnight shift
+        return Math.max(0, mins);
+      };
+
+      const syncTimeWorked = () => {
+        const mins = calcMinutesBetween(
+          timeStartInput.value,
+          timeEndInput.value
+        );
+        const h = Math.floor(mins / 60);
+        const m = mins % 60;
+        timeWorkedInput.value = pad2(h) + ":" + pad2(m);
+        if (mins > 0 && timeStartInput.value && timeEndInput.value) {
+          timeWorkedLabel.textContent = formatHours(mins / 60);
+          timeWorkedDisplay.style.display = "";
+        } else {
+          timeWorkedDisplay.style.display = "none";
+        }
+      };
+
+      const syncQeTime = () => {
+        if (!qeTimeStart || !qeTimeEnd) return;
+        const mins = calcMinutesBetween(qeTimeStart.value, qeTimeEnd.value);
+        const h = Math.floor(mins / 60);
+        const m = mins % 60;
+        if (qeTime) qeTime.value = pad2(h) + ":" + pad2(m);
+        if (mins > 0 && qeTimeStart.value && qeTimeEnd.value) {
+          if (qeTimeLabel) qeTimeLabel.textContent = formatHours(mins / 60);
+          if (qeTimeDisplay) qeTimeDisplay.style.display = "";
+        } else {
+          if (qeTimeDisplay) qeTimeDisplay.style.display = "none";
+        }
+      };
+
       const getTimeParts = () => {
+        syncTimeWorked();
         const timeParts = (timeWorkedInput.value || "00:00").split(":");
         const hours = parseInt(timeParts[0], 10) || 0;
         const minutes = parseInt(timeParts[1], 10) || 0;
-        const safeMinutes = Math.max(0, Math.min(59, minutes));
-        const safeHours = Math.max(0, hours);
-        if (safeMinutes !== minutes || safeHours !== hours) {
-          const safeTime = pad2(safeHours) + ":" + pad2(safeMinutes);
-          timeWorkedInput.value = safeTime;
-        }
-        return { hours: safeHours, minutes: safeMinutes };
+        return { hours, minutes };
       };
 
       const formatHours = (totalHours) => {
@@ -3766,6 +3849,85 @@
         if (goalsDaysLeftEl)
           goalsDaysLeftEl.textContent =
             daysLeft === 0 ? "Último día" : daysLeft;
+
+        // ── Este mes ──
+        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+        const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        const monthItems = items.filter((e) => {
+          if (!e.date) return false;
+          const dd = new Date(e.date + "T00:00:00");
+          return dd >= monthStart && dd <= monthEnd;
+        });
+        const monthEarned = monthItems.reduce((a, e) => a + (e.income || 0), 0);
+        const monthHours = monthItems.reduce((a, e) => {
+          if (!e.time) return a;
+          const p = e.time.split(":");
+          return a + (parseInt(p[0]) || 0) + (parseInt(p[1]) || 0) / 60;
+        }, 0);
+
+        const monthNames = [
+          "Enero",
+          "Febrero",
+          "Marzo",
+          "Abril",
+          "Mayo",
+          "Junio",
+          "Julio",
+          "Agosto",
+          "Septiembre",
+          "Octubre",
+          "Noviembre",
+          "Diciembre",
+        ];
+        const monthMeta = effectiveMeta > 0 ? effectiveMeta * 4.33 : 0; // approx weeks in month
+        const monthPct =
+          monthMeta > 0 ? Math.min((monthEarned / monthMeta) * 100, 100) : 0;
+        const monthOver = monthMeta > 0 && monthEarned >= monthMeta;
+        const daysInMonth = monthEnd.getDate();
+        const dayOfMonth = today.getDate();
+        const monthDaysLeft = daysInMonth - dayOfMonth;
+
+        if (goalsMonthRangeEl)
+          goalsMonthRangeEl.textContent =
+            monthNames[today.getMonth()] + " " + today.getFullYear();
+        if (goalsMonthBar) {
+          goalsMonthBar.style.width = (monthMeta > 0 ? monthPct : 0) + "%";
+          goalsMonthBar.style.background =
+            monthMeta > 0 ? barColor(monthPct) : "#4caf84";
+          goalsMonthBar.classList.toggle("over", monthOver);
+        }
+        if (goalsMonthEarnedEl)
+          goalsMonthEarnedEl.textContent = fmt.format(monthEarned);
+        if (goalsMonthTargetEl)
+          goalsMonthTargetEl.textContent =
+            monthMeta > 0
+              ? "Meta: " + fmt.format(monthMeta)
+              : "Sin meta definida";
+        if (goalsMonthBadgeEl) {
+          if (monthMeta <= 0) {
+            goalsMonthBadgeEl.textContent = "Sin meta";
+            goalsMonthBadgeEl.style.background = "";
+            goalsMonthBadgeEl.style.color = "";
+          } else if (monthOver) {
+            goalsMonthBadgeEl.textContent = "¡Meta cumplida!";
+            goalsMonthBadgeEl.style.background = "rgba(168,230,193,0.35)";
+            goalsMonthBadgeEl.style.color = "#2a7a52";
+          } else {
+            goalsMonthBadgeEl.textContent =
+              "Faltan " + fmt.format(monthMeta - monthEarned);
+            goalsMonthBadgeEl.style.background = "";
+            goalsMonthBadgeEl.style.color = "";
+          }
+        }
+        if (goalsMonthDaysEl) goalsMonthDaysEl.textContent = monthItems.length;
+        if (goalsMonthHoursEl)
+          goalsMonthHoursEl.textContent = formatHours(monthHours);
+        if (goalsMonthAvgHourEl)
+          goalsMonthAvgHourEl.textContent =
+            monthHours > 0 ? fmt.format(monthEarned / monthHours) : "—";
+        if (goalsMonthDaysLeftEl)
+          goalsMonthDaysLeftEl.textContent =
+            monthDaysLeft === 0 ? "Último día" : monthDaysLeft;
 
         if (!goalsWeeksListEl) return;
 
@@ -4481,6 +4643,16 @@
       };
 
       const initSync = async () => {
+        // Wait for dynamic Supabase loader
+        if (window.__supabaseReady) {
+          const loaded = await window.__supabaseReady;
+          if (loaded && typeof window.supabase !== "undefined") {
+            supabaseClient = window.supabase.createClient(
+              SUPABASE_URL,
+              SUPABASE_ANON_KEY
+            );
+          }
+        }
         if (!supabaseClient) {
           updateSyncUI(null);
           setHistory(getLocalHistory());
@@ -4798,9 +4970,9 @@
 
       const VIEW_TITLES = {
         main: "Cargar jornada",
-        history: "Ver historial",
+        history: "Historial",
         goals: "Metas",
-        repairs: "Reparaciones",
+        repairs: "Mantenimiento",
       };
 
       const closeTopbarMenu = () => {
@@ -4878,6 +5050,10 @@
       const quickEditTitle = document.getElementById("quick-edit-title");
       const qeIncome = document.getElementById("qe-income");
       const qeTime = document.getElementById("qe-time");
+      const qeTimeStart = document.getElementById("qe-time-start");
+      const qeTimeEnd = document.getElementById("qe-time-end");
+      const qeTimeDisplay = document.getElementById("qe-time-display");
+      const qeTimeLabel = document.getElementById("qe-time-label");
       const qeFuel = document.getElementById("qe-fuel");
       const qeTolls = document.getElementById("qe-tolls");
       const qeParking = document.getElementById("qe-parking");
@@ -4901,7 +5077,10 @@
           quickEditTitle.textContent =
             "Editar · " + getDriverLabel(entry.driver) + " · " + dateLabel;
         if (qeIncome) qeIncome.value = entry.income || "";
-        if (qeTime) qeTime.value = formatTimeValue(entry.time);
+        // Restore start/end if stored, else derive from total time
+        if (qeTimeStart) qeTimeStart.value = entry.timeStart || "";
+        if (qeTimeEnd) qeTimeEnd.value = entry.timeEnd || "";
+        syncQeTime();
         if (qeFuel) qeFuel.value = entry.fuel || "";
         if (qeTolls) qeTolls.value = entry.tolls || "";
         if (qeParking) qeParking.value = entry.parking || "";
@@ -4924,6 +5103,7 @@
         );
         if (idx === -1) return;
         const original = items[idx];
+        syncQeTime();
         const timeParts = (qeTime ? qeTime.value || "00:00" : "00:00").split(
           ":"
         );
@@ -4945,6 +5125,8 @@
           otherExpenses,
           net,
           time: qeTime ? qeTime.value : "00:00",
+          timeStart: qeTimeStart ? qeTimeStart.value : "",
+          timeEnd: qeTimeEnd ? qeTimeEnd.value : "",
           totalHours,
         };
         items[idx] = updated;
@@ -4974,6 +5156,14 @@
       document
         .getElementById("quick-edit-save")
         ?.addEventListener("click", saveQuickEdit);
+      if (qeTimeStart)
+        ["input", "change"].forEach((e) =>
+          qeTimeStart.addEventListener(e, syncQeTime)
+        );
+      if (qeTimeEnd)
+        ["input", "change"].forEach((e) =>
+          qeTimeEnd.addEventListener(e, syncQeTime)
+        );
       quickEditOverlay?.addEventListener("click", (e) => {
         if (e.target === quickEditOverlay) closeQuickEdit();
       });
@@ -5014,6 +5204,8 @@
         } = compute();
         const date = dateInput.value || todayString;
         const time = formatTimeValue(timeWorkedInput.value || "00:00");
+        const timeStart = timeStartInput.value || "";
+        const timeEnd = timeEndInput.value || "";
         const driver = getEffectiveDriver();
         const wasEditing = Boolean(editingId);
         const items = getHistory();
@@ -5043,6 +5235,8 @@
           id: editingId || (existing ? existing.id : createId()),
           date,
           time,
+          timeStart,
+          timeEnd,
           income,
           fuel,
           tolls,
@@ -5132,6 +5326,9 @@
       const clearForm = () => {
         incomeInput.value = "";
         timeWorkedInput.value = "00:00";
+        timeStartInput.value = "";
+        timeEndInput.value = "";
+        timeWorkedDisplay.style.display = "none";
         fuelInput.value = "";
         if (tollsInput) {
           tollsInput.value = "";
@@ -5244,38 +5441,48 @@
       };
 
       const handleSignUp = async () => {
+        setSyncFormError("");
         if (!supabaseClient) {
-          setSyncStatus("Sincronización no configurada.", true);
+          setSyncFormError(
+            "No se pudo conectar al servidor. Verificá tu conexión a internet."
+          );
           return;
         }
         const credentials = getSyncCredentials();
-        if (!credentials) {
-          return;
-        }
+        if (!credentials) return;
+        const btn = document.getElementById("sync-signup-btn");
+        setAuthBtnLoading(btn, true, "¿No tenés cuenta? Registrarse");
         const { error } = await supabaseClient.auth.signUp(credentials);
+        setAuthBtnLoading(btn, false, "¿No tenés cuenta? Registrarse");
         if (error) {
-          setSyncStatus("No se pudo crear la cuenta: " + error.message, true);
+          setSyncFormError("No se pudo crear la cuenta: " + error.message);
           return;
         }
+        setSyncFormError("");
         setSyncStatus("Cuenta creada. Revisá tu correo si pide confirmación.");
       };
 
       const handleSignIn = async () => {
+        setSyncFormError("");
         if (!supabaseClient) {
-          setSyncStatus("Sincronización no configurada.", true);
+          setSyncFormError(
+            "No se pudo conectar al servidor. Verificá tu conexión a internet."
+          );
           return;
         }
         const credentials = getSyncCredentials();
-        if (!credentials) {
-          return;
-        }
+        if (!credentials) return;
+        const btn = document.getElementById("sync-login-btn");
+        setAuthBtnLoading(btn, true, "Iniciar sesión");
         const { error } = await supabaseClient.auth.signInWithPassword(
           credentials
         );
+        setAuthBtnLoading(btn, false, "Iniciar sesión");
         if (error) {
-          setSyncStatus("No se pudo iniciar sesión: " + error.message, true);
+          setSyncFormError("No se pudo iniciar sesión: " + error.message);
           return;
         }
+        setSyncFormError("");
         setSyncStatus("Sesión iniciada. Sincronizando...");
       };
 
@@ -5321,6 +5528,23 @@
           goalsStatsRow.classList.toggle("hidden", isOpen);
           goalsExpandBtn.classList.toggle("open", !isOpen);
           goalsExpandBtn.querySelector("span").textContent = isOpen
+            ? "Ver detalles"
+            : "Ocultar detalles";
+        });
+      }
+
+      const goalsMonthExpandBtn = document.getElementById(
+        "goals-month-expand-btn"
+      );
+      const goalsMonthStatsRow = document.getElementById(
+        "goals-month-stats-row"
+      );
+      if (goalsMonthExpandBtn && goalsMonthStatsRow) {
+        goalsMonthExpandBtn.addEventListener("click", () => {
+          const isOpen = !goalsMonthStatsRow.classList.contains("hidden");
+          goalsMonthStatsRow.classList.toggle("hidden", isOpen);
+          goalsMonthExpandBtn.classList.toggle("open", !isOpen);
+          goalsMonthExpandBtn.querySelector("span").textContent = isOpen
             ? "Ver detalles"
             : "Ocultar detalles";
         });
@@ -5420,7 +5644,8 @@
 
       ["input", "change"].forEach((evt) => {
         incomeInput.addEventListener(evt, calculate);
-        timeWorkedInput.addEventListener(evt, calculate);
+        timeStartInput.addEventListener(evt, calculate);
+        timeEndInput.addEventListener(evt, calculate);
         fuelInput.addEventListener(evt, calculate);
         if (tollsInput) {
           tollsInput.addEventListener(evt, calculate);
@@ -5764,9 +5989,70 @@
         return `${d}/${m}/${y}`;
       };
 
+      let activeRepairId = null;
+
+      const closeRepairDetail = () => {
+        activeRepairId = null;
+        document
+          .getElementById("repair-detail-overlay")
+          .classList.add("hidden");
+        document
+          .querySelectorAll(".repair-list-item")
+          .forEach((el) => el.classList.remove("active"));
+      };
+
+      const openRepairDetail = (id) => {
+        const repairs = loadRepairs();
+        const r = repairs.find((x) => x.id === id);
+        if (!r) return;
+        activeRepairId = id;
+
+        document.getElementById("repair-detail-title").textContent =
+          r.desc || "Reparacion";
+        const total = Number(r.costParts || 0) + Number(r.costLabor || 0);
+        document.getElementById("repair-detail-body").innerHTML = `
+          <div class="results">
+            <div class="result-row"><span>Fecha</span><strong>${fmtDate(
+              r.date
+            )}</strong></div>
+            <div class="result-row"><span>Kilometraje</span><strong>${Number(
+              r.km || 0
+            ).toLocaleString("es-AR")} km</strong></div>
+            <div class="result-row"><span>Categoria</span><strong>${
+              r.category || "—"
+            }</strong></div>
+            ${
+              r.brand
+                ? `<div class="result-row"><span>Repuesto / Marca</span><strong>${r.brand}</strong></div>`
+                : ""
+            }
+            ${
+              r.workshop
+                ? `<div class="result-row"><span>Taller / Lugar</span><strong>${r.workshop}</strong></div>`
+                : ""
+            }
+            <div class="result-row"><span>Costo repuesto</span><strong>${
+              r.costParts > 0 ? fmtMoney(r.costParts) : "—"
+            }</strong></div>
+            <div class="result-row"><span>Mano de obra</span><strong>${
+              r.costLabor > 0 ? fmtMoney(r.costLabor) : "—"
+            }</strong></div>
+            <div class="result-row"><span>Total</span><strong style="color:var(--accent); font-size:16px">${fmtMoney(
+              total
+            )}</strong></div>
+          </div>`;
+
+        document
+          .getElementById("repair-detail-overlay")
+          .classList.remove("hidden");
+        document.querySelectorAll(".repair-list-item").forEach((el) => {
+          el.classList.toggle("active", el.dataset.id === id);
+        });
+      };
+
       const renderRepairs = () => {
         const repairs = loadRepairs();
-        const tbody = document.getElementById("repairs-tbody");
+        const list = document.getElementById("repairs-list");
         const empty = document.getElementById("repairs-empty");
 
         let totalParts = 0,
@@ -5785,48 +6071,41 @@
         );
 
         if (!repairs.length) {
-          tbody.innerHTML = "";
+          list.innerHTML = "";
           empty.style.display = "";
+          closeRepairDetail();
           return;
         }
         empty.style.display = "none";
 
-        // Sort newest first
         const sorted = [...repairs].sort((a, b) =>
           b.date.localeCompare(a.date)
         );
-        tbody.innerHTML = sorted
-          .map((r) => {
+        list.innerHTML = sorted
+          .map((r, i) => {
             const total = Number(r.costParts || 0) + Number(r.costLabor || 0);
-            return `<tr>
-            <td style="white-space:nowrap">${fmtDate(r.date)}</td>
-            <td style="text-align:right; white-space:nowrap">${Number(
-              r.km || 0
-            ).toLocaleString("es-AR")} km</td>
-            <td><span class="repair-category-badge">${
+            const isLast = i === sorted.length - 1;
+            return `<div class="repair-list-item" data-id="${
+              r.id
+            }" onclick="openRepairDetail('${r.id}')"
+            style="display:flex; align-items:center; justify-content:space-between; gap:12px;
+            padding:14px 16px; cursor:pointer; transition:background .13s;
+            border-bottom:${isLast ? "none" : "1px solid var(--line)"}">
+            <div style="min-width:0; flex:1">
+              <div style="font-weight:600; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">${
+                r.desc || "Sin descripción"
+              }</div>
+              <div style="font-size:12px; color:var(--muted); margin-top:3px">${fmtDate(
+                r.date
+              )} · <span class="repair-category-badge" style="font-size:10px; padding:2px 7px">${
               r.category || "—"
-            }</span></td>
-            <td style="max-width:200px">${r.desc || "—"}</td>
-            <td style="color:var(--muted)">${r.brand || "—"}</td>
-            <td style="color:var(--muted)">${r.workshop || "—"}</td>
-            <td style="text-align:right; white-space:nowrap">${
-              r.costParts > 0 ? fmtMoney(r.costParts) : "—"
-            }</td>
-            <td style="text-align:right; white-space:nowrap">${
-              r.costLabor > 0 ? fmtMoney(r.costLabor) : "—"
-            }</td>
-            <td style="text-align:right; white-space:nowrap; font-weight:700; color:var(--accent)">${fmtMoney(
+            }</span></div>
+            </div>
+            <div style="font-weight:700; font-size:15px; color:var(--accent); white-space:nowrap; flex-shrink:0">${fmtMoney(
               total
-            )}</td>
-            <td style="text-align:center; white-space:nowrap">
-              <button class="repair-action-btn" onclick="repairEdit('${
-                r.id
-              }')">✏️</button>
-              <button class="repair-action-btn del" onclick="repairDelete('${
-                r.id
-              }')">🗑️</button>
-            </td>
-          </tr>`;
+            )}</div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; color:var(--muted)"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>`;
           })
           .join("");
       };
@@ -5909,6 +6188,35 @@
           .getElementById("repair-delete-overlay")
           .classList.remove("hidden");
       };
+      window.openRepairDetail = openRepairDetail;
+
+      // Detail overlay buttons
+      document
+        .getElementById("repair-detail-close")
+        .addEventListener("click", closeRepairDetail);
+      document
+        .getElementById("repair-detail-overlay")
+        .addEventListener("click", (e) => {
+          if (e.target === e.currentTarget) closeRepairDetail();
+        });
+      document
+        .getElementById("repair-detail-edit")
+        .addEventListener("click", () => {
+          if (activeRepairId) {
+            closeRepairDetail();
+            repairModalOpen(activeRepairId);
+          }
+        });
+      document
+        .getElementById("repair-detail-delete")
+        .addEventListener("click", () => {
+          if (activeRepairId) {
+            repairDeleteId = activeRepairId;
+            document
+              .getElementById("repair-delete-overlay")
+              .classList.remove("hidden");
+          }
+        });
 
       // Wire up modal buttons
       document
@@ -5943,8 +6251,9 @@
           if (!repairDeleteId) return;
           const repairs = loadRepairs().filter((x) => x.id !== repairDeleteId);
           saveRepairs(repairs);
-          renderRepairs();
+          if (activeRepairId === repairDeleteId) closeRepairDetail();
           repairDeleteId = null;
+          renderRepairs();
           document
             .getElementById("repair-delete-overlay")
             .classList.add("hidden");
