@@ -1418,6 +1418,70 @@
         background: #d95f1e;
       }
 
+      .sync-status-dot.offline {
+        background: #e6a817;
+        animation: pulse-dot 1.5s ease-in-out infinite;
+      }
+
+      @keyframes pulse-dot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(0.8); }
+      }
+
+      /* Banner de estado de sesión/conexión */
+      .session-warning-banner {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 16px;
+        border-radius: 14px;
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1.4;
+        border: 1.5px solid;
+        animation: view-fade-in 0.2s ease both;
+      }
+
+      .session-warning-banner.no-session {
+        background: rgba(178, 59, 59, 0.07);
+        border-color: rgba(178, 59, 59, 0.25);
+        color: #b23b3b;
+      }
+
+      .session-warning-banner.offline {
+        background: rgba(230, 168, 23, 0.08);
+        border-color: rgba(230, 168, 23, 0.3);
+        color: #a07010;
+      }
+
+      .session-warning-banner.local-only {
+        background: rgba(230, 168, 23, 0.08);
+        border-color: rgba(230, 168, 23, 0.3);
+        color: #a07010;
+      }
+
+      .session-warning-banner .banner-icon {
+        font-size: 18px;
+        flex-shrink: 0;
+        line-height: 1;
+      }
+
+      .session-warning-banner .banner-action {
+        margin-left: auto;
+        background: transparent;
+        border: 1.5px solid currentColor;
+        border-radius: 8px;
+        padding: 4px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        color: inherit;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .session-warning-banner.hidden { display: none; }
+
       .sync-drawer {
         grid-column: 1 / -1;
         background: var(--card);
@@ -2340,6 +2404,25 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Banner de estado: sin sesión / sin internet -->
+      <div
+        class="session-warning-banner hidden"
+        id="session-warning-banner"
+        role="alert"
+      >
+        <span class="banner-icon" id="banner-icon">⚠️</span>
+        <span id="banner-text"
+          >Los datos se guardan solo en este dispositivo.</span
+        >
+        <button
+          type="button"
+          class="banner-action hidden"
+          id="banner-action-btn"
+        >
+          Iniciar sesión
+        </button>
       </div>
 
       <!-- Sync drawer -->
@@ -4820,6 +4903,70 @@
         }
         return items.filter((entry) => entry.driver === selected);
       };
+
+      // ── Banner de estado de sesión / conectividad ──
+      let _hasSession = false;
+
+      const updateStatusBanner = () => {
+        const banner = document.getElementById("session-warning-banner");
+        const iconEl = document.getElementById("banner-icon");
+        const textEl = document.getElementById("banner-text");
+        const actionBtn = document.getElementById("banner-action-btn");
+        if (!banner) return;
+
+        const isOnline = navigator.onLine;
+
+        if (!isOnline) {
+          // Sin internet — puede tener sesión pero no sincroniza
+          banner.className = "session-warning-banner offline";
+          if (iconEl) iconEl.textContent = "📡";
+          if (textEl)
+            textEl.textContent =
+              "Sin conexión — los cambios se guardan localmente hasta reconectarse.";
+          if (actionBtn) actionBtn.classList.add("hidden");
+          return;
+        }
+
+        if (!_hasSession) {
+          // Online pero sin sesión
+          banner.className = "session-warning-banner no-session";
+          if (iconEl) iconEl.textContent = "🔒";
+          if (textEl)
+            textEl.textContent =
+              "Sin sesión iniciada — los datos se guardan solo en este dispositivo.";
+          if (actionBtn) {
+            actionBtn.classList.remove("hidden");
+            actionBtn.textContent = "Iniciar sesión";
+          }
+          return;
+        }
+
+        // Todo bien — ocultar banner
+        banner.className = "session-warning-banner hidden";
+      };
+
+      // El botón del banner abre el drawer de sincronización
+      document
+        .getElementById("banner-action-btn")
+        ?.addEventListener("click", () => {
+          const syncCard = document.getElementById("sync-card");
+          if (syncCard) syncCard.classList.toggle("hidden");
+          document.getElementById("sync-email")?.focus();
+        });
+
+      // Detectar cambios de conectividad
+      window.addEventListener("online", () => {
+        const dot = document.getElementById("sync-status-dot");
+        if (dot) dot.classList.remove("offline");
+        updateStatusBanner();
+      });
+      window.addEventListener("offline", () => {
+        const dot = document.getElementById("sync-status-dot");
+        if (dot) {
+          dot.className = "sync-status-dot offline";
+        }
+        updateStatusBanner();
+      });
 
       const setSyncStatus = (message, isError = false) => {
         if (syncStatusEl) {
