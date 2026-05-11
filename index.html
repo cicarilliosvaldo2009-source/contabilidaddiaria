@@ -2684,6 +2684,97 @@
               </div>
               <p class="note" id="month-note"></p>
             </section>
+
+            <!-- Proyección fin de mes -->
+            <section class="card" id="month-projection-card">
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  margin-bottom: 12px;
+                  gap: 8px;
+                "
+              >
+                <h2 style="margin: 0; font-size: 15px">
+                  Proyección fin de mes
+                </h2>
+                <span
+                  style="
+                    font-size: 11px;
+                    font-weight: 700;
+                    color: var(--accent-2);
+                    background: rgba(13, 91, 82, 0.08);
+                    border: 1px solid rgba(13, 91, 82, 0.15);
+                    border-radius: 999px;
+                    padding: 3px 10px;
+                    white-space: nowrap;
+                  "
+                  id="proj-days-left-badge"
+                  >— días restantes</span
+                >
+              </div>
+              <div class="results">
+                <div class="result-row">
+                  <span style="font-weight: 700; color: var(--ink)"
+                    >Proyección bruta</span
+                  >
+                  <strong
+                    id="proj-gross"
+                    style="color: var(--accent); font-size: 17px"
+                    >—</strong
+                  >
+                </div>
+                <div class="result-row">
+                  <span style="font-weight: 700; color: var(--ink)"
+                    >Proyección neta</span
+                  >
+                  <strong
+                    id="proj-net"
+                    style="color: var(--accent-2); font-size: 15px"
+                    >—</strong
+                  >
+                </div>
+              </div>
+              <div style="margin-top: 12px">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 5px;
+                  "
+                >
+                  <span
+                    style="
+                      font-size: 12px;
+                      font-weight: 600;
+                      color: var(--muted);
+                      text-transform: uppercase;
+                      letter-spacing: 0.04em;
+                    "
+                    >Avance del mes</span
+                  >
+                  <span
+                    style="font-size: 12px; font-weight: 700; color: var(--ink)"
+                    id="proj-pct-label"
+                    >0%</span
+                  >
+                </div>
+                <div class="week-summary-track">
+                  <div
+                    class="week-summary-bar"
+                    id="proj-bar"
+                    style="width: 0%"
+                  ></div>
+                </div>
+                <p
+                  class="note"
+                  id="proj-note"
+                  style="margin: 8px 0 0; font-size: 12px"
+                ></p>
+              </div>
+            </section>
             <section class="card hidden" id="day-detail-card">
               <div
                 style="
@@ -2953,7 +3044,171 @@
       <!-- Vista Mantenimiento -->
       <section id="view-repairs" class="view hidden">
         <div class="view-grid" style="grid-template-columns: 1fr">
-          <!-- Totales -->
+          <!-- Costo mensual del auto -->
+          <section class="card" style="padding: 20px">
+            <h2 style="margin: 0 0 14px; font-size: 15px">
+              Costo mensual del auto
+            </h2>
+
+            <!-- Gastos fijos: lista siempre visible, edición colapsable -->
+            <div style="margin-bottom: 14px">
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  margin-bottom: 10px;
+                "
+              >
+                <div
+                  style="
+                    font-size: 12px;
+                    font-weight: 700;
+                    color: var(--muted);
+                    text-transform: uppercase;
+                    letter-spacing: 0.04em;
+                  "
+                >
+                  Gastos fijos mensuales
+                </div>
+                <button
+                  type="button"
+                  id="car-fixed-toggle-btn"
+                  style="
+                    background: transparent;
+                    border: 1px solid var(--line);
+                    border-radius: 8px;
+                    padding: 4px 12px;
+                    font-size: 12px;
+                    font-weight: 700;
+                    color: var(--muted);
+                    cursor: pointer;
+                    transition: background 0.15s, color 0.15s;
+                  "
+                >
+                  Editar
+                </button>
+              </div>
+              <div
+                id="car-fixed-list"
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  gap: 8px;
+                  margin-bottom: 4px;
+                "
+              ></div>
+              <!-- Panel de edición: oculto por defecto -->
+              <div
+                id="car-fixed-editor"
+                class="hidden"
+                style="
+                  margin-top: 12px;
+                  border-top: 1px dashed var(--line);
+                  padding-top: 12px;
+                "
+              >
+                <div
+                  id="car-fixed-form-wrap"
+                  style="
+                    display: flex;
+                    gap: 8px;
+                    flex-wrap: wrap;
+                    margin-bottom: 8px;
+                  "
+                >
+                  <div style="flex: 2; min-width: 140px">
+                    <label style="margin-bottom: 3px">Concepto</label>
+                    <input
+                      type="text"
+                      id="car-fixed-name"
+                      placeholder="Ej: Seguro"
+                      style="font-size: 14px; padding: 9px 12px"
+                    />
+                  </div>
+                  <div style="flex: 1; min-width: 110px">
+                    <label style="margin-bottom: 3px">Monto mensual ($)</label>
+                    <input
+                      type="number"
+                      id="car-fixed-amount"
+                      min="0"
+                      step="100"
+                      placeholder="Ej: 30000"
+                      style="font-size: 14px; padding: 9px 12px"
+                    />
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      gap: 8px;
+                      width: 100%;
+                      margin-top: 4px;
+                    "
+                  >
+                    <button
+                      type="button"
+                      class="secondary"
+                      id="car-fixed-save-btn"
+                      style="flex: 1; padding: 9px; font-size: 13px"
+                    >
+                      + Agregar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              style="height: 1px; background: var(--line); margin-bottom: 14px"
+            ></div>
+
+            <!-- Totales del mes -->
+            <div
+              style="
+                font-size: 12px;
+                font-weight: 700;
+                color: var(--muted);
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+                margin-bottom: 10px;
+              "
+            >
+              Mes corriente
+            </div>
+            <div class="results">
+              <div class="result-row">
+                <span>Gastos fijos</span>
+                <strong id="car-fixed-total" style="color: #b23b3b">—</strong>
+              </div>
+              <div class="result-row">
+                <span>Combustible (mes)</span>
+                <strong id="car-fuel-month" style="color: #b23b3b">—</strong>
+              </div>
+              <div class="result-row">
+                <span>Reparaciones y gastos variables (mes)</span>
+                <strong id="car-repairs-month" style="color: #b23b3b">—</strong>
+              </div>
+              <div
+                class="result-row"
+                style="
+                  border-top: 2px solid var(--line);
+                  padding-top: 10px;
+                  margin-top: 2px;
+                "
+              >
+                <span style="font-weight: 700; color: var(--ink)"
+                  >Costo total del mes</span
+                >
+                <strong
+                  id="car-total-month"
+                  style="color: #b23b3b; font-size: 17px"
+                  >—</strong
+                >
+              </div>
+            </div>
+          </section>
+
+          <!-- Totales acumulados de reparaciones -->
           <section class="card" style="padding: 16px 20px">
             <div class="results">
               <div class="result-row">
@@ -3175,6 +3430,45 @@
             </button>
             <button type="button" class="primary" id="repair-delete-confirm">
               Eliminar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal confirmar jornada duplicada -->
+      <div class="quick-edit-overlay hidden" id="duplicate-day-overlay">
+        <div class="quick-edit-modal" style="max-width: 360px; width: 100%">
+          <div class="quick-edit-header">
+            <h3>Jornada ya registrada</h3>
+            <button
+              type="button"
+              class="reminder-alert-close"
+              id="duplicate-day-close"
+            >
+              ✕
+            </button>
+          </div>
+          <div
+            style="
+              padding: 0 20px 16px;
+              color: var(--muted);
+              font-size: 14px;
+              line-height: 1.5;
+            "
+          >
+            <span id="duplicate-day-msg"
+              >Ya existe un registro para este día.</span
+            >
+            <br /><br />
+            Los valores se <strong style="color: var(--ink)">sumarán</strong> al
+            registro existente. ¿Querés continuar?
+          </div>
+          <div class="quick-edit-footer">
+            <button type="button" class="ghost" id="duplicate-day-cancel">
+              Cancelar
+            </button>
+            <button type="button" class="primary" id="duplicate-day-confirm">
+              Sí, sumar
             </button>
           </div>
         </div>
@@ -4558,13 +4852,13 @@
           const email =
             session.user && session.user.email ? session.user.email : "usuario";
           setSyncStatus("Activa");
-          if (syncFooterStatus) syncFooterStatus.textContent = email;
+          const driverFromEmail = resolveDriverFromEmail(email);
+          const driverLabel = driverFromEmail
+            ? getDriverLabel(driverFromEmail)
+            : email;
+          if (syncFooterStatus) syncFooterStatus.textContent = driverLabel;
           const avatar = document.getElementById("sync-account-avatar");
           if (avatar) {
-            const driverFromEmail = resolveDriverFromEmail(email);
-            const driverLabel = driverFromEmail
-              ? getDriverLabel(driverFromEmail)
-              : email;
             avatar.textContent = driverLabel.charAt(0).toUpperCase();
           }
           if (syncForm) syncForm.classList.add("hidden");
@@ -4754,6 +5048,233 @@
 
         updateWeeklyGoalStatus();
       };
+      const renderMonthProjection = () => {
+        const month = monthFilterInput.value || today.toISOString().slice(0, 7);
+        const [yearStr, monthStr] = month.split("-");
+        const year = parseInt(yearStr, 10);
+        const monthIndex = parseInt(monthStr, 10) - 1;
+        const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+        const todayDate = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate()
+        );
+        const isCurrentMonth =
+          year === todayDate.getFullYear() &&
+          monthIndex === todayDate.getMonth();
+        const dayOfMonth = isCurrentMonth ? todayDate.getDate() : daysInMonth;
+        const daysLeft = isCurrentMonth ? daysInMonth - dayOfMonth : 0;
+
+        const items = filterByDriver(
+          getHistory().filter(
+            (entry) => entry.date && entry.date.startsWith(month)
+          )
+        );
+
+        const totals = items.reduce(
+          (acc, entry) => {
+            acc.income += entry.income || 0;
+            acc.net += entry.net || 0;
+            return acc;
+          },
+          { income: 0, net: 0 }
+        );
+
+        const workedDays = new Set(items.map((e) => e.date)).size;
+
+        const fmt = formatter();
+        const badge = document.getElementById("proj-days-left-badge");
+        const projGrossEl = document.getElementById("proj-gross");
+        const projNetEl = document.getElementById("proj-net");
+        const projBarEl = document.getElementById("proj-bar");
+        const projPctEl = document.getElementById("proj-pct-label");
+        const projNoteEl = document.getElementById("proj-note");
+
+        if (badge)
+          badge.textContent = isCurrentMonth
+            ? daysLeft + " días restantes"
+            : "Mes cerrado";
+
+        if (workedDays === 0) {
+          if (projGrossEl) projGrossEl.textContent = "—";
+          if (projNetEl) projNetEl.textContent = "—";
+          if (projBarEl) {
+            projBarEl.style.width = "0%";
+            projBarEl.style.background = barColor(0);
+          }
+          if (projPctEl) projPctEl.textContent = "0%";
+          if (projNoteEl) projNoteEl.textContent = "Sin datos para proyectar.";
+          return;
+        }
+
+        const dailyAvgGross = totals.income / workedDays;
+        const dailyAvgNet = totals.net / workedDays;
+        const projGross = isCurrentMonth
+          ? totals.income + dailyAvgGross * daysLeft
+          : totals.income;
+        const projNet = isCurrentMonth
+          ? totals.net + dailyAvgNet * daysLeft
+          : totals.net;
+        const pctDone = Math.round((dayOfMonth / daysInMonth) * 100);
+
+        if (projGrossEl)
+          projGrossEl.textContent = fmt.format(Math.round(projGross));
+        if (projNetEl) projNetEl.textContent = fmt.format(Math.round(projNet));
+        if (projBarEl) {
+          projBarEl.style.width = pctDone + "%";
+          projBarEl.style.background = barColor(pctDone);
+        }
+        if (projPctEl) projPctEl.textContent = pctDone + "%";
+        if (projNoteEl) {
+          if (!isCurrentMonth) {
+            projNoteEl.textContent =
+              "Mes finalizado · " + workedDays + " días trabajados.";
+          } else if (daysLeft === 0) {
+            projNoteEl.textContent = "Último día del mes.";
+          } else {
+            projNoteEl.textContent =
+              "Basado en " +
+              workedDays +
+              " días trabajados · promedio " +
+              fmt.format(Math.round(dailyAvgGross)) +
+              "/día.";
+          }
+        }
+      };
+
+      // ── Costo mensual auto ──
+      const carCostKey = "uber_car_cost_v1";
+      const loadCarFixedItems = () => {
+        try {
+          const raw = localStorage.getItem(carCostKey);
+          const parsed = raw ? JSON.parse(raw) : {};
+          if (Array.isArray(parsed)) return parsed;
+          return [];
+        } catch {
+          return [];
+        }
+      };
+      const saveCarFixedItems = (items) =>
+        localStorage.setItem(carCostKey, JSON.stringify(items));
+
+      const renderCarFixedList = () => {
+        const items = loadCarFixedItems();
+        const container = document.getElementById("car-fixed-list");
+        if (!container) return;
+        const fmt = formatter();
+        const isEditing = !document
+          .getElementById("car-fixed-editor")
+          ?.classList.contains("hidden");
+        if (!items.length) {
+          container.innerHTML =
+            '<p class="note" style="margin:0; font-size:13px">Sin gastos fijos cargados.</p>';
+          return;
+        }
+        container.innerHTML = items
+          .map(
+            (item) => `
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; background:rgba(0,0,0,0.02); border:1px solid var(--line); border-radius:10px; padding:10px 12px">
+            <span style="font-size:14px; font-weight:600; color:var(--ink); flex:1">${
+              item.name
+            }</span>
+            <span style="font-size:14px; font-weight:700; color:#b23b3b; white-space:nowrap">${fmt.format(
+              item.amount
+            )}</span>
+            ${
+              isEditing
+                ? `<button type="button" data-id="${item.id}" data-action="delete-fixed"
+              style="background:transparent; border:none; color:var(--muted); cursor:pointer; font-size:18px; line-height:1; padding:0 2px; flex-shrink:0"
+              title="Eliminar">×</button>`
+                : ""
+            }
+          </div>`
+          )
+          .join("");
+
+        container
+          .querySelectorAll("[data-action='delete-fixed']")
+          .forEach((btn) => {
+            btn.addEventListener("click", () => {
+              const id = btn.getAttribute("data-id");
+              saveCarFixedItems(loadCarFixedItems().filter((i) => i.id !== id));
+              renderCarCostSummary();
+            });
+          });
+      };
+
+      const renderCarCostSummary = () => {
+        renderCarFixedList();
+        const fixedItems = loadCarFixedItems();
+        const fixedTotal = fixedItems.reduce((a, i) => a + (i.amount || 0), 0);
+
+        const currentMonth = today.toISOString().slice(0, 7);
+        const monthEntries = getHistory().filter(
+          (e) => e.date && e.date.startsWith(currentMonth)
+        );
+        const fuelTotal = monthEntries.reduce((a, e) => a + (e.fuel || 0), 0);
+        const repairsThisMonth = (() => {
+          try {
+            const raw = localStorage.getItem("uber_repairs_v1");
+            const repairs = raw ? JSON.parse(raw) : [];
+            return repairs
+              .filter((r) => r.date && r.date.startsWith(currentMonth))
+              .reduce(
+                (a, r) =>
+                  a + (Number(r.costParts) || 0) + (Number(r.costLabor) || 0),
+                0
+              );
+          } catch {
+            return 0;
+          }
+        })();
+        const grandTotal = fixedTotal + fuelTotal + repairsThisMonth;
+
+        const fmt = formatter();
+        const setEl = (id, val) => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = val > 0 ? fmt.format(val) : "—";
+        };
+        setEl("car-fixed-total", fixedTotal);
+        setEl("car-fuel-month", fuelTotal);
+        setEl("car-repairs-month", repairsThisMonth);
+        setEl("car-total-month", grandTotal);
+      };
+
+      // Toggle edición gastos fijos
+      document
+        .getElementById("car-fixed-toggle-btn")
+        ?.addEventListener("click", () => {
+          const editor = document.getElementById("car-fixed-editor");
+          const btn = document.getElementById("car-fixed-toggle-btn");
+          if (!editor) return;
+          const opening = editor.classList.contains("hidden");
+          editor.classList.toggle("hidden", !opening);
+          if (btn) btn.textContent = opening ? "Listo" : "Editar";
+          renderCarFixedList(); // re-render to show/hide × buttons
+          if (opening) document.getElementById("car-fixed-name")?.focus();
+        });
+
+      document
+        .getElementById("car-fixed-save-btn")
+        ?.addEventListener("click", () => {
+          const name = document.getElementById("car-fixed-name")?.value.trim();
+          const amount =
+            parseFloat(document.getElementById("car-fixed-amount")?.value) || 0;
+          if (!name && !amount) return;
+          const items = loadCarFixedItems();
+          items.push({
+            id: "cf-" + Date.now(),
+            name: name || "Sin nombre",
+            amount,
+          });
+          saveCarFixedItems(items);
+          if (document.getElementById("car-fixed-name"))
+            document.getElementById("car-fixed-name").value = "";
+          if (document.getElementById("car-fixed-amount"))
+            document.getElementById("car-fixed-amount").value = "";
+          renderCarCostSummary();
+        });
+
       const renderCalendar = () => {
         const monthValue =
           monthFilterInput.value || today.toISOString().slice(0, 7);
@@ -4870,74 +5391,85 @@
         const [y, m, d] = date.split("-");
         const dateObj = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
         const dateLabel = dateObj.toLocaleDateString("es-AR", {
+          weekday: "long",
           day: "numeric",
           month: "long",
         });
-        dayDetailTitle.textContent = "Detalle del día " + dateLabel;
+        dayDetailTitle.textContent =
+          dateLabel.charAt(0).toUpperCase() + dateLabel.slice(1);
 
         const fmt = formatter();
-        items.sort(
-          (a, b) =>
-            a.date.localeCompare(b.date) ||
-            (a.time || "").localeCompare(b.time || "")
-        );
+        items.sort((a, b) => (a.time || "").localeCompare(b.time || ""));
 
-        const byDate = new Map();
-        items.forEach((e) => {
-          if (!byDate.has(e.date)) byDate.set(e.date, []);
-          byDate.get(e.date).push(e);
-        });
+        const row = (label, value, highlight) =>
+          `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)">
+            <span style="font-size:13px;color:var(--muted)">${label}</span>
+            <strong style="font-size:13px;${
+              highlight ? "color:" + highlight : "color:var(--ink)"
+            }">${value}</strong>
+          </div>`;
 
-        dayDetailList.innerHTML = Array.from(byDate.entries())
-          .map(([date, dayEntries]) => {
-            const rows = dayEntries
-              .map((e) => {
-                const avgGross = e.totalHours > 0 ? e.income / e.totalHours : 0;
-                const avgText = avgGross > 0 ? fmt.format(avgGross) : "—";
-                const editBtns = canEditEntry(e)
-                  ? '<div class="entry-actions">' +
-                    '<button type="button" class="entry-action-btn" data-action="edit" data-id="' +
-                    e.id +
-                    '">Editar</button>' +
-                    '<button type="button" class="entry-action-btn entry-action-delete" data-action="delete" data-id="' +
-                    e.id +
-                    '">Eliminar</button>' +
-                    "</div>"
-                  : "";
-                return (
-                  '<div class="detail-entry-row">' +
-                  '<div class="detail-entry-driver">' +
-                  '<span class="detail-driver-name">' +
-                  getDriverLabel(e.driver) +
-                  "</span>" +
-                  '<span class="detail-driver-net">' +
-                  fmt.format(e.net) +
-                  "</span>" +
-                  "</div>" +
-                  '<div class="detail-entry-stats">' +
-                  "<span>" +
-                  (e.time || "—") +
-                  " hs</span>" +
-                  "<span>" +
-                  fmt.format(e.income) +
-                  " bruto</span>" +
-                  "<span>" +
-                  fmt.format(e.fuel) +
-                  " comb.</span>" +
-                  (e.otherExpenses > 0
-                    ? "<span>" + fmt.format(e.otherExpenses) + " otros</span>"
-                    : "") +
-                  "<span>" +
-                  avgText +
-                  "/h</span>" +
-                  "</div>" +
-                  editBtns +
-                  "</div>"
-                );
-              })
-              .join("");
+        dayDetailList.innerHTML = items
+          .map((e) => {
+            const avgGross = e.totalHours > 0 ? e.income / e.totalHours : 0;
+            const hasSchedule = e.timeStart || e.timeEnd;
+            const hasTolls = e.tolls > 0;
+            const hasParking = e.parking > 0;
+            const hasOther = e.otherExpenses > 0;
 
-            return rows;
+            const scheduleRow = hasSchedule
+              ? row(
+                  "Horario",
+                  [e.timeStart, e.timeEnd].filter(Boolean).join(" → ")
+                )
+              : "";
+            const hoursRow = e.time
+              ? row("Horas trabajadas", e.time + " hs")
+              : "";
+            const avgRow =
+              avgGross > 0
+                ? row(
+                    "Promedio por hora",
+                    fmt.format(Math.round(avgGross)) + "/h"
+                  )
+                : "";
+            const tollsRow = hasTolls ? row("Peajes", fmt.format(e.tolls)) : "";
+            const parkingRow = hasParking
+              ? row("Estacionamiento", fmt.format(e.parking))
+              : "";
+            const otherRow = hasOther
+              ? row("Otros gastos", fmt.format(e.otherExpenses))
+              : "";
+
+            const editBtns = canEditEntry(e)
+              ? `<div class="entry-actions" style="margin-top:12px">
+                <button type="button" class="entry-action-btn" data-action="edit" data-id="${e.id}">Editar</button>
+                <button type="button" class="entry-action-btn entry-action-delete" data-action="delete" data-id="${e.id}">Eliminar</button>
+              </div>`
+              : "";
+
+            return `
+            <div style="background:rgba(0,0,0,0.02);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                <span style="font-size:15px;font-weight:800;color:var(--ink)">${getDriverLabel(
+                  e.driver
+                )}</span>
+                <span style="font-size:18px;font-weight:800;color:var(--accent-2)">${fmt.format(
+                  e.net
+                )}<span style="font-size:11px;font-weight:600;color:var(--muted);margin-left:3px">neto</span></span>
+              </div>
+              <div style="border-top:2px solid var(--line);padding-top:8px">
+                ${row("Ingreso bruto", fmt.format(e.income), "var(--accent)")}
+                ${row("Combustible", fmt.format(e.fuel || 0))}
+                ${tollsRow}
+                ${parkingRow}
+                ${otherRow}
+                ${scheduleRow}
+                ${hoursRow}
+                ${avgRow}
+              </div>
+              ${editBtns}
+            </div>`;
           })
           .join("");
 
@@ -4963,6 +5495,7 @@
       const renderHistoryView = () => {
         renderCalendar();
         renderMonthlySummary();
+        renderMonthProjection();
         renderDayDetails(selectedDate);
         updateReminderBanner();
         updateWeeklySummary();
@@ -5144,6 +5677,7 @@
           setHistory(items);
           renderHistoryView();
         }
+        triggerHaptic();
         closeQuickEdit();
       };
 
@@ -5189,6 +5723,12 @@
         renderHistoryView();
       };
 
+      const triggerHaptic = () => {
+        if (navigator.vibrate) {
+          navigator.vibrate([30, 50, 80]);
+        }
+      };
+
       const saveEntry = async () => {
         const {
           income,
@@ -5229,6 +5769,37 @@
             ? "Tu correo no está asociado a un conductor."
             : "Seleccioná un conductor o iniciá sesión para asignarlo.";
           return;
+        }
+
+        // ── Advertencia jornada duplicada ──
+        if (existing) {
+          const fmt = formatter();
+          const msgEl = document.getElementById("duplicate-day-msg");
+          if (msgEl) {
+            const label = getDriverLabel(driver);
+            const existing_income = fmt.format(existing.income || 0);
+            msgEl.innerHTML = `<strong style="color:var(--ink)">${label}</strong> ya tiene un registro el <strong style="color:var(--ink)">${date}</strong> con ${existing_income} de ingreso.`;
+          }
+          const confirmed = await new Promise((resolve) => {
+            const overlay = document.getElementById("duplicate-day-overlay");
+            const confirmBtn = document.getElementById("duplicate-day-confirm");
+            const cancelBtn = document.getElementById("duplicate-day-cancel");
+            const closeBtn = document.getElementById("duplicate-day-close");
+            overlay?.classList.remove("hidden");
+            const cleanup = (result) => {
+              overlay?.classList.add("hidden");
+              confirmBtn?.removeEventListener("click", onConfirm);
+              cancelBtn?.removeEventListener("click", onCancel);
+              closeBtn?.removeEventListener("click", onCancel);
+              resolve(result);
+            };
+            const onConfirm = () => cleanup(true);
+            const onCancel = () => cleanup(false);
+            confirmBtn?.addEventListener("click", onConfirm);
+            cancelBtn?.addEventListener("click", onCancel);
+            closeBtn?.addEventListener("click", onCancel);
+          });
+          if (!confirmed) return;
         }
 
         let entry = {
@@ -5297,6 +5868,7 @@
               : merged
               ? "Registro del día actualizado."
               : "Registro guardado.";
+            triggerHaptic();
             resetEditState(successMessage);
             clearForm();
             return;
@@ -5319,6 +5891,7 @@
           : merged
           ? "Registro del día actualizado."
           : "Registro guardado.";
+        triggerHaptic();
         resetEditState(successMessage);
         clearForm();
       };
@@ -6051,6 +6624,7 @@
       };
 
       const renderRepairs = () => {
+        renderCarCostSummary();
         const repairs = loadRepairs();
         const list = document.getElementById("repairs-list");
         const empty = document.getElementById("repairs-empty");
