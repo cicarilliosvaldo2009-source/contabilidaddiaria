@@ -2525,20 +2525,37 @@
 
       <section id="view-main" class="view">
         <div class="view-grid">
-          <div class="reminder-alert hidden" id="reminder-card" role="alert">
-            <div class="reminder-alert-body">
-              <strong>Hoy todavía no hay carga</strong>
-              <p class="note" id="reminder-text" style="margin: 2px 0 0">
-                Registrá tu jornada para llevar el control al día.
-              </p>
-            </div>
-            <button
-              class="reminder-alert-close"
-              id="reminder-close"
-              aria-label="Cerrar alerta"
+          <div
+            class="hidden"
+            id="reminder-card"
+            role="status"
+            style="
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              padding: 9px 14px;
+              border-radius: 10px;
+              background: rgba(227, 109, 47, 0.07);
+              border: 1px solid rgba(227, 109, 47, 0.18);
+            "
+          >
+            <span
+              style="
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                background: var(--accent);
+                flex-shrink: 0;
+                display: inline-block;
+              "
+            ></span>
+            <p
+              class="note"
+              id="reminder-text"
+              style="margin: 0; font-size: 13px; color: var(--muted)"
             >
-              ✕
-            </button>
+              Hoy todavía no hay carga.
+            </p>
           </div>
 
           <section class="card card-form">
@@ -3776,8 +3793,7 @@
       const historyStatus = document.getElementById("history-status");
       const reminderCard = document.getElementById("reminder-card");
       const reminderText = document.getElementById("reminder-text");
-      const reminderCloseButton = document.getElementById("reminder-close");
-      let reminderDismissed = false;
+      let reminderDismissed = false; // kept for legacy compat
 
       const calcButton = document.getElementById("calc-btn");
       const saveButton = document.getElementById("save-btn");
@@ -4690,9 +4706,7 @@
       };
 
       const updateReminderBanner = () => {
-        if (!reminderCard) {
-          return;
-        }
+        if (!reminderCard) return;
         const driver = isAutoDriverActive()
           ? currentDriverId
           : driverInput
@@ -4704,14 +4718,10 @@
             entry.date === todayString && (!driver || entry.driver === driver)
         );
         if (hasToday) {
-          reminderCard.classList.add("hidden");
-          reminderDismissed = false;
+          reminderCard.style.display = "none";
           return;
         }
-        if (reminderDismissed) {
-          return;
-        }
-        reminderCard.classList.remove("hidden");
+        reminderCard.style.display = "flex";
         if (reminderText) {
           reminderText.textContent = driver
             ? "Hoy todavía no hay datos para " + getDriverLabel(driver) + "."
@@ -4829,6 +4839,7 @@
         ...entry,
         id: entry.id ? String(entry.id) : createId(),
         driver: entry.driver || "martin",
+        vehicle: entry.vehicle || null, // preparado para múltiples vehículos
         income: Number(entry.income) || 0,
         fuel: Number(entry.fuel) || 0,
         tolls: Number(entry.tolls) || 0,
@@ -4855,6 +4866,7 @@
           avgNet: row.avg_net,
           totalHours: row.total_hours,
           driver: row.driver,
+          vehicle: row.vehicle || null,
         });
 
       const toDbEntry = (entry, userId) => ({
@@ -4873,6 +4885,7 @@
         avg_net: entry.avgNet,
         total_hours: entry.totalHours,
         driver: entry.driver,
+        vehicle: entry.vehicle || null,
       });
 
       const setHistory = (items) => {
@@ -6389,13 +6402,6 @@
       }
       if (goalWeeklyInput) {
         goalWeeklyInput.addEventListener("input", handleGoalsChange);
-      }
-
-      if (reminderCloseButton) {
-        reminderCloseButton.addEventListener("click", () => {
-          reminderDismissed = true;
-          reminderCard.classList.add("hidden");
-        });
       }
 
       const dayDetailCloseBtn = document.getElementById("day-detail-close");
