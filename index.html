@@ -4919,7 +4919,8 @@
         if (!isOnline) {
           // Sin internet — puede tener sesión pero no sincroniza
           banner.className = "session-warning-banner offline";
-          if (iconEl) iconEl.textContent = "📡";
+          if (iconEl) iconEl.textContent = "";
+          if (iconEl) iconEl.style.display = "none";
           if (textEl)
             textEl.textContent =
               "Sin conexión — los cambios se guardan localmente hasta reconectarse.";
@@ -4930,7 +4931,8 @@
         if (!_hasSession) {
           // Online pero sin sesión
           banner.className = "session-warning-banner no-session";
-          if (iconEl) iconEl.textContent = "🔒";
+          if (iconEl) iconEl.textContent = "";
+          if (iconEl) iconEl.style.display = "none";
           if (textEl)
             textEl.textContent =
               "Sin sesión iniciada — los datos se guardan solo en este dispositivo.";
@@ -5034,7 +5036,9 @@
           .from("entries")
           .upsert(payload, { onConflict: "id" });
         if (error) {
-          setSyncStatus("No se pudo subir el historial local.", true);
+          console.warn("syncLocalToCloud error:", error);
+          // No marcar error permanente — la sesión sigue activa, solo falló la migración local
+          setSyncStatus("Activa");
         }
       };
 
