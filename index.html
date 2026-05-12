@@ -4989,6 +4989,8 @@
       };
 
       const updateSyncUI = (session) => {
+        _hasSession = !!session;
+        updateStatusBanner();
         if (!supabaseClient) {
           setSyncStatus("Sin configurar");
           if (syncForm) syncForm.classList.remove("hidden");
@@ -7027,6 +7029,7 @@
 
       // Render on load
       renderRepairs();
+      updateStatusBanner();
     </script>
   </body>
 </html>
