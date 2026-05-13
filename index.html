@@ -3152,54 +3152,123 @@
               Costo mensual del auto
             </h2>
 
-            <!-- Gastos fijos: lista siempre visible, edición colapsable -->
+            <!-- Gastos fijos: desplegable, orden mayor a menor -->
             <div style="margin-bottom: 14px">
-              <div
+              <!-- Cabecera: click abre/cierra la lista -->
+              <button
+                type="button"
+                id="car-fixed-list-toggle"
                 style="
+                  width: 100%;
                   display: flex;
                   align-items: center;
                   justify-content: space-between;
-                  margin-bottom: 10px;
+                  background: transparent;
+                  border: none;
+                  padding: 0;
+                  margin-bottom: 0;
+                  cursor: pointer;
+                "
+              >
+                <div style="display: flex; align-items: center; gap: 6px">
+                  <span
+                    style="
+                      font-size: 12px;
+                      font-weight: 700;
+                      color: var(--muted);
+                      text-transform: uppercase;
+                      letter-spacing: 0.04em;
+                    "
+                    >Gastos fijos mensuales</span
+                  >
+                  <span
+                    id="car-fixed-count-badge"
+                    style="
+                      font-size: 11px;
+                      font-weight: 700;
+                      color: var(--accent-2);
+                      background: rgba(11, 79, 72, 0.09);
+                      border-radius: 999px;
+                      padding: 1px 8px;
+                      display: none;
+                    "
+                  ></span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px">
+                  <span
+                    id="car-fixed-total-inline"
+                    style="
+                      font-size: 13px;
+                      font-weight: 700;
+                      color: #b23b3b;
+                      display: none;
+                    "
+                  ></span>
+                  <svg
+                    id="car-fixed-chevron"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    style="
+                      color: var(--muted);
+                      transition: transform 0.25s ease;
+                      flex-shrink: 0;
+                    "
+                  >
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </div>
+              </button>
+
+              <!-- Lista colapsable -->
+              <div
+                id="car-fixed-list-wrap"
+                style="
+                  overflow: hidden;
+                  max-height: 0;
+                  transition: max-height 0.3s ease, margin-top 0.2s ease;
+                  margin-top: 0;
                 "
               >
                 <div
                   style="
-                    font-size: 12px;
-                    font-weight: 700;
-                    color: var(--muted);
-                    text-transform: uppercase;
-                    letter-spacing: 0.04em;
+                    padding-top: 10px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0;
                   "
                 >
-                  Gastos fijos mensuales
+                  <div
+                    id="car-fixed-list"
+                    style="display: flex; flex-direction: column; gap: 0"
+                  ></div>
+                  <button
+                    type="button"
+                    id="car-fixed-toggle-btn"
+                    style="
+                      margin-top: 8px;
+                      background: transparent;
+                      border: 1px dashed var(--line);
+                      border-radius: 8px;
+                      padding: 7px 12px;
+                      font-size: 12px;
+                      font-weight: 700;
+                      color: var(--muted);
+                      cursor: pointer;
+                      width: 100%;
+                      text-align: center;
+                      transition: background 0.15s, color 0.15s;
+                    "
+                  >
+                    + Editar gastos fijos
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  id="car-fixed-toggle-btn"
-                  style="
-                    background: transparent;
-                    border: 1px solid var(--line);
-                    border-radius: 8px;
-                    padding: 4px 12px;
-                    font-size: 12px;
-                    font-weight: 700;
-                    color: var(--muted);
-                    cursor: pointer;
-                    transition: background 0.15s, color 0.15s;
-                  "
-                >
-                  Editar
-                </button>
               </div>
-              <div
-                id="car-fixed-list"
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  gap: 8px;
-                  margin-bottom: 4px;
-                "
-              ></div>
               <!-- Panel de edición: oculto por defecto -->
               <div
                 id="car-fixed-editor"
@@ -5248,37 +5317,68 @@
         localStorage.setItem(carCostKey, JSON.stringify(items));
 
       const renderCarFixedList = () => {
-        const items = loadCarFixedItems();
+        const allItems = loadCarFixedItems();
+        // Ordenar de mayor a menor importe
+        const items = [...allItems].sort(
+          (a, b) => (b.amount || 0) - (a.amount || 0)
+        );
         const container = document.getElementById("car-fixed-list");
-        if (!container) return;
+        const wrap = document.getElementById("car-fixed-list-wrap");
+        const chevron = document.getElementById("car-fixed-chevron");
+        const badge = document.getElementById("car-fixed-count-badge");
+        const totalInline = document.getElementById("car-fixed-total-inline");
         const fmt = formatter();
         const isEditing = !document
           .getElementById("car-fixed-editor")
           ?.classList.contains("hidden");
+
+        // Badge con cantidad
+        if (badge) {
+          if (items.length > 0) {
+            badge.textContent = items.length;
+            badge.style.display = "";
+          } else {
+            badge.style.display = "none";
+          }
+        }
+
+        // Total inline en la cabecera (visible cuando está cerrado)
+        const fixedTotal = items.reduce((a, i) => a + (i.amount || 0), 0);
+        if (totalInline) {
+          totalInline.textContent =
+            fixedTotal > 0 ? fmt.format(fixedTotal) : "";
+          totalInline.style.display = fixedTotal > 0 ? "" : "none";
+        }
+
+        if (!container) return;
         if (!items.length) {
           container.innerHTML =
-            '<p class="note" style="margin:0; font-size:13px">Sin gastos fijos cargados.</p>';
+            '<p class="note" style="margin:4px 0 0; font-size:13px">Sin gastos fijos cargados.</p>';
           return;
         }
+
         container.innerHTML = items
-          .map(
-            (item) => `
-          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; background:rgba(0,0,0,0.02); border:1px solid var(--line); border-radius:10px; padding:10px 12px">
-            <span style="font-size:14px; font-weight:600; color:var(--ink); flex:1">${
+          .map((item, i) => {
+            const isLast = i === items.length - 1;
+            return `<div style="display:flex; align-items:center; justify-content:space-between; gap:10px;
+            padding:9px 4px;
+            border-bottom:${isLast ? "none" : "1px solid var(--line)"};
+            ">
+            <span style="font-size:14px; font-weight:600; color:var(--ink); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">${
               item.name
             }</span>
-            <span style="font-size:14px; font-weight:700; color:#b23b3b; white-space:nowrap">${fmt.format(
+            <span style="font-size:14px; font-weight:700; color:#b23b3b; white-space:nowrap; flex-shrink:0">${fmt.format(
               item.amount
             )}</span>
             ${
               isEditing
                 ? `<button type="button" data-id="${item.id}" data-action="delete-fixed"
-              style="background:transparent; border:none; color:var(--muted); cursor:pointer; font-size:18px; line-height:1; padding:0 2px; flex-shrink:0"
+              style="background:transparent; border:none; color:var(--muted); cursor:pointer; font-size:18px; line-height:1; padding:0 4px; flex-shrink:0"
               title="Eliminar">×</button>`
                 : ""
             }
-          </div>`
-          )
+          </div>`;
+          })
           .join("");
 
         container
@@ -5330,6 +5430,47 @@
         setEl("car-total-month", grandTotal);
       };
 
+      // Toggle desplegable de la lista
+      (() => {
+        let listOpen = false;
+        const listToggleBtn = document.getElementById("car-fixed-list-toggle");
+        const listWrap = document.getElementById("car-fixed-list-wrap");
+        const chevron = document.getElementById("car-fixed-chevron");
+        const totalInline = document.getElementById("car-fixed-total-inline");
+
+        const openList = () => {
+          listOpen = true;
+          if (listWrap)
+            listWrap.style.maxHeight = listWrap.scrollHeight + 200 + "px";
+          if (listWrap) listWrap.style.marginTop = "10px";
+          if (chevron) chevron.style.transform = "rotate(180deg)";
+          if (totalInline) totalInline.style.display = "none";
+        };
+        const closeList = () => {
+          listOpen = false;
+          if (listWrap) listWrap.style.maxHeight = "0";
+          if (listWrap) listWrap.style.marginTop = "0";
+          if (chevron) chevron.style.transform = "rotate(0deg)";
+          // Mostrar total inline solo si hay items
+          renderCarFixedList(); // refresca total inline
+        };
+
+        if (listToggleBtn) {
+          listToggleBtn.addEventListener("click", () => {
+            if (listOpen) closeList();
+            else openList();
+          });
+        }
+
+        // Guardar referencia para que renderCarFixedList pueda re-calcular maxHeight
+        window._carFixedListOpen = () => listOpen;
+        window._carFixedListReopen = () => {
+          if (listOpen && listWrap)
+            listWrap.style.maxHeight = listWrap.scrollHeight + 200 + "px";
+        };
+      })();
+
+      // Toggle editar (dentro del desplegable)
       document
         .getElementById("car-fixed-toggle-btn")
         ?.addEventListener("click", () => {
@@ -5338,8 +5479,13 @@
           if (!editor) return;
           const opening = editor.classList.contains("hidden");
           editor.classList.toggle("hidden", !opening);
-          if (btn) btn.textContent = opening ? "Listo" : "Editar";
+          if (btn)
+            btn.textContent = opening ? "✓ Listo" : "+ Editar gastos fijos";
           renderCarFixedList();
+          // Re-expandir el wrap por si el editor cambió la altura
+          setTimeout(() => {
+            if (window._carFixedListReopen) window._carFixedListReopen();
+          }, 50);
           if (opening) document.getElementById("car-fixed-name")?.focus();
         });
 
@@ -5362,6 +5508,9 @@
           if (document.getElementById("car-fixed-amount"))
             document.getElementById("car-fixed-amount").value = "";
           renderCarCostSummary();
+          setTimeout(() => {
+            if (window._carFixedListReopen) window._carFixedListReopen();
+          }, 50);
         });
 
       const renderCalendar = () => {
