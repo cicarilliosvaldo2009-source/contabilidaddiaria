@@ -3152,186 +3152,7 @@
               Costo mensual del auto
             </h2>
 
-            <!-- Gastos fijos: desplegable, orden mayor a menor -->
-            <div style="margin-bottom: 14px">
-              <!-- Cabecera: click abre/cierra la lista -->
-              <button
-                type="button"
-                id="car-fixed-list-toggle"
-                style="
-                  width: 100%;
-                  display: flex;
-                  align-items: center;
-                  justify-content: space-between;
-                  background: transparent;
-                  border: none;
-                  padding: 0;
-                  margin-bottom: 0;
-                  cursor: pointer;
-                "
-              >
-                <div style="display: flex; align-items: center; gap: 6px">
-                  <span
-                    style="
-                      font-size: 12px;
-                      font-weight: 700;
-                      color: var(--muted);
-                      text-transform: uppercase;
-                      letter-spacing: 0.04em;
-                    "
-                    >Gastos fijos mensuales</span
-                  >
-                  <span
-                    id="car-fixed-count-badge"
-                    style="
-                      font-size: 11px;
-                      font-weight: 700;
-                      color: var(--accent-2);
-                      background: rgba(11, 79, 72, 0.09);
-                      border-radius: 999px;
-                      padding: 1px 8px;
-                      display: none;
-                    "
-                  ></span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 8px">
-                  <span
-                    id="car-fixed-total-inline"
-                    style="
-                      font-size: 13px;
-                      font-weight: 700;
-                      color: #b23b3b;
-                      display: none;
-                    "
-                  ></span>
-                  <svg
-                    id="car-fixed-chevron"
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    style="
-                      color: var(--muted);
-                      transition: transform 0.25s ease;
-                      flex-shrink: 0;
-                    "
-                  >
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
-                </div>
-              </button>
-
-              <!-- Lista colapsable -->
-              <div
-                id="car-fixed-list-wrap"
-                style="
-                  overflow: hidden;
-                  max-height: 0;
-                  transition: max-height 0.3s ease, margin-top 0.2s ease;
-                  margin-top: 0;
-                "
-              >
-                <div
-                  style="
-                    padding-top: 10px;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 0;
-                  "
-                >
-                  <div
-                    id="car-fixed-list"
-                    style="display: flex; flex-direction: column; gap: 0"
-                  ></div>
-                  <button
-                    type="button"
-                    id="car-fixed-toggle-btn"
-                    style="
-                      margin-top: 8px;
-                      background: transparent;
-                      border: 1px dashed var(--line);
-                      border-radius: 8px;
-                      padding: 7px 12px;
-                      font-size: 12px;
-                      font-weight: 700;
-                      color: var(--muted);
-                      cursor: pointer;
-                      width: 100%;
-                      text-align: center;
-                      transition: background 0.15s, color 0.15s;
-                    "
-                  >
-                    + Editar gastos fijos
-                  </button>
-                </div>
-              </div>
-              <!-- Panel de edición: oculto por defecto -->
-              <div
-                id="car-fixed-editor"
-                class="hidden"
-                style="
-                  margin-top: 12px;
-                  border-top: 1px dashed var(--line);
-                  padding-top: 12px;
-                "
-              >
-                <div
-                  id="car-fixed-form-wrap"
-                  style="
-                    display: flex;
-                    gap: 8px;
-                    flex-wrap: wrap;
-                    margin-bottom: 8px;
-                  "
-                >
-                  <div style="flex: 2; min-width: 140px">
-                    <label style="margin-bottom: 3px">Concepto</label>
-                    <input
-                      type="text"
-                      id="car-fixed-name"
-                      placeholder="Ej: Seguro"
-                      style="font-size: 14px; padding: 9px 12px"
-                    />
-                  </div>
-                  <div style="flex: 1; min-width: 110px">
-                    <label style="margin-bottom: 3px">Monto mensual ($)</label>
-                    <input
-                      type="number"
-                      id="car-fixed-amount"
-                      min="0"
-                      step="100"
-                      placeholder="Ej: 30000"
-                      style="font-size: 14px; padding: 9px 12px"
-                    />
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      gap: 8px;
-                      width: 100%;
-                      margin-top: 4px;
-                    "
-                  >
-                    <button
-                      type="button"
-                      class="secondary"
-                      id="car-fixed-save-btn"
-                      style="flex: 1; padding: 9px; font-size: 13px"
-                    >
-                      + Agregar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div
-              style="height: 1px; background: var(--line); margin-bottom: 14px"
-            ></div>
+            <!-- Sin bloque superior; la lista se despliega desde "Mes corriente" -->
 
             <!-- Totales del mes -->
             <div
@@ -3347,9 +3168,187 @@
               Mes corriente
             </div>
             <div class="results">
-              <div class="result-row">
-                <span>Gastos fijos</span>
-                <strong id="car-fixed-total" style="color: #b23b3b">—</strong>
+              <!-- Fila "Gastos fijos" clickeable → despliega detalle -->
+              <div
+                id="car-fixed-list-toggle"
+                role="button"
+                tabindex="0"
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  border-radius: 10px;
+                  background: rgba(0, 0, 0, 0.025);
+                  overflow: hidden;
+                  cursor: pointer;
+                  transition: background 0.15s;
+                "
+                onmouseenter="this.style.background='rgba(0,0,0,0.045)'"
+                onmouseleave="this.style.background='rgba(0,0,0,0.025)'"
+              >
+                <!-- Cabecera de la fila -->
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 11px 14px;
+                    gap: 8px;
+                  "
+                >
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      gap: 7px;
+                      min-width: 0;
+                    "
+                  >
+                    <span style="font-size: 14px">Gastos fijos</span>
+                    <span
+                      id="car-fixed-count-badge"
+                      style="
+                        font-size: 11px;
+                        font-weight: 700;
+                        color: var(--accent-2);
+                        background: rgba(11, 79, 72, 0.09);
+                        border-radius: 999px;
+                        padding: 1px 7px;
+                        display: none;
+                        flex-shrink: 0;
+                      "
+                    ></span>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      gap: 8px;
+                      flex-shrink: 0;
+                    "
+                  >
+                    <strong
+                      id="car-fixed-total"
+                      style="color: #b23b3b; font-size: 15px"
+                      >—</strong
+                    >
+                    <svg
+                      id="car-fixed-chevron"
+                      width="13"
+                      height="13"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#b23b3b"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      style="
+                        transition: transform 0.25s ease;
+                        flex-shrink: 0;
+                        opacity: 0.6;
+                      "
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </div>
+                </div>
+
+                <!-- Panel colapsable: lista + editor -->
+                <div
+                  id="car-fixed-list-wrap"
+                  style="
+                    overflow: hidden;
+                    max-height: 0;
+                    transition: max-height 0.35s ease;
+                  "
+                >
+                  <div
+                    style="
+                      border-top: 1px solid var(--line);
+                      padding: 8px 14px 4px;
+                    "
+                  >
+                    <!-- Lista de ítems ordenada mayor→menor -->
+                    <div
+                      id="car-fixed-list"
+                      style="display: flex; flex-direction: column"
+                    ></div>
+
+                    <!-- Botón editar -->
+                    <button
+                      type="button"
+                      id="car-fixed-toggle-btn"
+                      style="
+                        margin: 8px 0 6px;
+                        background: transparent;
+                        border: 1px dashed var(--line);
+                        border-radius: 8px;
+                        padding: 6px 12px;
+                        font-size: 12px;
+                        font-weight: 700;
+                        color: var(--muted);
+                        cursor: pointer;
+                        width: 100%;
+                        text-align: center;
+                        transition: background 0.15s, color 0.15s;
+                      "
+                    >
+                      + Editar gastos fijos
+                    </button>
+
+                    <!-- Panel agregar/eliminar (oculto por defecto) -->
+                    <div
+                      id="car-fixed-editor"
+                      class="hidden"
+                      style="
+                        border-top: 1px dashed var(--line);
+                        padding-top: 10px;
+                        margin-top: 4px;
+                      "
+                    >
+                      <div
+                        style="
+                          display: flex;
+                          gap: 8px;
+                          flex-wrap: wrap;
+                          margin-bottom: 8px;
+                        "
+                      >
+                        <div style="flex: 2; min-width: 140px">
+                          <label style="margin-bottom: 3px">Concepto</label>
+                          <input
+                            type="text"
+                            id="car-fixed-name"
+                            placeholder="Ej: Seguro"
+                            style="font-size: 14px; padding: 9px 12px"
+                          />
+                        </div>
+                        <div style="flex: 1; min-width: 110px">
+                          <label style="margin-bottom: 3px"
+                            >Monto mensual ($)</label
+                          >
+                          <input
+                            type="number"
+                            id="car-fixed-amount"
+                            min="0"
+                            step="100"
+                            placeholder="Ej: 30000"
+                            style="font-size: 14px; padding: 9px 12px"
+                          />
+                        </div>
+                        <div style="width: 100%; margin-top: 4px">
+                          <button
+                            type="button"
+                            class="secondary"
+                            id="car-fixed-save-btn"
+                            style="width: 100%; padding: 9px; font-size: 13px"
+                          >
+                            + Agregar
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div class="result-row">
                 <span>Combustible (mes)</span>
@@ -5323,51 +5322,37 @@
           (a, b) => (b.amount || 0) - (a.amount || 0)
         );
         const container = document.getElementById("car-fixed-list");
-        const wrap = document.getElementById("car-fixed-list-wrap");
-        const chevron = document.getElementById("car-fixed-chevron");
         const badge = document.getElementById("car-fixed-count-badge");
-        const totalInline = document.getElementById("car-fixed-total-inline");
         const fmt = formatter();
         const isEditing = !document
           .getElementById("car-fixed-editor")
           ?.classList.contains("hidden");
 
-        // Badge con cantidad
+        // Badge con cantidad en la cabecera de la fila
         if (badge) {
-          if (items.length > 0) {
-            badge.textContent = items.length;
-            badge.style.display = "";
-          } else {
-            badge.style.display = "none";
-          }
-        }
-
-        // Total inline en la cabecera (visible cuando está cerrado)
-        const fixedTotal = items.reduce((a, i) => a + (i.amount || 0), 0);
-        if (totalInline) {
-          totalInline.textContent =
-            fixedTotal > 0 ? fmt.format(fixedTotal) : "";
-          totalInline.style.display = fixedTotal > 0 ? "" : "none";
+          badge.textContent = items.length > 0 ? items.length : "";
+          badge.style.display = items.length > 0 ? "" : "none";
         }
 
         if (!container) return;
         if (!items.length) {
           container.innerHTML =
-            '<p class="note" style="margin:4px 0 0; font-size:13px">Sin gastos fijos cargados.</p>';
+            '<p class="note" style="margin:4px 0 6px; font-size:13px">Sin gastos fijos cargados.</p>';
           return;
         }
 
         container.innerHTML = items
           .map((item, i) => {
             const isLast = i === items.length - 1;
-            return `<div style="display:flex; align-items:center; justify-content:space-between; gap:10px;
-            padding:9px 4px;
+            return `<div style="
+            display:flex; align-items:center; justify-content:space-between; gap:10px;
+            padding:8px 0;
             border-bottom:${isLast ? "none" : "1px solid var(--line)"};
-            ">
-            <span style="font-size:14px; font-weight:600; color:var(--ink); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">${
+          ">
+            <span style="font-size:13px; font-weight:600; color:var(--ink); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">${
               item.name
             }</span>
-            <span style="font-size:14px; font-weight:700; color:#b23b3b; white-space:nowrap; flex-shrink:0">${fmt.format(
+            <span style="font-size:13px; font-weight:700; color:#b23b3b; white-space:nowrap; flex-shrink:0">${fmt.format(
               item.amount
             )}</span>
             ${
@@ -5384,10 +5369,14 @@
         container
           .querySelectorAll("[data-action='delete-fixed']")
           .forEach((btn) => {
-            btn.addEventListener("click", () => {
+            btn.addEventListener("click", (e) => {
+              e.stopPropagation(); // no cerrar el desplegable padre
               const id = btn.getAttribute("data-id");
               saveCarFixedItems(loadCarFixedItems().filter((i) => i.id !== id));
               renderCarCostSummary();
+              setTimeout(() => {
+                if (window._carFixedListReopen) window._carFixedListReopen();
+              }, 50);
             });
           });
       };
@@ -5430,50 +5419,62 @@
         setEl("car-total-month", grandTotal);
       };
 
-      // Toggle desplegable de la lista
+      // Toggle desplegable: fila "Gastos fijos" en Mes corriente
       (() => {
         let listOpen = false;
-        const listToggleBtn = document.getElementById("car-fixed-list-toggle");
-        const listWrap = document.getElementById("car-fixed-list-wrap");
-        const chevron = document.getElementById("car-fixed-chevron");
-        const totalInline = document.getElementById("car-fixed-total-inline");
+
+        const getEls = () => ({
+          toggleBtn: document.getElementById("car-fixed-list-toggle"),
+          listWrap: document.getElementById("car-fixed-list-wrap"),
+          chevron: document.getElementById("car-fixed-chevron"),
+        });
 
         const openList = () => {
+          const { listWrap, chevron } = getEls();
           listOpen = true;
           if (listWrap)
-            listWrap.style.maxHeight = listWrap.scrollHeight + 200 + "px";
-          if (listWrap) listWrap.style.marginTop = "10px";
+            listWrap.style.maxHeight = listWrap.scrollHeight + 300 + "px";
           if (chevron) chevron.style.transform = "rotate(180deg)";
-          if (totalInline) totalInline.style.display = "none";
-        };
-        const closeList = () => {
-          listOpen = false;
-          if (listWrap) listWrap.style.maxHeight = "0";
-          if (listWrap) listWrap.style.marginTop = "0";
-          if (chevron) chevron.style.transform = "rotate(0deg)";
-          // Mostrar total inline solo si hay items
-          renderCarFixedList(); // refresca total inline
         };
 
-        if (listToggleBtn) {
-          listToggleBtn.addEventListener("click", () => {
+        const closeList = () => {
+          const { listWrap, chevron } = getEls();
+          listOpen = false;
+          if (listWrap) listWrap.style.maxHeight = "0";
+          if (chevron) chevron.style.transform = "rotate(0deg)";
+        };
+
+        const { toggleBtn } = getEls();
+        if (toggleBtn) {
+          toggleBtn.addEventListener("click", () => {
             if (listOpen) closeList();
             else openList();
           });
+          // Accesibilidad teclado
+          toggleBtn.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              if (listOpen) closeList();
+              else openList();
+            }
+          });
         }
 
-        // Guardar referencia para que renderCarFixedList pueda re-calcular maxHeight
         window._carFixedListOpen = () => listOpen;
         window._carFixedListReopen = () => {
-          if (listOpen && listWrap)
-            listWrap.style.maxHeight = listWrap.scrollHeight + 200 + "px";
+          if (listOpen) {
+            const { listWrap } = getEls();
+            if (listWrap)
+              listWrap.style.maxHeight = listWrap.scrollHeight + 300 + "px";
+          }
         };
       })();
 
-      // Toggle editar (dentro del desplegable)
+      // Toggle editar (botón dentro del desplegable)
       document
         .getElementById("car-fixed-toggle-btn")
-        ?.addEventListener("click", () => {
+        ?.addEventListener("click", (e) => {
+          e.stopPropagation(); // no cerrar el desplegable padre
           const editor = document.getElementById("car-fixed-editor");
           const btn = document.getElementById("car-fixed-toggle-btn");
           if (!editor) return;
@@ -5482,7 +5483,6 @@
           if (btn)
             btn.textContent = opening ? "✓ Listo" : "+ Editar gastos fijos";
           renderCarFixedList();
-          // Re-expandir el wrap por si el editor cambió la altura
           setTimeout(() => {
             if (window._carFixedListReopen) window._carFixedListReopen();
           }, 50);
@@ -5491,7 +5491,8 @@
 
       document
         .getElementById("car-fixed-save-btn")
-        ?.addEventListener("click", () => {
+        ?.addEventListener("click", (e) => {
+          e.stopPropagation();
           const name = document.getElementById("car-fixed-name")?.value.trim();
           const amount =
             parseFloat(document.getElementById("car-fixed-amount")?.value) || 0;
@@ -6917,10 +6918,10 @@
       document
         .getElementById("repair-detail-edit")
         .addEventListener("click", () => {
-          if (activeRepairId) {
-            closeRepairDetail();
-            repairModalOpen(activeRepairId);
-          }
+          if (!activeRepairId) return;
+          const idToEdit = activeRepairId; // guardar antes de que closeRepairDetail lo nullifique
+          closeRepairDetail();
+          repairModalOpen(idToEdit);
         });
       document
         .getElementById("repair-detail-delete")
