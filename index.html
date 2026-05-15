@@ -6042,14 +6042,21 @@
         const merged = false;
 
         if (syncMode === "cloud" && supabaseClient && currentUserId) {
+          console.log(
+            "[save] trying cloud upsert, entry:",
+            entry.id,
+            entry.date,
+            entry.driver,
+            entry.income
+          );
           const { error } = await supabaseClient
             .from("entries")
             .upsert(toDbEntry(entry, currentUserId), { onConflict: "id" });
 
           if (error) {
-            console.warn("Cloud save failed, falling back to local:", error);
-            // No cambiamos syncMode — el próximo guardado reintentará la nube
+            console.warn("[save] cloud failed:", error.message, error.code);
           } else {
+            console.log("[save] cloud ok, refreshing");
             selectedDate = null;
             await refreshHistory();
             const successMessage = wasEditing
@@ -6062,14 +6069,18 @@
           }
         }
 
+        console.log("[save] saving local, syncMode:", syncMode);
+        console.log("[save] items before:", items.length);
         const index = items.findIndex(
           (item) => String(item.id) === String(entry.id)
         );
+        console.log("[save] found existing at index:", index);
         if (index !== -1) {
           items[index] = entry;
         } else {
           items.unshift(entry);
         }
+        console.log("[save] items after:", items.length);
         setHistory(items);
         selectedDate = null;
         renderHistoryView();
