@@ -5091,15 +5091,13 @@
           const { data, error } = await supabaseClient
             .from("entries")
             .select("*")
-            .eq("team_id", TEAM_ID)
             .order("date", { ascending: false })
             .order("time", { ascending: false });
           if (error) {
             console.warn("[refresh] cloud fetch failed:", error.message);
-            // No cambiar syncMode — usar datos locales como fallback temporal
             setHistory(getLocalHistory());
           } else {
-            setHistory(data.map(fromDbEntry));
+            setHistory((data || []).map(fromDbEntry));
           }
         } else {
           setHistory(getLocalHistory());
@@ -5896,7 +5894,6 @@
               const { data, error: fetchErr } = await supabaseClient
                 .from("entries")
                 .select("*")
-                .eq("team_id", TEAM_ID)
                 .order("date", { ascending: false })
                 .order("time", { ascending: false });
               if (!fetchErr && data) {
@@ -6083,11 +6080,9 @@
             if (error) {
               console.warn("[save] cloud sync failed:", error.message);
             } else {
-              // Refrescar desde nube en background para asegurar consistencia
               const { data, error: fetchErr } = await supabaseClient
                 .from("entries")
                 .select("*")
-                .eq("team_id", TEAM_ID)
                 .order("date", { ascending: false })
                 .order("time", { ascending: false });
               if (!fetchErr && data) {
@@ -6178,7 +6173,6 @@
               const { data, error: fetchErr } = await supabaseClient
                 .from("entries")
                 .select("*")
-                .eq("team_id", TEAM_ID)
                 .order("date", { ascending: false })
                 .order("time", { ascending: false });
               if (!fetchErr && data) {
