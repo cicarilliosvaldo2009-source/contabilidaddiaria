@@ -5976,7 +5976,8 @@
           extraCosts === 0 &&
           totalHours === 0
         ) {
-          historyStatus.textContent = "Completá los datos antes de guardar.";
+          if (noteEl)
+            noteEl.textContent = "Completá los datos antes de guardar.";
           return;
         }
 
