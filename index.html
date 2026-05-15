@@ -5095,11 +5095,8 @@
             .order("date", { ascending: false })
             .order("time", { ascending: false });
           if (error) {
-            syncMode = "local";
-            setSyncStatus(
-              "Sincronización con error. Usando datos locales.",
-              true
-            );
+            console.warn("[refresh] cloud fetch failed:", error.message);
+            // No cambiar syncMode — usar datos locales como fallback temporal
             setHistory(getLocalHistory());
           } else {
             setHistory(data.map(fromDbEntry));
@@ -5559,7 +5556,7 @@
 
       const renderDayDetails = (date) => {
         dayDetailList.innerHTML = "";
-        historyStatus.textContent = "";
+        if (historyStatus) historyStatus.textContent = "";
 
         if (!date) return;
 
@@ -5847,7 +5844,7 @@
 
       const saveQuickEdit = async () => {
         if (!quickEditEntryId) return;
-        const items = getHistory();
+        const items = getHistory().slice();
         const idx = items.findIndex(
           (e) => String(e.id) === String(quickEditEntryId)
         );
@@ -5866,7 +5863,7 @@
         const parking = original.parking || 0;
         const otherExpenses = parseFloat(qeOther ? qeOther.value : 0) || 0;
         const net = income - fuel - tolls - parking - otherExpenses;
-        const updated = {
+        const updated = normalizeEntry({
           ...original,
           income,
           fuel,
@@ -5878,24 +5875,39 @@
           timeStart: qeTimeStart ? qeTimeStart.value : "",
           timeEnd: qeTimeEnd ? qeTimeEnd.value : "",
           totalHours,
-        };
-        items[idx] = updated;
+        });
 
-        if (syncMode === "cloud" && supabaseClient && currentUserId) {
-          const { error } = await supabaseClient
-            .from("entries")
-            .upsert(toDbEntry(updated, currentUserId), { onConflict: "id" });
-          if (error) {
-            setSyncStatus("No se pudo guardar en la nube.", true);
-          } else {
-            await refreshHistory();
-          }
-        } else {
-          setHistory(items);
-          renderHistoryView();
-        }
+        // Guardar local primero
+        items[idx] = updated;
+        setHistory(items);
+        renderHistoryView();
         triggerHaptic();
         closeQuickEdit();
+
+        // Sync a nube en background
+        if (syncMode === "cloud" && supabaseClient && currentUserId) {
+          try {
+            const { error } = await supabaseClient
+              .from("entries")
+              .upsert(toDbEntry(updated, currentUserId), { onConflict: "id" });
+            if (error) {
+              console.warn("[quickEdit] cloud sync failed:", error.message);
+            } else {
+              const { data, error: fetchErr } = await supabaseClient
+                .from("entries")
+                .select("*")
+                .eq("team_id", TEAM_ID)
+                .order("date", { ascending: false })
+                .order("time", { ascending: false });
+              if (!fetchErr && data) {
+                setHistory(data.map(fromDbEntry));
+                renderHistoryView();
+              }
+            }
+          } catch (e) {
+            console.warn("[quickEdit] cloud error:", e);
+          }
+        }
       };
 
       document
@@ -5930,7 +5942,7 @@
         saveButton.textContent = "Guardar en historial";
         cancelEditButton.classList.add("hidden");
         if (message) {
-          historyStatus.textContent = message;
+          if (historyStatus) historyStatus.textContent = message;
         }
         updateWeeklySummary();
       };
@@ -5965,11 +5977,8 @@
         const timeEnd = timeEndInput.value || "";
         const driver = getEffectiveDriver();
         const wasEditing = Boolean(editingId);
-        const items = getHistory();
-        const existing =
-          !wasEditing &&
-          items.find((item) => item.date === date && item.driver === driver);
 
+        // Validación
         if (
           income === 0 &&
           fuel === 0 &&
@@ -5980,22 +5989,31 @@
             noteEl.textContent = "Completá los datos antes de guardar.";
           return;
         }
-
         if (!driver) {
-          noteEl.textContent = isAutoDriverActive()
-            ? "Tu correo no está asociado a un conductor."
-            : "Seleccioná un conductor o iniciá sesión para asignarlo.";
+          if (noteEl)
+            noteEl.textContent = isAutoDriverActive()
+              ? "Tu correo no está asociado a un conductor."
+              : "Seleccioná un conductor o iniciá sesión para asignarlo.";
           return;
         }
 
-        // ── Advertencia jornada duplicada ──
+        // Snapshot del historial actual (siempre fresco)
+        const currentItems = getHistory().slice();
+        const existing =
+          !wasEditing &&
+          currentItems.find(
+            (item) => item.date === date && item.driver === driver
+          );
+
+        // Advertencia jornada duplicada
         if (existing) {
           const fmt = formatter();
           const msgEl = document.getElementById("duplicate-day-msg");
           if (msgEl) {
-            const label = getDriverLabel(driver);
             const existing_income = fmt.format(existing.income || 0);
-            msgEl.innerHTML = `<strong style="color:var(--ink)">${label}</strong> ya tiene un registro el <strong style="color:var(--ink)">${date}</strong> con ${existing_income} de ingreso.`;
+            msgEl.innerHTML = `<strong style="color:var(--ink)">${getDriverLabel(
+              driver
+            )}</strong> ya tiene un registro el <strong style="color:var(--ink)">${date}</strong> con ${existing_income} de ingreso.`;
           }
           const confirmed = await new Promise((resolve) => {
             const overlay = document.getElementById("duplicate-day-overlay");
@@ -6019,7 +6037,8 @@
           if (!confirmed) return;
         }
 
-        let entry = {
+        // Construir entrada
+        const entry = normalizeEntry({
           id: editingId || createId(),
           date,
           time,
@@ -6036,60 +6055,50 @@
           totalHours,
           driver,
           vehicle: null,
-        };
+        });
 
-        // Si hay existing y no es edición, guardar como entrada separada (no mergear)
-        const merged = false;
-
-        if (syncMode === "cloud" && supabaseClient && currentUserId) {
-          console.log(
-            "[save] trying cloud upsert, entry:",
-            entry.id,
-            entry.date,
-            entry.driver,
-            entry.income
-          );
-          const { error } = await supabaseClient
-            .from("entries")
-            .upsert(toDbEntry(entry, currentUserId), { onConflict: "id" });
-
-          if (error) {
-            console.warn("[save] cloud failed:", error.message, error.code);
-          } else {
-            console.log("[save] cloud ok, refreshing");
-            selectedDate = null;
-            await refreshHistory();
-            const successMessage = wasEditing
-              ? "Edición guardada."
-              : "Registro guardado.";
-            triggerHaptic();
-            resetEditState(successMessage);
-            clearForm();
-            return;
-          }
-        }
-
-        console.log("[save] saving local, syncMode:", syncMode);
-        console.log("[save] items before:", items.length);
-        const index = items.findIndex(
+        // ── GUARDAR LOCAL PRIMERO (siempre) ──
+        const latestItems = getHistory().slice();
+        const idx = latestItems.findIndex(
           (item) => String(item.id) === String(entry.id)
         );
-        console.log("[save] found existing at index:", index);
-        if (index !== -1) {
-          items[index] = entry;
+        if (idx !== -1) {
+          latestItems[idx] = entry;
         } else {
-          items.unshift(entry);
+          latestItems.unshift(entry);
         }
-        console.log("[save] items after:", items.length);
-        setHistory(items);
+        setHistory(latestItems);
         selectedDate = null;
         renderHistoryView();
-        const successMessage = wasEditing
-          ? "Edición guardada."
-          : "Registro guardado.";
         triggerHaptic();
-        resetEditState(successMessage);
+        resetEditState(wasEditing ? "Edición guardada." : "Registro guardado.");
         clearForm();
+
+        // ── INTENTAR NUBE EN BACKGROUND (no bloquea UI) ──
+        if (syncMode === "cloud" && supabaseClient && currentUserId) {
+          try {
+            const { error } = await supabaseClient
+              .from("entries")
+              .upsert(toDbEntry(entry, currentUserId), { onConflict: "id" });
+            if (error) {
+              console.warn("[save] cloud sync failed:", error.message);
+            } else {
+              // Refrescar desde nube en background para asegurar consistencia
+              const { data, error: fetchErr } = await supabaseClient
+                .from("entries")
+                .select("*")
+                .eq("team_id", TEAM_ID)
+                .order("date", { ascending: false })
+                .order("time", { ascending: false });
+              if (!fetchErr && data) {
+                setHistory(data.map(fromDbEntry));
+                renderHistoryView();
+              }
+            }
+          } catch (e) {
+            console.warn("[save] cloud error:", e);
+          }
+        }
       };
 
       const clearForm = () => {
@@ -6130,8 +6139,9 @@
             .delete()
             .eq("user_id", currentUserId);
           if (error) {
-            historyStatus.textContent =
-              "No se pudo borrar el historial en la nube.";
+            if (historyStatus)
+              historyStatus.textContent =
+                "No se pudo borrar el historial en la nube.";
             return;
           }
           setHistory([]);
@@ -6141,36 +6151,45 @@
         }
         selectedDate = null;
         renderHistoryView();
-        historyStatus.textContent = "Historial borrado.";
+        if (historyStatus) historyStatus.textContent = "Historial borrado.";
       };
 
       const deleteEntry = async (id) => {
-        if (syncMode === "cloud" && supabaseClient && currentUserId) {
-          const { error } = await supabaseClient
-            .from("entries")
-            .delete()
-            .eq("id", id);
-          if (error) {
-            historyStatus.textContent = "No se pudo eliminar en la nube.";
-            return;
-          }
-          await refreshHistory();
-          historyStatus.textContent = "Registro eliminado.";
-          return;
-        }
-
-        const items = getHistory();
+        // Eliminar local primero
+        const items = getHistory().slice();
         const index = items.findIndex((item) => String(item.id) === String(id));
-        if (index === -1) {
-          return;
-        }
+        if (index === -1) return;
         const removed = items.splice(index, 1);
         setHistory(items);
-        if (removed.length && selectedDate === removed[0].date) {
-          selectedDate = removed[0].date;
-        }
+        selectedDate = null;
+        document.getElementById("day-detail-overlay")?.classList.add("hidden");
         renderHistoryView();
-        historyStatus.textContent = "Registro eliminado.";
+
+        // Sync a nube en background
+        if (syncMode === "cloud" && supabaseClient && currentUserId) {
+          try {
+            const { error } = await supabaseClient
+              .from("entries")
+              .delete()
+              .eq("id", id);
+            if (error) {
+              console.warn("[delete] cloud failed:", error.message);
+            } else {
+              const { data, error: fetchErr } = await supabaseClient
+                .from("entries")
+                .select("*")
+                .eq("team_id", TEAM_ID)
+                .order("date", { ascending: false })
+                .order("time", { ascending: false });
+              if (!fetchErr && data) {
+                setHistory(data.map(fromDbEntry));
+                renderHistoryView();
+              }
+            }
+          } catch (e) {
+            console.warn("[delete] cloud error:", e);
+          }
+        }
       };
 
       dayDetailList.addEventListener("click", (event) => {
