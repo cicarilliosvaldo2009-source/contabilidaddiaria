@@ -2524,40 +2524,39 @@
       </div>
 
       <section id="view-main" class="view">
-        <div class="view-grid">
-          <div
-            class="hidden"
-            id="reminder-card"
-            role="status"
+        <div
+          id="reminder-card"
+          role="status"
+          style="
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 14px;
+            border-radius: 10px;
+            background: rgba(227, 109, 47, 0.07);
+            border: 1px solid rgba(227, 109, 47, 0.18);
+            margin-bottom: 4px;
+          "
+        >
+          <span
             style="
-              display: flex;
-              align-items: center;
-              gap: 8px;
-              padding: 9px 14px;
-              border-radius: 10px;
-              background: rgba(227, 109, 47, 0.07);
-              border: 1px solid rgba(227, 109, 47, 0.18);
+              width: 7px;
+              height: 7px;
+              border-radius: 50%;
+              background: var(--accent);
+              flex-shrink: 0;
+              display: inline-block;
             "
+          ></span>
+          <p
+            class="note"
+            id="reminder-text"
+            style="margin: 0; font-size: 13px; color: var(--muted)"
           >
-            <span
-              style="
-                width: 7px;
-                height: 7px;
-                border-radius: 50%;
-                background: var(--accent);
-                flex-shrink: 0;
-                display: inline-block;
-              "
-            ></span>
-            <p
-              class="note"
-              id="reminder-text"
-              style="margin: 0; font-size: 13px; color: var(--muted)"
-            >
-              Hoy todavía no hay carga.
-            </p>
-          </div>
-
+            Hoy todavía no hay carga.
+          </p>
+        </div>
+        <div class="view-grid">
           <section class="card card-form">
             <form id="calc-form">
               <div>
@@ -5562,9 +5561,10 @@
 
         if (!date) return;
 
-        const items = filterByDriver(getHistory()).filter(
-          (entry) => entry.date === date
-        );
+        // Mostramos TODAS las cargas del día, sin filtro de conductor
+        const items = getHistory()
+          .filter((entry) => entry.date === date)
+          .sort((a, b) => (a.time || "").localeCompare(b.time || ""));
 
         if (!items.length) return;
 
@@ -5591,7 +5591,6 @@
         }
 
         const fmt = formatter();
-        items.sort((a, b) => (a.time || "").localeCompare(b.time || ""));
 
         const row = (label, value, highlight) =>
           `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)">
@@ -5633,11 +5632,17 @@
               ? row("Otros gastos", fmt.format(e.otherExpenses))
               : "";
 
+            // Con múltiples cargas: etiqueta "Carga N · Conductor" en el header
             const multiHeader =
               items.length > 1
-                ? `<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Carga ${
-                    idx + 1
-                  }</div>`
+                ? `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Carga ${
+                  idx + 1
+                }</span>
+                <span style="font-size:12px;font-weight:700;color:var(--accent-2)">${getDriverLabel(
+                  e.driver
+                )}</span>
+               </div>`
                 : "";
 
             const editBtns = canEditEntry(e)
@@ -6071,7 +6076,7 @@
               true
             );
           } else {
-            selectedDate = date;
+            selectedDate = null;
             await refreshHistory();
             const successMessage = wasEditing
               ? "Edición guardada."
@@ -6094,7 +6099,7 @@
           items.unshift(entry);
         }
         setHistory(items);
-        selectedDate = date;
+        selectedDate = null;
         renderHistoryView();
         const successMessage = wasEditing
           ? "Edición guardada."
