@@ -3589,15 +3589,17 @@
               >Ya existe un registro para este día.</span
             >
             <br /><br />
-            Los valores se <strong style="color: var(--ink)">sumarán</strong> al
-            registro existente. ¿Querés continuar?
+            Los valores se
+            <strong style="color: var(--ink)"
+              >guardarán como una carga separada</strong
+            >. ¿Querés continuar?
           </div>
           <div class="quick-edit-footer">
             <button type="button" class="ghost" id="duplicate-day-cancel">
               Cancelar
             </button>
             <button type="button" class="primary" id="duplicate-day-confirm">
-              Sí, sumar
+              Sí, agregar
             </button>
           </div>
         </div>
@@ -5967,7 +5969,6 @@
         const existing =
           !wasEditing &&
           items.find((item) => item.date === date && item.driver === driver);
-        const merged = Boolean(existing);
 
         if (
           income === 0 &&
@@ -6018,7 +6019,7 @@
         }
 
         let entry = {
-          id: editingId || (existing ? existing.id : createId()),
+          id: editingId || createId(),
           date,
           time,
           timeStart,
@@ -6033,36 +6034,11 @@
           avgNet,
           totalHours,
           driver,
+          vehicle: null,
         };
 
-        if (existing) {
-          const mergedIncome = (existing.income || 0) + income;
-          const mergedFuel = (existing.fuel || 0) + fuel;
-          const mergedTolls = (existing.tolls || 0) + tolls;
-          const mergedParking = (existing.parking || 0) + parking;
-          const mergedOtherExpenses =
-            (existing.otherExpenses || 0) + otherExpenses;
-          const mergedExtras =
-            mergedTolls + mergedParking + mergedOtherExpenses;
-          const mergedHours = (existing.totalHours || 0) + totalHours;
-          const mergedNet = mergedIncome - mergedFuel - mergedExtras;
-          entry = {
-            ...existing,
-            id: existing.id,
-            date,
-            driver,
-            income: mergedIncome,
-            fuel: mergedFuel,
-            tolls: mergedTolls,
-            parking: mergedParking,
-            otherExpenses: mergedOtherExpenses,
-            totalHours: mergedHours,
-            net: mergedNet,
-            avgGross: mergedHours > 0 ? mergedIncome / mergedHours : 0,
-            avgNet: mergedHours > 0 ? mergedNet / mergedHours : 0,
-            time: formatTimeFromHours(mergedHours),
-          };
-        }
+        // Si hay existing y no es edición, guardar como entrada separada (no mergear)
+        const merged = false;
 
         if (syncMode === "cloud" && supabaseClient && currentUserId) {
           const { error } = await supabaseClient
@@ -6070,18 +6046,13 @@
             .upsert(toDbEntry(entry, currentUserId), { onConflict: "id" });
 
           if (error) {
-            syncMode = "local";
-            setSyncStatus(
-              "No se pudo guardar en la nube. Guardando local.",
-              true
-            );
+            console.warn("Cloud save failed, falling back to local:", error);
+            // No cambiamos syncMode — el próximo guardado reintentará la nube
           } else {
             selectedDate = null;
             await refreshHistory();
             const successMessage = wasEditing
               ? "Edición guardada."
-              : merged
-              ? "Registro del día actualizado."
               : "Registro guardado.";
             triggerHaptic();
             resetEditState(successMessage);
@@ -6103,8 +6074,6 @@
         renderHistoryView();
         const successMessage = wasEditing
           ? "Edición guardada."
-          : merged
-          ? "Registro del día actualizado."
           : "Registro guardado.";
         triggerHaptic();
         resetEditState(successMessage);
