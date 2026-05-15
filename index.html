@@ -2525,13 +2525,11 @@
 
       <section id="view-main" class="view">
         <div class="view-grid">
-          <!-- ▼ ÚNICO CAMBIO: agregado grid-column: 1 / -1 ▼ -->
           <div
             class="hidden"
             id="reminder-card"
             role="status"
             style="
-              grid-column: 1 / -1;
               display: flex;
               align-items: center;
               gap: 8px;
@@ -2877,28 +2875,6 @@
                 ></p>
               </div>
             </section>
-            <section class="card hidden" id="day-detail-card">
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: center;
-                  margin: 0 0 8px;
-                "
-              >
-                <h2 id="day-detail-title" style="margin: 0">Detalle del día</h2>
-                <button
-                  type="button"
-                  class="reminder-alert-close"
-                  id="day-detail-close"
-                  aria-label="Cerrar"
-                >
-                  ✕
-                </button>
-              </div>
-              <div id="day-detail-list"></div>
-              <p class="note" id="history-status"></p>
-            </section>
           </div>
         </div>
       </section>
@@ -3152,7 +3128,117 @@
               Costo mensual del auto
             </h2>
 
-            <!-- Sin bloque superior; la lista se despliega desde "Mes corriente" -->
+            <!-- Gastos fijos: lista siempre visible, edición colapsable -->
+            <div style="margin-bottom: 14px">
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  margin-bottom: 10px;
+                "
+              >
+                <div
+                  style="
+                    font-size: 12px;
+                    font-weight: 700;
+                    color: var(--muted);
+                    text-transform: uppercase;
+                    letter-spacing: 0.04em;
+                  "
+                >
+                  Gastos fijos mensuales
+                </div>
+                <button
+                  type="button"
+                  id="car-fixed-toggle-btn"
+                  style="
+                    background: transparent;
+                    border: 1px solid var(--line);
+                    border-radius: 8px;
+                    padding: 4px 12px;
+                    font-size: 12px;
+                    font-weight: 700;
+                    color: var(--muted);
+                    cursor: pointer;
+                    transition: background 0.15s, color 0.15s;
+                  "
+                >
+                  Editar
+                </button>
+              </div>
+              <div
+                id="car-fixed-list"
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  gap: 8px;
+                  margin-bottom: 4px;
+                "
+              ></div>
+              <!-- Panel de edición: oculto por defecto -->
+              <div
+                id="car-fixed-editor"
+                class="hidden"
+                style="
+                  margin-top: 12px;
+                  border-top: 1px dashed var(--line);
+                  padding-top: 12px;
+                "
+              >
+                <div
+                  id="car-fixed-form-wrap"
+                  style="
+                    display: flex;
+                    gap: 8px;
+                    flex-wrap: wrap;
+                    margin-bottom: 8px;
+                  "
+                >
+                  <div style="flex: 2; min-width: 140px">
+                    <label style="margin-bottom: 3px">Concepto</label>
+                    <input
+                      type="text"
+                      id="car-fixed-name"
+                      placeholder="Ej: Seguro"
+                      style="font-size: 14px; padding: 9px 12px"
+                    />
+                  </div>
+                  <div style="flex: 1; min-width: 110px">
+                    <label style="margin-bottom: 3px">Monto mensual ($)</label>
+                    <input
+                      type="number"
+                      id="car-fixed-amount"
+                      min="0"
+                      step="100"
+                      placeholder="Ej: 30000"
+                      style="font-size: 14px; padding: 9px 12px"
+                    />
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      gap: 8px;
+                      width: 100%;
+                      margin-top: 4px;
+                    "
+                  >
+                    <button
+                      type="button"
+                      class="secondary"
+                      id="car-fixed-save-btn"
+                      style="flex: 1; padding: 9px; font-size: 13px"
+                    >
+                      + Agregar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              style="height: 1px; background: var(--line); margin-bottom: 14px"
+            ></div>
 
             <!-- Totales del mes -->
             <div
@@ -3168,187 +3254,9 @@
               Mes corriente
             </div>
             <div class="results">
-              <!-- Fila "Gastos fijos" clickeable → despliega detalle -->
-              <div
-                id="car-fixed-list-toggle"
-                role="button"
-                tabindex="0"
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  border-radius: 10px;
-                  background: rgba(0, 0, 0, 0.025);
-                  overflow: hidden;
-                  cursor: pointer;
-                  transition: background 0.15s;
-                "
-                onmouseenter="this.style.background='rgba(0,0,0,0.045)'"
-                onmouseleave="this.style.background='rgba(0,0,0,0.025)'"
-              >
-                <!-- Cabecera de la fila -->
-                <div
-                  style="
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    padding: 11px 14px;
-                    gap: 8px;
-                  "
-                >
-                  <div
-                    style="
-                      display: flex;
-                      align-items: center;
-                      gap: 7px;
-                      min-width: 0;
-                    "
-                  >
-                    <span style="font-size: 14px">Gastos fijos</span>
-                    <span
-                      id="car-fixed-count-badge"
-                      style="
-                        font-size: 11px;
-                        font-weight: 700;
-                        color: var(--accent-2);
-                        background: rgba(11, 79, 72, 0.09);
-                        border-radius: 999px;
-                        padding: 1px 7px;
-                        display: none;
-                        flex-shrink: 0;
-                      "
-                    ></span>
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      align-items: center;
-                      gap: 8px;
-                      flex-shrink: 0;
-                    "
-                  >
-                    <strong
-                      id="car-fixed-total"
-                      style="color: #b23b3b; font-size: 15px"
-                      >—</strong
-                    >
-                    <svg
-                      id="car-fixed-chevron"
-                      width="13"
-                      height="13"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#b23b3b"
-                      stroke-width="2.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      style="
-                        transition: transform 0.25s ease;
-                        flex-shrink: 0;
-                        opacity: 0.6;
-                      "
-                    >
-                      <polyline points="6 9 12 15 18 9" />
-                    </svg>
-                  </div>
-                </div>
-
-                <!-- Panel colapsable: lista + editor -->
-                <div
-                  id="car-fixed-list-wrap"
-                  style="
-                    overflow: hidden;
-                    max-height: 0;
-                    transition: max-height 0.35s ease;
-                  "
-                >
-                  <div
-                    style="
-                      border-top: 1px solid var(--line);
-                      padding: 8px 14px 4px;
-                    "
-                  >
-                    <!-- Lista de ítems ordenada mayor→menor -->
-                    <div
-                      id="car-fixed-list"
-                      style="display: flex; flex-direction: column"
-                    ></div>
-
-                    <!-- Botón editar -->
-                    <button
-                      type="button"
-                      id="car-fixed-toggle-btn"
-                      style="
-                        margin: 8px 0 6px;
-                        background: transparent;
-                        border: 1px dashed var(--line);
-                        border-radius: 8px;
-                        padding: 6px 12px;
-                        font-size: 12px;
-                        font-weight: 700;
-                        color: var(--muted);
-                        cursor: pointer;
-                        width: 100%;
-                        text-align: center;
-                        transition: background 0.15s, color 0.15s;
-                      "
-                    >
-                      + Editar gastos fijos
-                    </button>
-
-                    <!-- Panel agregar/eliminar (oculto por defecto) -->
-                    <div
-                      id="car-fixed-editor"
-                      class="hidden"
-                      style="
-                        border-top: 1px dashed var(--line);
-                        padding-top: 10px;
-                        margin-top: 4px;
-                      "
-                    >
-                      <div
-                        style="
-                          display: flex;
-                          gap: 8px;
-                          flex-wrap: wrap;
-                          margin-bottom: 8px;
-                        "
-                      >
-                        <div style="flex: 2; min-width: 140px">
-                          <label style="margin-bottom: 3px">Concepto</label>
-                          <input
-                            type="text"
-                            id="car-fixed-name"
-                            placeholder="Ej: Seguro"
-                            style="font-size: 14px; padding: 9px 12px"
-                          />
-                        </div>
-                        <div style="flex: 1; min-width: 110px">
-                          <label style="margin-bottom: 3px"
-                            >Monto mensual ($)</label
-                          >
-                          <input
-                            type="number"
-                            id="car-fixed-amount"
-                            min="0"
-                            step="100"
-                            placeholder="Ej: 30000"
-                            style="font-size: 14px; padding: 9px 12px"
-                          />
-                        </div>
-                        <div style="width: 100%; margin-top: 4px">
-                          <button
-                            type="button"
-                            class="secondary"
-                            id="car-fixed-save-btn"
-                            style="width: 100%; padding: 9px; font-size: 13px"
-                          >
-                            + Agregar
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div class="result-row">
+                <span>Gastos fijos</span>
+                <strong id="car-fixed-total" style="color: #b23b3b">—</strong>
               </div>
               <div class="result-row">
                 <span>Combustible (mes)</span>
@@ -3605,6 +3513,58 @@
         </div>
       </div>
 
+      <!-- Popup detalle del día -->
+      <div class="quick-edit-overlay hidden" id="day-detail-overlay">
+        <div
+          class="quick-edit-modal"
+          style="
+            max-width: 420px;
+            width: 100%;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+          "
+        >
+          <div class="quick-edit-header" style="flex-shrink: 0">
+            <div style="display: flex; flex-direction: column; gap: 3px">
+              <h3 id="day-detail-title" style="margin: 0">Detalle del día</h3>
+              <span
+                id="day-detail-multi-badge"
+                class="hidden"
+                style="
+                  font-size: 11px;
+                  font-weight: 700;
+                  color: var(--accent);
+                  background: rgba(13, 91, 82, 0.08);
+                  border: 1px solid rgba(13, 91, 82, 0.2);
+                  border-radius: 999px;
+                  padding: 2px 9px;
+                  align-self: flex-start;
+                "
+                >2 cargas</span
+              >
+            </div>
+            <button
+              type="button"
+              class="reminder-alert-close"
+              id="day-detail-close"
+              aria-label="Cerrar"
+            >
+              ✕
+            </button>
+          </div>
+          <div
+            id="day-detail-list"
+            style="overflow-y: auto; padding: 16px 20px; flex: 1"
+          ></div>
+          <p
+            class="note"
+            id="history-status"
+            style="margin: 0; padding: 0 20px 14px; flex-shrink: 0"
+          ></p>
+        </div>
+      </div>
+
       <!-- Modal confirmar jornada duplicada -->
       <div class="quick-edit-overlay hidden" id="duplicate-day-overlay">
         <div class="quick-edit-modal" style="max-width: 360px; width: 100%">
@@ -3828,7 +3788,7 @@
       const monthHoursEl = document.getElementById("month-hours");
       const monthAvgGrossEl = document.getElementById("month-avg-gross");
       const monthAvgNetEl = document.getElementById("month-avg-net");
-      const weekGoalStatusEl = null;
+      const weekGoalStatusEl = null; // moved to goals view
       const monthNoteEl = document.getElementById("month-note");
       const goalsWeekRangeEl = document.getElementById("goals-week-range");
       const goalsWeekBadgeEl = document.getElementById("goals-week-badge");
@@ -3863,7 +3823,7 @@
       const historyStatus = document.getElementById("history-status");
       const reminderCard = document.getElementById("reminder-card");
       const reminderText = document.getElementById("reminder-text");
-      let reminderDismissed = false;
+      let reminderDismissed = false; // kept for legacy compat
 
       const calcButton = document.getElementById("calc-btn");
       const saveButton = document.getElementById("save-btn");
@@ -3892,8 +3852,10 @@
       const SUPABASE_ANON_KEY =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwc2ZmbWtvaW16dnFnd2tzb2ZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyNjQ1MDksImV4cCI6MjA4ODg0MDUwOX0.Kms7i-avDF6g-EdjWQ7WygzIC93Xm2jaf4TnKZKLOKI";
 
+      // Will be set after Supabase loads
       let supabaseClient = null;
 
+      // Inject a visible error area in the sync form
       const syncFormErrorEl = (() => {
         const el = document.createElement("p");
         el.style.cssText =
@@ -3987,7 +3949,9 @@
       };
 
       const parseValue = (input) => {
-        if (!input) return 0;
+        if (!input) {
+          return 0;
+        }
         const value = parseFloat(input.value);
         return Number.isFinite(value) ? value : 0;
       };
@@ -4006,7 +3970,7 @@
         const [sh, sm] = start.split(":").map(Number);
         const [eh, em] = end.split(":").map(Number);
         let mins = eh * 60 + em - (sh * 60 + sm);
-        if (mins < 0) mins += 24 * 60;
+        if (mins < 0) mins += 24 * 60; // overnight shift
         return Math.max(0, mins);
       };
 
@@ -4049,11 +4013,15 @@
       };
 
       const formatHours = (totalHours) => {
-        if (totalHours <= 0) return "0 h";
+        if (totalHours <= 0) {
+          return "0 h";
+        }
         const totalMinutes = Math.round(totalHours * 60);
         const hours = Math.floor(totalMinutes / 60);
         const minutes = totalMinutes % 60;
-        if (minutes === 0) return hours + " h";
+        if (minutes === 0) {
+          return hours + " h";
+        }
         return hours + " h " + minutes + " min";
       };
 
@@ -4065,7 +4033,9 @@
       };
 
       const formatTimeFromHours = (totalHours) => {
-        if (!Number.isFinite(totalHours) || totalHours <= 0) return "00:00";
+        if (!Number.isFinite(totalHours) || totalHours <= 0) {
+          return "00:00";
+        }
         const totalMinutes = Math.round(totalHours * 60);
         const hours = Math.floor(totalMinutes / 60);
         const minutes = totalMinutes % 60;
@@ -4075,7 +4045,9 @@
       const isAutoDriverActive = () => Boolean(currentDriverId);
 
       const getEffectiveDriver = () => {
-        if (isAutoDriverActive()) return editDriverOverride || currentDriverId;
+        if (isAutoDriverActive()) {
+          return editDriverOverride || currentDriverId;
+        }
         return driverInput ? driverInput.value : "";
       };
 
@@ -4106,7 +4078,9 @@
       };
 
       const canEditEntry = (entry) => {
-        if (!isAutoDriverActive()) return true;
+        if (!isAutoDriverActive()) {
+          return true;
+        }
         return entry.driver === currentDriverId;
       };
 
@@ -4116,7 +4090,9 @@
       });
 
       const updateDailyGoalStatus = (avgGross, totalHours) => {
-        if (!goalDailyStatusEl) return;
+        if (!goalDailyStatusEl) {
+          return;
+        }
         const { hourly } = getGoals();
         if (hourly <= 0) {
           goalDailyStatusEl.textContent = "Definí tu meta por hora.";
@@ -4297,6 +4273,7 @@
           goalsDaysLeftEl.textContent =
             daysLeft === 0 ? "Último día" : daysLeft;
 
+        // ── Este mes ──
         const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
         const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
         const monthItems = items.filter((e) => {
@@ -4325,7 +4302,7 @@
           "Noviembre",
           "Diciembre",
         ];
-        const monthMeta = effectiveMeta > 0 ? effectiveMeta * 4.33 : 0;
+        const monthMeta = effectiveMeta > 0 ? effectiveMeta * 4.33 : 0; // approx weeks in month
         const monthPct =
           monthMeta > 0 ? Math.min((monthEarned / monthMeta) * 100, 100) : 0;
         const monthOver = monthMeta > 0 && monthEarned >= monthMeta;
@@ -4422,30 +4399,33 @@
         if (nextBtn) nextBtn.disabled = activeIdx >= sortedMonths.length - 1;
 
         const weeksThisMonth = Array.from(weekMap.entries())
-          .filter(
-            ([k, { start: ws }]) =>
+          .filter(([k, { start: ws }]) => {
+            return (
               ws.getFullYear() === activeYear &&
               ws.getMonth() + 1 === activeMonthNum
-          )
+            );
+          })
           .sort(([a], [b]) => b.localeCompare(a));
 
         if (weeksThisMonth.length === 0) {
           goalsWeeksListEl.innerHTML =
             "<p class='note'>Sin registros en este mes.</p>";
-          if (prevBtn)
+          if (prevBtn) {
             prevBtn.onclick = () => {
               if (activeIdx > 0) {
                 window._weeksCarouselMonth = sortedMonths[activeIdx - 1];
                 renderGoalsView();
               }
             };
-          if (nextBtn)
+          }
+          if (nextBtn) {
             nextBtn.onclick = () => {
               if (activeIdx < sortedMonths.length - 1) {
                 window._weeksCarouselMonth = sortedMonths[activeIdx + 1];
                 renderGoalsView();
               }
             };
+          }
           return;
         }
 
@@ -4516,20 +4496,22 @@
           });
         });
 
-        if (prevBtn)
+        if (prevBtn) {
           prevBtn.onclick = () => {
             if (activeIdx > 0) {
               window._weeksCarouselMonth = sortedMonths[activeIdx - 1];
               renderGoalsView();
             }
           };
-        if (nextBtn)
+        }
+        if (nextBtn) {
           nextBtn.onclick = () => {
             if (activeIdx < sortedMonths.length - 1) {
               window._weeksCarouselMonth = sortedMonths[activeIdx + 1];
               renderGoalsView();
             }
           };
+        }
 
         const listEl = goalsWeeksListEl.parentElement;
         if (listEl && !listEl._swipeInit) {
@@ -4629,6 +4611,17 @@
 
         const totalEarned = allWe.reduce((a, e) => a + (e.income || 0), 0);
         const totalFuel = allWe.reduce((a, e) => a + (e.fuel || 0), 0);
+        const totalHrs = allWe.reduce(
+          (a, e) =>
+            a +
+            (e.time
+              ? (() => {
+                  const p = e.time.split(":");
+                  return (parseInt(p[0]) || 0) + (parseInt(p[1]) || 0) / 60;
+                })()
+              : 0),
+          0
+        );
         const totalNet = allWe.reduce(
           (a, e) =>
             a +
@@ -4653,6 +4646,7 @@
         }
 
         const sorted = [...allWe].sort((a, b) => a.date.localeCompare(b.date));
+
         const byDate = new Map();
         sorted.forEach((e) => {
           if (!byDate.has(e.date)) byDate.set(e.date, []);
@@ -4766,21 +4760,30 @@
       };
 
       const getThresholds = (weekday) => {
-        if (weekday === 5) return { low: 12000, mid: 15000, high: 17000 };
-        if (weekday === 6 || weekday === 0)
+        if (weekday === 5) {
+          return { low: 12000, mid: 15000, high: 17000 };
+        }
+        if (weekday === 6 || weekday === 0) {
           return { low: 15000, mid: 17000, high: 20000 };
+        }
         return { low: 10000, mid: 13000, high: 15000 };
       };
 
       const getHeatColors = (avgGross, weekday) => {
-        if (!Number.isFinite(avgGross) || avgGross <= 0) return null;
+        if (!Number.isFinite(avgGross) || avgGross <= 0) {
+          return null;
+        }
         const { low, mid, high } = getThresholds(weekday);
         let t = 0;
-        if (avgGross <= low) t = 0;
-        else if (avgGross <= mid) t = (0.5 * (avgGross - low)) / (mid - low);
-        else if (avgGross <= high)
+        if (avgGross <= low) {
+          t = 0;
+        } else if (avgGross <= mid) {
+          t = (0.5 * (avgGross - low)) / (mid - low);
+        } else if (avgGross <= high) {
           t = 0.5 + (0.5 * (avgGross - mid)) / (high - mid);
-        else t = 1;
+        } else {
+          t = 1;
+        }
 
         const clamp = (value) => Math.max(0, Math.min(1, value));
         const mix = (a, b, ratio) => Math.round(a + (b - a) * ratio);
@@ -4816,6 +4819,7 @@
         const net = income - fuel - extraCosts;
         const avgGross = totalHours > 0 ? income / totalHours : 0;
         const avgNet = totalHours > 0 ? net / totalHours : 0;
+
         return {
           income,
           fuel,
@@ -4848,9 +4852,16 @@
         netTotalEl.textContent = fmt.format(net);
         if (avgNetEl)
           avgNetEl.textContent = totalHours > 0 ? fmt.format(avgNet) : "—";
-        if (extraCostsEl)
+        if (extraCostsEl) {
           extraCostsEl.textContent = fmt.format(fuel + extraCosts);
-        noteEl.textContent = "";
+        }
+
+        if (totalHours > 0) {
+          noteEl.textContent = "";
+        } else {
+          noteEl.textContent = "";
+        }
+
         updateDailyGoalStatus(avgGross, totalHours);
       };
 
@@ -4858,7 +4869,7 @@
         ...entry,
         id: entry.id ? String(entry.id) : createId(),
         driver: entry.driver || "martin",
-        vehicle: entry.vehicle || null,
+        vehicle: entry.vehicle || null, // preparado para múltiples vehículos
         income: Number(entry.income) || 0,
         fuel: Number(entry.fuel) || 0,
         tolls: Number(entry.tolls) || 0,
@@ -4930,10 +4941,13 @@
 
       const filterByDriver = (items) => {
         const selected = driverFilterInput ? driverFilterInput.value : "all";
-        if (!selected || selected === "all") return items;
+        if (!selected || selected === "all") {
+          return items;
+        }
         return items.filter((entry) => entry.driver === selected);
       };
 
+      // ── Banner de estado de sesión / conectividad ──
       let _hasSession = false;
 
       const updateStatusBanner = () => {
@@ -4946,6 +4960,7 @@
         const isOnline = navigator.onLine;
 
         if (!isOnline) {
+          // Sin internet — puede tener sesión pero no sincroniza
           banner.className = "session-warning-banner offline";
           if (iconEl) iconEl.textContent = "";
           if (iconEl) iconEl.style.display = "none";
@@ -4957,6 +4972,7 @@
         }
 
         if (!_hasSession) {
+          // Online pero sin sesión
           banner.className = "session-warning-banner no-session";
           if (iconEl) iconEl.textContent = "";
           if (iconEl) iconEl.style.display = "none";
@@ -4970,9 +4986,11 @@
           return;
         }
 
+        // Todo bien — ocultar banner
         banner.className = "session-warning-banner hidden";
       };
 
+      // El botón del banner abre el drawer de sincronización
       document
         .getElementById("banner-action-btn")
         ?.addEventListener("click", () => {
@@ -4981,6 +4999,7 @@
           document.getElementById("sync-email")?.focus();
         });
 
+      // Detectar cambios de conectividad
       window.addEventListener("online", () => {
         const dot = document.getElementById("sync-status-dot");
         if (dot) dot.classList.remove("offline");
@@ -4988,7 +5007,9 @@
       });
       window.addEventListener("offline", () => {
         const dot = document.getElementById("sync-status-dot");
-        if (dot) dot.className = "sync-status-dot offline";
+        if (dot) {
+          dot.className = "sync-status-dot offline";
+        }
         updateStatusBanner();
       });
 
@@ -5001,8 +5022,9 @@
         const btn = document.getElementById("topbar-sync-btn");
         if (dot) {
           dot.className = "sync-status-dot";
-          if (isError) dot.classList.add("error");
-          else if (message === "Activa") {
+          if (isError) {
+            dot.classList.add("error");
+          } else if (message === "Activa") {
             dot.classList.add("active");
             if (btn) btn.classList.add("synced");
           } else {
@@ -5030,7 +5052,9 @@
             : email;
           if (syncFooterStatus) syncFooterStatus.textContent = driverLabel;
           const avatar = document.getElementById("sync-account-avatar");
-          if (avatar) avatar.textContent = driverLabel.charAt(0).toUpperCase();
+          if (avatar) {
+            avatar.textContent = driverLabel.charAt(0).toUpperCase();
+          }
           if (syncForm) syncForm.classList.add("hidden");
           if (syncFooter) syncFooter.classList.remove("hidden");
           if (syncLogoutButton) syncLogoutButton.classList.remove("hidden");
@@ -5047,13 +5071,16 @@
         const realItems = localItems.filter(
           (e) => !String(e.id).startsWith("demo-")
         );
-        if (!realItems.length || !supabaseClient) return;
+        if (!realItems.length || !supabaseClient) {
+          return;
+        }
         const payload = realItems.map((entry) => toDbEntry(entry, userId));
         const { error } = await supabaseClient
           .from("entries")
           .upsert(payload, { onConflict: "id" });
         if (error) {
           console.warn("syncLocalToCloud error:", error);
+          // No marcar error permanente — la sesión sigue activa, solo falló la migración local
           setSyncStatus("Activa");
         }
       };
@@ -5106,6 +5133,7 @@
       };
 
       const initSync = async () => {
+        // Wait for dynamic Supabase loader
         if (window.__supabaseReady) {
           const loaded = await window.__supabaseReady;
           if (loaded && typeof window.supabase !== "undefined") {
@@ -5130,9 +5158,12 @@
 
       const buildDailyMap = (items) => {
         return items.reduce((acc, entry) => {
-          if (!entry.date) return acc;
-          if (!acc[entry.date])
+          if (!entry.date) {
+            return acc;
+          }
+          if (!acc[entry.date]) {
             acc[entry.date] = { net: 0, hours: 0, income: 0, count: 0 };
+          }
           acc[entry.date].net += entry.net || 0;
           acc[entry.date].hours += entry.totalHours || 0;
           acc[entry.date].income += entry.income || 0;
@@ -5166,7 +5197,9 @@
         const fmt = formatter();
         monthIncomeEl.textContent = fmt.format(totals.income);
         monthFuelEl.textContent = fmt.format(totals.fuel);
-        if (monthExtraEl) monthExtraEl.textContent = fmt.format(totals.extras);
+        if (monthExtraEl) {
+          monthExtraEl.textContent = fmt.format(totals.extras);
+        }
         monthNetEl.textContent = fmt.format(totals.net);
         monthHoursEl.textContent = formatHours(totals.hours);
         monthAvgGrossEl.textContent =
@@ -5174,6 +5207,7 @@
         if (monthAvgNetEl)
           monthAvgNetEl.textContent =
             totals.hours > 0 ? fmt.format(totals.net / totals.hours) : "—";
+
         monthNoteEl.textContent = "";
 
         const { weekly } = getGoals();
@@ -5181,6 +5215,7 @@
         const monthGoalBar = document.getElementById("month-goal-bar");
         const monthGoalPct = document.getElementById("month-goal-pct");
         const monthGoalEarned = document.getElementById("month-goal-earned");
+        const monthGoalTarget = document.getElementById("month-goal-target");
 
         if (weekly > 0) {
           const driverFilter = driverFilterInput
@@ -5202,13 +5237,13 @@
               " / " +
               fmt.format(monthMeta) +
               (pct >= 100 ? " ✓" : "");
+          if (monthGoalTarget) monthGoalTarget.textContent = "";
         } else {
           if (monthGoalWrap) monthGoalWrap.classList.add("hidden");
         }
 
         updateWeeklyGoalStatus();
       };
-
       const renderMonthProjection = () => {
         const month = monthFilterInput.value || today.toISOString().slice(0, 7);
         const [yearStr, monthStr] = month.split("-");
@@ -5231,6 +5266,7 @@
             (entry) => entry.date && entry.date.startsWith(month)
           )
         );
+
         const totals = items.reduce(
           (acc, entry) => {
             acc.income += entry.income || 0;
@@ -5239,6 +5275,7 @@
           },
           { income: 0, net: 0 }
         );
+
         const workedDays = new Set(items.map((e) => e.date)).size;
 
         const fmt = formatter();
@@ -5285,18 +5322,19 @@
         }
         if (projPctEl) projPctEl.textContent = pctDone + "%";
         if (projNoteEl) {
-          if (!isCurrentMonth)
+          if (!isCurrentMonth) {
             projNoteEl.textContent =
               "Mes finalizado · " + workedDays + " días trabajados.";
-          else if (daysLeft === 0)
+          } else if (daysLeft === 0) {
             projNoteEl.textContent = "Último día del mes.";
-          else
+          } else {
             projNoteEl.textContent =
               "Basado en " +
               workedDays +
               " días trabajados · promedio " +
               fmt.format(Math.round(dailyAvgGross)) +
               "/día.";
+          }
         }
       };
 
@@ -5316,67 +5354,46 @@
         localStorage.setItem(carCostKey, JSON.stringify(items));
 
       const renderCarFixedList = () => {
-        const allItems = loadCarFixedItems();
-        // Ordenar de mayor a menor importe
-        const items = [...allItems].sort(
-          (a, b) => (b.amount || 0) - (a.amount || 0)
-        );
+        const items = loadCarFixedItems();
         const container = document.getElementById("car-fixed-list");
-        const badge = document.getElementById("car-fixed-count-badge");
+        if (!container) return;
         const fmt = formatter();
         const isEditing = !document
           .getElementById("car-fixed-editor")
           ?.classList.contains("hidden");
-
-        // Badge con cantidad en la cabecera de la fila
-        if (badge) {
-          badge.textContent = items.length > 0 ? items.length : "";
-          badge.style.display = items.length > 0 ? "" : "none";
-        }
-
-        if (!container) return;
         if (!items.length) {
           container.innerHTML =
-            '<p class="note" style="margin:4px 0 6px; font-size:13px">Sin gastos fijos cargados.</p>';
+            '<p class="note" style="margin:0; font-size:13px">Sin gastos fijos cargados.</p>';
           return;
         }
-
         container.innerHTML = items
-          .map((item, i) => {
-            const isLast = i === items.length - 1;
-            return `<div style="
-            display:flex; align-items:center; justify-content:space-between; gap:10px;
-            padding:8px 0;
-            border-bottom:${isLast ? "none" : "1px solid var(--line)"};
-          ">
-            <span style="font-size:13px; font-weight:600; color:var(--ink); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">${
+          .map(
+            (item) => `
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; background:rgba(0,0,0,0.02); border:1px solid var(--line); border-radius:10px; padding:10px 12px">
+            <span style="font-size:14px; font-weight:600; color:var(--ink); flex:1">${
               item.name
             }</span>
-            <span style="font-size:13px; font-weight:700; color:#b23b3b; white-space:nowrap; flex-shrink:0">${fmt.format(
+            <span style="font-size:14px; font-weight:700; color:#b23b3b; white-space:nowrap">${fmt.format(
               item.amount
             )}</span>
             ${
               isEditing
                 ? `<button type="button" data-id="${item.id}" data-action="delete-fixed"
-              style="background:transparent; border:none; color:var(--muted); cursor:pointer; font-size:18px; line-height:1; padding:0 4px; flex-shrink:0"
+              style="background:transparent; border:none; color:var(--muted); cursor:pointer; font-size:18px; line-height:1; padding:0 2px; flex-shrink:0"
               title="Eliminar">×</button>`
                 : ""
             }
-          </div>`;
-          })
+          </div>`
+          )
           .join("");
 
         container
           .querySelectorAll("[data-action='delete-fixed']")
           .forEach((btn) => {
-            btn.addEventListener("click", (e) => {
-              e.stopPropagation(); // no cerrar el desplegable padre
+            btn.addEventListener("click", () => {
               const id = btn.getAttribute("data-id");
               saveCarFixedItems(loadCarFixedItems().filter((i) => i.id !== id));
               renderCarCostSummary();
-              setTimeout(() => {
-                if (window._carFixedListReopen) window._carFixedListReopen();
-              }, 50);
             });
           });
       };
@@ -5419,80 +5436,23 @@
         setEl("car-total-month", grandTotal);
       };
 
-      // Toggle desplegable: fila "Gastos fijos" en Mes corriente
-      (() => {
-        let listOpen = false;
-
-        const getEls = () => ({
-          toggleBtn: document.getElementById("car-fixed-list-toggle"),
-          listWrap: document.getElementById("car-fixed-list-wrap"),
-          chevron: document.getElementById("car-fixed-chevron"),
-        });
-
-        const openList = () => {
-          const { listWrap, chevron } = getEls();
-          listOpen = true;
-          if (listWrap)
-            listWrap.style.maxHeight = listWrap.scrollHeight + 300 + "px";
-          if (chevron) chevron.style.transform = "rotate(180deg)";
-        };
-
-        const closeList = () => {
-          const { listWrap, chevron } = getEls();
-          listOpen = false;
-          if (listWrap) listWrap.style.maxHeight = "0";
-          if (chevron) chevron.style.transform = "rotate(0deg)";
-        };
-
-        const { toggleBtn } = getEls();
-        if (toggleBtn) {
-          toggleBtn.addEventListener("click", () => {
-            if (listOpen) closeList();
-            else openList();
-          });
-          // Accesibilidad teclado
-          toggleBtn.addEventListener("keydown", (e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              if (listOpen) closeList();
-              else openList();
-            }
-          });
-        }
-
-        window._carFixedListOpen = () => listOpen;
-        window._carFixedListReopen = () => {
-          if (listOpen) {
-            const { listWrap } = getEls();
-            if (listWrap)
-              listWrap.style.maxHeight = listWrap.scrollHeight + 300 + "px";
-          }
-        };
-      })();
-
-      // Toggle editar (botón dentro del desplegable)
+      // Toggle edición gastos fijos
       document
         .getElementById("car-fixed-toggle-btn")
-        ?.addEventListener("click", (e) => {
-          e.stopPropagation(); // no cerrar el desplegable padre
+        ?.addEventListener("click", () => {
           const editor = document.getElementById("car-fixed-editor");
           const btn = document.getElementById("car-fixed-toggle-btn");
           if (!editor) return;
           const opening = editor.classList.contains("hidden");
           editor.classList.toggle("hidden", !opening);
-          if (btn)
-            btn.textContent = opening ? "✓ Listo" : "+ Editar gastos fijos";
-          renderCarFixedList();
-          setTimeout(() => {
-            if (window._carFixedListReopen) window._carFixedListReopen();
-          }, 50);
+          if (btn) btn.textContent = opening ? "Listo" : "Editar";
+          renderCarFixedList(); // re-render to show/hide × buttons
           if (opening) document.getElementById("car-fixed-name")?.focus();
         });
 
       document
         .getElementById("car-fixed-save-btn")
-        ?.addEventListener("click", (e) => {
-          e.stopPropagation();
+        ?.addEventListener("click", () => {
           const name = document.getElementById("car-fixed-name")?.value.trim();
           const amount =
             parseFloat(document.getElementById("car-fixed-amount")?.value) || 0;
@@ -5509,9 +5469,6 @@
           if (document.getElementById("car-fixed-amount"))
             document.getElementById("car-fixed-amount").value = "";
           renderCarCostSummary();
-          setTimeout(() => {
-            if (window._carFixedListReopen) window._carFixedListReopen();
-          }, 50);
         });
 
       const renderCalendar = () => {
@@ -5521,8 +5478,9 @@
         const year = parseInt(parts[0], 10) || today.getFullYear();
         const monthIndex = (parseInt(parts[1], 10) || today.getMonth() + 1) - 1;
 
-        if (selectedDate && !selectedDate.startsWith(monthValue))
+        if (selectedDate && !selectedDate.startsWith(monthValue)) {
           selectedDate = null;
+        }
 
         calendarTitle.textContent =
           MONTHS_ES[Math.max(0, Math.min(11, monthIndex))];
@@ -5555,14 +5513,20 @@
           const cell = document.createElement("button");
           cell.type = "button";
           cell.className = "calendar-cell calendar-day";
-          if (data) cell.classList.add("has-data");
+          if (data) {
+            cell.classList.add("has-data");
+          }
           if (colors) {
             cell.classList.add("heat");
             cell.style.setProperty("--heat-soft", colors.soft);
             cell.style.setProperty("--heat-strong", colors.strong);
           }
-          if (dateString === todayString) cell.classList.add("today");
-          if (dateString === selectedDate) cell.classList.add("selected");
+          if (dateString === todayString) {
+            cell.classList.add("today");
+          }
+          if (dateString === selectedDate) {
+            cell.classList.add("selected");
+          }
           cell.dataset.date = dateString;
           const incomeDisplay = data ? fmt.format(data.income) : "";
 
@@ -5596,30 +5560,15 @@
         dayDetailList.innerHTML = "";
         historyStatus.textContent = "";
 
-        if (!date) {
-          if (dayDetailCard) dayDetailCard.classList.add("hidden");
-          return;
-        }
+        if (!date) return;
 
         const items = filterByDriver(getHistory()).filter(
           (entry) => entry.date === date
         );
 
-        if (!items.length) {
-          if (dayDetailCard) dayDetailCard.classList.add("hidden");
-          return;
-        }
+        if (!items.length) return;
 
-        if (dayDetailCard) dayDetailCard.classList.remove("hidden");
-
-        setTimeout(() => {
-          if (dayDetailCard)
-            dayDetailCard.scrollIntoView({
-              behavior: "smooth",
-              block: "start",
-            });
-        }, 50);
-
+        // Título
         const [y, m, d] = date.split("-");
         const dateObj = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
         const dateLabel = dateObj.toLocaleDateString("es-AR", {
@@ -5629,6 +5578,17 @@
         });
         dayDetailTitle.textContent =
           dateLabel.charAt(0).toUpperCase() + dateLabel.slice(1);
+
+        // Badge de múltiples cargas
+        const multiBadge = document.getElementById("day-detail-multi-badge");
+        if (multiBadge) {
+          if (items.length > 1) {
+            multiBadge.textContent = items.length + " cargas";
+            multiBadge.classList.remove("hidden");
+          } else {
+            multiBadge.classList.add("hidden");
+          }
+        }
 
         const fmt = formatter();
         items.sort((a, b) => (a.time || "").localeCompare(b.time || ""));
@@ -5642,7 +5602,7 @@
           </div>`;
 
         dayDetailList.innerHTML = items
-          .map((e) => {
+          .map((e, idx) => {
             const avgGross = e.totalHours > 0 ? e.income / e.totalHours : 0;
             const hasSchedule = e.timeStart || e.timeEnd;
             const hasTolls = e.tolls > 0;
@@ -5673,6 +5633,13 @@
               ? row("Otros gastos", fmt.format(e.otherExpenses))
               : "";
 
+            const multiHeader =
+              items.length > 1
+                ? `<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Carga ${
+                    idx + 1
+                  }</div>`
+                : "";
+
             const editBtns = canEditEntry(e)
               ? `<div class="entry-actions" style="margin-top:12px">
                 <button type="button" class="entry-action-btn" data-action="edit" data-id="${e.id}">Editar</button>
@@ -5681,7 +5648,10 @@
               : "";
 
             return `
-            <div style="background:rgba(0,0,0,0.02);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px">
+            <div style="background:rgba(0,0,0,0.02);border:1px solid var(--line);border-radius:14px;padding:14px 16px;${
+              idx < items.length - 1 ? "margin-bottom:12px" : ""
+            }">
+              ${multiHeader}
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
                 <span style="font-size:15px;font-weight:800;color:var(--ink)">${getDriverLabel(
                   e.driver
@@ -5705,6 +5675,7 @@
             e.stopPropagation();
             const action = btn.getAttribute("data-action");
             const id = btn.getAttribute("data-id");
+            closeDayDetailPopup();
             if (action === "delete") {
               deleteEntry(id);
               return;
@@ -5717,6 +5688,16 @@
             }
           });
         });
+
+        // Open popup
+        const overlay = document.getElementById("day-detail-overlay");
+        if (overlay) overlay.classList.remove("hidden");
+      };
+
+      const closeDayDetailPopup = () => {
+        const overlay = document.getElementById("day-detail-overlay");
+        if (overlay) overlay.classList.add("hidden");
+        selectedDate = null;
       };
 
       const renderHistoryView = () => {
@@ -5747,46 +5728,64 @@
         const isRepairs = view === "repairs";
 
         const viewRepairs = document.getElementById("view-repairs");
+        const allViews = [viewMain, viewHistory, viewGoals, viewRepairs].filter(
+          Boolean
+        );
+        const currentView = allViews.find(
+          (v) => !v.classList.contains("hidden")
+        );
 
-        viewMain.classList.toggle("hidden", !isMain);
-        viewHistory.classList.toggle("hidden", !isHistory);
-        if (viewGoals) viewGoals.classList.toggle("hidden", !isGoals);
-        if (viewRepairs) viewRepairs.classList.toggle("hidden", !isRepairs);
+        const doSwitch = () => {
+          viewMain.classList.toggle("hidden", !isMain);
+          viewHistory.classList.toggle("hidden", !isHistory);
+          if (viewGoals) viewGoals.classList.toggle("hidden", !isGoals);
+          if (viewRepairs) viewRepairs.classList.toggle("hidden", !isRepairs);
 
-        const incoming = isMain
-          ? viewMain
-          : isHistory
-          ? viewHistory
-          : isGoals
-          ? viewGoals
-          : viewRepairs;
-        if (incoming) {
-          incoming.style.animation = "none";
-          incoming.offsetHeight;
-          incoming.style.animation = "";
-        }
+          const incoming = isMain
+            ? viewMain
+            : isHistory
+            ? viewHistory
+            : isGoals
+            ? viewGoals
+            : viewRepairs;
+          if (incoming) {
+            incoming.style.animation = "none";
+            incoming.offsetHeight;
+            incoming.style.animation = "";
+          }
 
-        navButtons.forEach((btn) => {
-          btn.classList.toggle(
-            "active",
-            btn.getAttribute("data-view") === view
-          );
-        });
-        if (topbarTitle)
-          topbarTitle.textContent = VIEW_TITLES[view] || "Panel Uber";
-        closeTopbarMenu();
+          navButtons.forEach((btn) => {
+            btn.classList.toggle(
+              "active",
+              btn.getAttribute("data-view") === view
+            );
+          });
+          if (topbarTitle)
+            topbarTitle.textContent = VIEW_TITLES[view] || "Panel Uber";
+          closeTopbarMenu();
+          if (isHistory) {
+            const currentMonth = today.toISOString().slice(0, 7);
+            if (monthFilterInput) monthFilterInput.value = currentMonth;
+            if (driverFilterInput) driverFilterInput.value = "all";
+            selectedDate = null;
+            document
+              .getElementById("day-detail-overlay")
+              ?.classList.add("hidden");
+            if (syncMode === "cloud") {
+              refreshHistory();
+            } else {
+              renderHistoryView();
+            }
+          }
+          if (isGoals) {
+            renderGoalsView();
+          }
+          if (isRepairs) {
+            renderRepairs();
+          }
+        };
 
-        if (isHistory) {
-          const currentMonth = today.toISOString().slice(0, 7);
-          if (monthFilterInput) monthFilterInput.value = currentMonth;
-          if (driverFilterInput) driverFilterInput.value = "all";
-          selectedDate = null;
-          if (dayDetailCard) dayDetailCard.classList.add("hidden");
-          if (syncMode === "cloud") refreshHistory();
-          else renderHistoryView();
-        }
-        if (isGoals) renderGoalsView();
-        if (isRepairs) renderRepairs();
+        doSwitch();
       };
 
       // ── Quick Edit Modal ──
@@ -5821,6 +5820,7 @@
           quickEditTitle.textContent =
             "Editar · " + getDriverLabel(entry.driver) + " · " + dateLabel;
         if (qeIncome) qeIncome.value = entry.income || "";
+        // Restore start/end if stored, else derive from total time
         if (qeTimeStart) qeTimeStart.value = entry.timeStart || "";
         if (qeTimeEnd) qeTimeEnd.value = entry.timeEnd || "";
         syncQeTime();
@@ -5878,8 +5878,11 @@
           const { error } = await supabaseClient
             .from("entries")
             .upsert(toDbEntry(updated, currentUserId), { onConflict: "id" });
-          if (error) setSyncStatus("No se pudo guardar en la nube.", true);
-          else await refreshHistory();
+          if (error) {
+            setSyncStatus("No se pudo guardar en la nube.", true);
+          } else {
+            await refreshHistory();
+          }
         } else {
           setHistory(items);
           renderHistoryView();
@@ -5919,7 +5922,9 @@
         updateDriverUI();
         saveButton.textContent = "Guardar en historial";
         cancelEditButton.classList.add("hidden");
-        if (message) historyStatus.textContent = message;
+        if (message) {
+          historyStatus.textContent = message;
+        }
         updateWeeklySummary();
       };
 
@@ -5929,7 +5934,9 @@
       };
 
       const triggerHaptic = () => {
-        if (navigator.vibrate) navigator.vibrate([30, 50, 80]);
+        if (navigator.vibrate) {
+          navigator.vibrate([30, 50, 80]);
+        }
       };
 
       const saveEntry = async () => {
@@ -5974,6 +5981,7 @@
           return;
         }
 
+        // ── Advertencia jornada duplicada ──
         if (existing) {
           const fmt = formatter();
           const msgEl = document.getElementById("duplicate-day-msg");
@@ -6055,6 +6063,7 @@
           const { error } = await supabaseClient
             .from("entries")
             .upsert(toDbEntry(entry, currentUserId), { onConflict: "id" });
+
           if (error) {
             syncMode = "local";
             setSyncStatus(
@@ -6079,8 +6088,11 @@
         const index = items.findIndex(
           (item) => String(item.id) === String(entry.id)
         );
-        if (index !== -1) items[index] = entry;
-        else items.unshift(entry);
+        if (index !== -1) {
+          items[index] = entry;
+        } else {
+          items.unshift(entry);
+        }
         setHistory(items);
         selectedDate = date;
         renderHistoryView();
@@ -6101,16 +6113,26 @@
         timeEndInput.value = "";
         timeWorkedDisplay.style.display = "none";
         fuelInput.value = "";
-        if (tollsInput) tollsInput.value = "";
-        if (parkingInput) parkingInput.value = "";
-        if (otherExpensesInput) otherExpensesInput.value = "";
-        if (driverInput) driverInput.value = "";
+        if (tollsInput) {
+          tollsInput.value = "";
+        }
+        if (parkingInput) {
+          parkingInput.value = "";
+        }
+        if (otherExpensesInput) {
+          otherExpensesInput.value = "";
+        }
+        if (driverInput) {
+          driverInput.value = "";
+        }
         editDriverOverride = "";
         updateDriverUI();
         avgGrossEl.textContent = "—";
         netTotalEl.textContent = "—";
         if (avgNetEl) avgNetEl.textContent = "—";
-        if (extraCostsEl) extraCostsEl.textContent = "—";
+        if (extraCostsEl) {
+          extraCostsEl.textContent = "—";
+        }
         noteEl.textContent = "";
         updateDailyGoalStatus(0, 0);
       };
@@ -6153,28 +6175,40 @@
 
         const items = getHistory();
         const index = items.findIndex((item) => String(item.id) === String(id));
-        if (index === -1) return;
+        if (index === -1) {
+          return;
+        }
         const removed = items.splice(index, 1);
         setHistory(items);
-        if (removed.length && selectedDate === removed[0].date)
+        if (removed.length && selectedDate === removed[0].date) {
           selectedDate = removed[0].date;
+        }
         renderHistoryView();
         historyStatus.textContent = "Registro eliminado.";
       };
 
       dayDetailList.addEventListener("click", (event) => {
         const button = event.target.closest("button[data-action]");
-        if (!button) return;
+        if (!button) {
+          return;
+        }
         const action = button.getAttribute("data-action");
         const id = button.getAttribute("data-id");
+
         if (action === "delete") {
           deleteEntry(id);
           return;
         }
+
         const items = getHistory();
         const index = items.findIndex((item) => String(item.id) === String(id));
-        if (index === -1) return;
-        if (action === "edit") startEdit(items[index]);
+        if (index === -1) {
+          return;
+        }
+
+        if (action === "edit") {
+          startEdit(items[index]);
+        }
       });
 
       const getSyncCredentials = () => {
@@ -6236,17 +6270,21 @@
       };
 
       const handleSignOut = async () => {
-        if (!supabaseClient) return;
+        if (!supabaseClient) {
+          return;
+        }
         await supabaseClient.auth.signOut();
         setSyncStatus("Sesión cerrada. Usando datos locales.");
       };
 
       const applySavedGoals = () => {
         const goals = loadGoals();
-        if (goalHourlyInput)
+        if (goalHourlyInput) {
           goalHourlyInput.value = goals.hourly ? String(goals.hourly) : "";
-        if (goalWeeklyInput)
+        }
+        if (goalWeeklyInput) {
           goalWeeklyInput.value = goals.weekly ? String(goals.weekly) : "";
+        }
       };
 
       const handleGoalsChange = () => {
@@ -6256,12 +6294,14 @@
         updateDailyGoalStatus(avgGross, totalHours);
         updateWeeklyGoalStatus();
         updateWeeklySummary();
-        if (viewGoals && !viewGoals.classList.contains("hidden"))
+        if (viewGoals && !viewGoals.classList.contains("hidden")) {
           renderGoalsView();
+        }
       };
 
-      if (goalsDriverFilterInput)
+      if (goalsDriverFilterInput) {
         goalsDriverFilterInput.addEventListener("change", renderGoalsView);
+      }
 
       const goalsExpandBtn = document.getElementById("goals-expand-btn");
       const goalsStatsRow = document.getElementById("goals-stats-row");
@@ -6312,8 +6352,9 @@
           if (
             !topbarMenuBtn.contains(e.target) &&
             !topbarDropdown.contains(e.target)
-          )
+          ) {
             closeTopbarMenu();
+          }
         });
       }
 
@@ -6330,24 +6371,29 @@
         localStorage.setItem("darkmode", dark ? "1" : "0");
       };
 
-      if (darkmodeRow)
+      if (darkmodeRow) {
         darkmodeRow.addEventListener("click", () => {
           applyDarkMode(!document.body.classList.contains("dark"));
         });
+      }
+
       applyDarkMode(localStorage.getItem("darkmode") === "1");
 
       const topbarSyncBtn = document.getElementById("topbar-sync-btn");
       const syncDrawerCloseBtn = document.getElementById("sync-drawer-close");
+      const syncStatusDot = document.getElementById("sync-status-dot");
 
-      if (topbarSyncBtn && syncCard)
+      if (topbarSyncBtn && syncCard) {
         topbarSyncBtn.addEventListener("click", (e) => {
           e.stopPropagation();
           syncCard.classList.toggle("hidden");
         });
-      if (syncDrawerCloseBtn && syncCard)
+      }
+      if (syncDrawerCloseBtn && syncCard) {
         syncDrawerCloseBtn.addEventListener("click", () =>
           syncCard.classList.add("hidden")
         );
+      }
 
       const goalsConfigToggle = document.getElementById("goals-config-toggle");
       const goalsConfigOverlay = document.getElementById(
@@ -6384,40 +6430,51 @@
         timeStartInput.addEventListener(evt, calculate);
         timeEndInput.addEventListener(evt, calculate);
         fuelInput.addEventListener(evt, calculate);
-        if (tollsInput) tollsInput.addEventListener(evt, calculate);
-        if (parkingInput) parkingInput.addEventListener(evt, calculate);
-        if (otherExpensesInput)
+        if (tollsInput) {
+          tollsInput.addEventListener(evt, calculate);
+        }
+        if (parkingInput) {
+          parkingInput.addEventListener(evt, calculate);
+        }
+        if (otherExpensesInput) {
           otherExpensesInput.addEventListener(evt, calculate);
+        }
       });
 
-      if (goalHourlyInput)
+      if (goalHourlyInput) {
         goalHourlyInput.addEventListener("input", handleGoalsChange);
-      if (goalWeeklyInput)
+      }
+      if (goalWeeklyInput) {
         goalWeeklyInput.addEventListener("input", handleGoalsChange);
+      }
 
       const dayDetailCloseBtn = document.getElementById("day-detail-close");
       if (dayDetailCloseBtn) {
-        dayDetailCloseBtn.addEventListener("click", () => {
-          dayDetailCard.classList.add("hidden");
-          selectedDate = null;
-          document
-            .querySelectorAll(".calendar-day.selected")
-            .forEach((el) => el.classList.remove("selected"));
-        });
+        dayDetailCloseBtn.addEventListener("click", closeDayDetailPopup);
       }
+      document
+        .getElementById("day-detail-overlay")
+        ?.addEventListener("click", (e) => {
+          if (e.target === e.currentTarget) closeDayDetailPopup();
+        });
 
       monthFilterInput.addEventListener("change", renderHistoryView);
-      if (driverFilterInput)
+      if (driverFilterInput) {
         driverFilterInput.addEventListener("change", renderHistoryView);
-      if (driverInput)
+      }
+      if (driverInput) {
         driverInput.addEventListener("change", updateReminderBanner);
+      }
 
-      if (syncSignupButton)
+      if (syncSignupButton) {
         syncSignupButton.addEventListener("click", handleSignUp);
-      if (syncLoginButton)
+      }
+      if (syncLoginButton) {
         syncLoginButton.addEventListener("click", handleSignIn);
-      if (syncLogoutButton)
+      }
+      if (syncLogoutButton) {
         syncLogoutButton.addEventListener("click", handleSignOut);
+      }
 
       if (calcButton) calcButton.addEventListener("click", calculate);
       saveButton.addEventListener("click", saveEntry);
@@ -6655,6 +6712,7 @@
           parking: e.parking || 0,
           otherExpenses: e.otherExpenses || 0,
         }));
+
         saveLocalHistory(seeded);
         setHistory(seeded);
 
@@ -6828,6 +6886,7 @@
           .join("");
       };
 
+      // Modal state
       let repairEditId = null;
       let repairDeleteId = null;
 
@@ -6907,6 +6966,7 @@
       };
       window.openRepairDetail = openRepairDetail;
 
+      // Detail overlay buttons
       document
         .getElementById("repair-detail-close")
         .addEventListener("click", closeRepairDetail);
@@ -6918,10 +6978,10 @@
       document
         .getElementById("repair-detail-edit")
         .addEventListener("click", () => {
-          if (!activeRepairId) return;
-          const idToEdit = activeRepairId; // guardar antes de que closeRepairDetail lo nullifique
-          closeRepairDetail();
-          repairModalOpen(idToEdit);
+          if (activeRepairId) {
+            closeRepairDetail();
+            repairModalOpen(activeRepairId);
+          }
         });
       document
         .getElementById("repair-detail-delete")
@@ -6934,6 +6994,7 @@
           }
         });
 
+      // Wire up modal buttons
       document
         .getElementById("repair-add-btn")
         .addEventListener("click", () => repairModalOpen());
@@ -6974,6 +7035,7 @@
             .classList.add("hidden");
         });
 
+      // Close modals on overlay click
       document
         .getElementById("repair-modal-overlay")
         .addEventListener("click", (e) => {
@@ -6988,8 +7050,9 @@
               .classList.add("hidden");
         });
 
+      // Seed the two initial repairs from the image
       (() => {
-        if (loadRepairs().length > 0) return;
+        if (loadRepairs().length > 0) return; // already seeded
         const seed = [
           {
             id: "r-seed-1",
@@ -7017,6 +7080,7 @@
         saveRepairs(seed);
       })();
 
+      // Render on load
       renderRepairs();
       updateStatusBanner();
     </script>
