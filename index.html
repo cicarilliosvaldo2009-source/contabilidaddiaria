@@ -5676,8 +5676,8 @@
             e.stopPropagation();
             const action = btn.getAttribute("data-action");
             const id = btn.getAttribute("data-id");
-            closeDayDetailPopup();
             if (action === "delete") {
+              closeDayDetailPopup();
               deleteEntry(id);
               return;
             }
@@ -5685,7 +5685,10 @@
               const entry = getHistory().find(
                 (it) => String(it.id) === String(id)
               );
-              if (entry) startEdit(entry);
+              if (entry) {
+                closeDayDetailPopup();
+                startEdit(entry);
+              }
             }
           });
         });
@@ -5856,8 +5859,8 @@
         const totalHours = hours + mins / 60;
         const income = parseFloat(qeIncome ? qeIncome.value : 0) || 0;
         const fuel = parseFloat(qeFuel ? qeFuel.value : 0) || 0;
-        const tolls = original.tolls || 0;
-        const parking = original.parking || 0;
+        const tolls = parseFloat(qeTolls ? qeTolls.value : 0) || 0;
+        const parking = parseFloat(qeParking ? qeParking.value : 0) || 0;
         const otherExpenses = parseFloat(qeOther ? qeOther.value : 0) || 0;
         const net = income - fuel - tolls - parking - otherExpenses;
         const updated = normalizeEntry({
