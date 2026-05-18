@@ -4760,21 +4760,23 @@
         }
       };
 
-      const getThresholds = (weekday) => {
-        if (weekday === 5) {
-          return { low: 12000, mid: 15000, high: 17000 };
+      const getThresholds = () => {
+        const { hourly } = getGoals();
+        if (hourly > 0) {
+          // Basado en la meta por hora del usuario
+          return {
+            low: hourly * 0.7, // < 70% de la meta → rojo
+            mid: hourly * 0.9, // 70–90% → naranja
+            high: hourly, // ≥ 100% → verde
+          };
         }
-        if (weekday === 6 || weekday === 0) {
-          return { low: 15000, mid: 17000, high: 20000 };
-        }
+        // Sin meta definida: umbrales genéricos
         return { low: 10000, mid: 13000, high: 15000 };
       };
 
-      const getHeatColors = (avgGross, weekday) => {
-        if (!Number.isFinite(avgGross) || avgGross <= 0) {
-          return null;
-        }
-        const { low, mid, high } = getThresholds(weekday);
+      const getHeatColors = (avgGross) => {
+        if (!Number.isFinite(avgGross) || avgGross <= 0) return null;
+        const { low, mid, high } = getThresholds();
         let t = 0;
         if (avgGross <= low) {
           t = 0;
@@ -4785,9 +4787,8 @@
         } else {
           t = 1;
         }
-
-        const clamp = (value) => Math.max(0, Math.min(1, value));
-        const mix = (a, b, ratio) => Math.round(a + (b - a) * ratio);
+        const clamp = (v) => Math.max(0, Math.min(1, v));
+        const mix = (a, b, r) => Math.round(a + (b - a) * r);
         const red = { r: 255, g: 105, b: 97 };
         const green = { r: 200, g: 242, b: 185 };
         const baseT = clamp(t);
@@ -4803,8 +4804,8 @@
           b: mix(red.b, green.b, softT),
         };
         return {
-          soft: "rgb(" + soft.r + ", " + soft.g + ", " + soft.b + ")",
-          strong: "rgb(" + base.r + ", " + base.g + ", " + base.b + ")",
+          soft: `rgb(${soft.r}, ${soft.g}, ${soft.b})`,
+          strong: `rgb(${base.r}, ${base.g}, ${base.b})`,
         };
       };
 
@@ -5504,7 +5505,7 @@
           const avgGross =
             data && data.hours > 0 ? data.income / data.hours : 0;
           const weekday = new Date(year, monthIndex, day).getDay();
-          const colors = getHeatColors(avgGross, weekday);
+          const colors = getHeatColors(avgGross);
 
           const cell = document.createElement("button");
           cell.type = "button";
@@ -5642,12 +5643,10 @@
                </div>`
                 : "";
 
-            const editBtns = canEditEntry(e)
-              ? `<div class="entry-actions" style="margin-top:12px">
+            const editBtns = `<div class="entry-actions" style="margin-top:12px">
                 <button type="button" class="entry-action-btn" data-action="edit" data-id="${e.id}">Editar</button>
                 <button type="button" class="entry-action-btn entry-action-delete" data-action="delete" data-id="${e.id}">Eliminar</button>
-              </div>`
-              : "";
+              </div>`;
 
             return `
             <div style="background:rgba(0,0,0,0.02);border:1px solid var(--line);border-radius:14px;padding:14px 16px;${
@@ -6293,6 +6292,7 @@
         updateDailyGoalStatus(avgGross, totalHours);
         updateWeeklyGoalStatus();
         updateWeeklySummary();
+        renderCalendar(); // actualizar colores del calendario según nueva meta
         if (viewGoals && !viewGoals.classList.contains("hidden")) {
           renderGoalsView();
         }
