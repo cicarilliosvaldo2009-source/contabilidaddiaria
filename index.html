@@ -3886,9 +3886,23 @@
       let selectedDate = null;
 
       const today = new Date();
-      const todayString = today.toISOString().slice(0, 10);
+      const todayString = [
+        today.getFullYear(),
+        String(today.getMonth() + 1).padStart(2, "0"),
+        String(today.getDate()).padStart(2, "0"),
+      ].join("-");
+      const todayMonth = todayString.slice(0, 7);
       dateInput.value = todayString;
-      monthFilterInput.value = today.toISOString().slice(0, 7);
+      monthFilterInput.value = todayMonth;
+
+      // Convierte un Date a "YYYY-MM-DD" en hora local (evita el bug de UTC)
+      const localDateStr = (d) =>
+        [
+          d.getFullYear(),
+          String(d.getMonth() + 1).padStart(2, "0"),
+          String(d.getDate()).padStart(2, "0"),
+        ].join("-");
+      const localMonthStr = (d) => localDateStr(d).slice(0, 7);
 
       const MONTHS_ES = [
         "Enero",
@@ -4214,10 +4228,10 @@
         );
 
         const rangeText =
-          formatDateShort(start.toISOString().slice(0, 10)).slice(0, 5) +
+          formatDateShort(localDateStr(start)).slice(0, 5) +
           " al " +
           formatDateShort(
-            new Date(start.getTime() + 6 * 86400000).toISOString().slice(0, 10)
+            localDateStr(new Date(start.getTime() + 6 * 86400000))
           ).slice(0, 5);
         if (goalsWeekRangeEl) goalsWeekRangeEl.textContent = rangeText;
 
@@ -4360,12 +4374,12 @@
           if (!entry.date) return;
           const dd = new Date(entry.date + "T00:00:00");
           const { start: ws } = getWeekRange(dd);
-          const key = ws.toISOString().slice(0, 10);
+          const key = localDateStr(ws);
           if (!weekMap.has(key)) weekMap.set(key, { start: ws, entries: [] });
           weekMap.get(key).entries.push(entry);
         });
 
-        const currentWeekKey = start.toISOString().slice(0, 10);
+        const currentWeekKey = localDateStr(start);
 
         const monthsWithData = new Set();
         weekMap.forEach(({ start: ws }) => {
@@ -4443,9 +4457,9 @@
             const pctW = meta > 0 ? Math.min((earned / meta) * 100, 100) : 0;
             const overW = meta > 0 && earned >= meta;
             const dateLabel =
-              formatDateShort(ws.toISOString().slice(0, 10)).slice(0, 5) +
+              formatDateShort(localDateStr(ws)).slice(0, 5) +
               " al " +
-              formatDateShort(we_end.toISOString().slice(0, 10)).slice(0, 5);
+              formatDateShort(localDateStr(we_end)).slice(0, 5);
             const daysText =
               filteredWe.length +
               " día" +
@@ -4558,9 +4572,9 @@
         const { start: ws, entries: allWe } = weekMap.get(weekKey);
         const we_end = new Date(ws.getTime() + 6 * 86400000);
         const rangeShort =
-          formatDateShort(ws.toISOString().slice(0, 10)).slice(0, 5) +
+          formatDateShort(localDateStr(ws)).slice(0, 5) +
           " – " +
-          formatDateShort(we_end.toISOString().slice(0, 10)).slice(0, 5);
+          formatDateShort(localDateStr(we_end)).slice(0, 5);
 
         if (titleEl)
           titleEl.textContent =
@@ -4718,9 +4732,9 @@
 
         if (rangeEl)
           rangeEl.textContent =
-            formatDateShort(start.toISOString().slice(0, 10)).slice(0, 5) +
+            formatDateShort(localDateStr(start)).slice(0, 5) +
             " al " +
-            formatDateShort(weekEnd.toISOString().slice(0, 10)).slice(0, 5);
+            formatDateShort(localDateStr(weekEnd)).slice(0, 5);
         if (earnedEl) earnedEl.textContent = fmt.format(earned);
         if (targetEl)
           targetEl.textContent =
@@ -5170,7 +5184,7 @@
       };
 
       const renderMonthlySummary = () => {
-        const month = monthFilterInput.value || today.toISOString().slice(0, 7);
+        const month = monthFilterInput.value || localMonthStr(today);
         const items = filterByDriver(
           getHistory().filter(
             (entry) => entry.date && entry.date.startsWith(month)
@@ -5242,7 +5256,7 @@
         updateWeeklyGoalStatus();
       };
       const renderMonthProjection = () => {
-        const month = monthFilterInput.value || today.toISOString().slice(0, 7);
+        const month = monthFilterInput.value || localMonthStr(today);
         const [yearStr, monthStr] = month.split("-");
         const year = parseInt(yearStr, 10);
         const monthIndex = parseInt(monthStr, 10) - 1;
@@ -5400,7 +5414,7 @@
         const fixedItems = loadCarFixedItems();
         const fixedTotal = fixedItems.reduce((a, i) => a + (i.amount || 0), 0);
 
-        const currentMonth = today.toISOString().slice(0, 7);
+        const currentMonth = localMonthStr(today);
         const monthEntries = getHistory().filter(
           (e) => e.date && e.date.startsWith(currentMonth)
         );
@@ -5469,8 +5483,7 @@
         });
 
       const renderCalendar = () => {
-        const monthValue =
-          monthFilterInput.value || today.toISOString().slice(0, 7);
+        const monthValue = monthFilterInput.value || localMonthStr(today);
         const parts = monthValue.split("-");
         const year = parseInt(parts[0], 10) || today.getFullYear();
         const monthIndex = (parseInt(parts[1], 10) || today.getMonth() + 1) - 1;
@@ -5768,7 +5781,7 @@
             topbarTitle.textContent = VIEW_TITLES[view] || "Panel Uber";
           closeTopbarMenu();
           if (isHistory) {
-            const currentMonth = today.toISOString().slice(0, 7);
+            const currentMonth = localMonthStr(today);
             if (monthFilterInput) monthFilterInput.value = currentMonth;
             if (driverFilterInput) driverFilterInput.value = "all";
             selectedDate = null;
@@ -6914,9 +6927,9 @@
               r.costLabor || "";
           }
         } else {
-          document.getElementById("repair-date").value = new Date()
-            .toISOString()
-            .slice(0, 10);
+          document.getElementById("repair-date").value = localDateStr(
+            new Date()
+          );
           document.getElementById("repair-km").value = "";
           document.getElementById("repair-category").value = "Reparación";
           document.getElementById("repair-desc").value = "";
