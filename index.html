@@ -5611,78 +5611,109 @@
             }">${value}</strong>
           </div>`;
 
-        dayDetailList.innerHTML = items
-          .map((e, idx) => {
-            const avgGross = e.totalHours > 0 ? e.income / e.totalHours : 0;
-            const hasSchedule = e.timeStart || e.timeEnd;
-            const hasTolls = e.tolls > 0;
-            const hasParking = e.parking > 0;
-            const hasOther = e.otherExpenses > 0;
+        // Resumen unificado del día: se suman TODAS las cargas (sin importar el conductor)
+        const totals = items.reduce(
+          (acc, e) => {
+            acc.income += e.income || 0;
+            acc.fuel += e.fuel || 0;
+            acc.tolls += e.tolls || 0;
+            acc.parking += e.parking || 0;
+            acc.otherExpenses += e.otherExpenses || 0;
+            acc.net += e.net || 0;
+            acc.hours += e.totalHours || 0;
+            return acc;
+          },
+          {
+            income: 0,
+            fuel: 0,
+            tolls: 0,
+            parking: 0,
+            otherExpenses: 0,
+            net: 0,
+            hours: 0,
+          }
+        );
 
-            const scheduleRow = hasSchedule
-              ? row(
-                  "Horario",
-                  [e.timeStart, e.timeEnd].filter(Boolean).join(" → ")
-                )
-              : "";
-            const hoursRow = e.time
-              ? row("Horas trabajadas", e.time + " hs")
-              : "";
-            const avgRow =
-              avgGross > 0
-                ? row(
-                    "Promedio por hora",
-                    fmt.format(Math.round(avgGross)) + "/h"
-                  )
-                : "";
-            const tollsRow = hasTolls ? row("Peajes", fmt.format(e.tolls)) : "";
-            const parkingRow = hasParking
-              ? row("Estacionamiento", fmt.format(e.parking))
-              : "";
-            const otherRow = hasOther
-              ? row("Otros gastos", fmt.format(e.otherExpenses))
-              : "";
+        const avgGross = totals.hours > 0 ? totals.income / totals.hours : 0;
+        const hasTolls = totals.tolls > 0;
+        const hasParking = totals.parking > 0;
+        const hasOther = totals.otherExpenses > 0;
 
-            // Con múltiples cargas: etiqueta "Carga N · Conductor" en el header
-            const multiHeader =
-              items.length > 1
-                ? `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-                <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Carga ${
-                  idx + 1
-                }</span>
-                <span style="font-size:12px;font-weight:700;color:var(--accent-2)">${getDriverLabel(
-                  e.driver
-                )}</span>
-               </div>`
-                : "";
+        const tollsRow = hasTolls ? row("Peajes", fmt.format(totals.tolls)) : "";
+        const parkingRow = hasParking
+          ? row("Estacionamiento", fmt.format(totals.parking))
+          : "";
+        const otherRow = hasOther
+          ? row("Otros gastos", fmt.format(totals.otherExpenses))
+          : "";
+        const hoursRow =
+          totals.hours > 0
+            ? row("Horas trabajadas", totals.hours.toFixed(2) + " hs")
+            : "";
+        const avgRow =
+          avgGross > 0
+            ? row("Promedio por hora", fmt.format(Math.round(avgGross)) + "/h")
+            : "";
 
-            const editBtns = `<div class="entry-actions" style="margin-top:12px">
-                <button type="button" class="entry-action-btn" data-action="edit" data-id="${e.id}">Editar</button>
-                <button type="button" class="entry-action-btn entry-action-delete" data-action="delete" data-id="${e.id}">Eliminar</button>
-              </div>`;
+        // Conductores que aportaron cargas ese día (sin repetir)
+        const driverIds = [...new Set(items.map((e) => e.driver))];
+        const driversLabel = driverIds.map(getDriverLabel).join(" + ");
+
+        const summaryCard = `
+          <div style="background:rgba(0,0,0,0.02);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:14px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <span style="font-size:15px;font-weight:800;color:var(--ink)">${driversLabel}</span>
+              <span style="font-size:18px;font-weight:800;color:var(--accent-2)">${fmt.format(
+                totals.net
+              )}<span style="font-size:11px;font-weight:600;color:var(--muted);margin-left:3px">neto</span></span>
+            </div>
+            <div style="border-top:2px solid var(--line);padding-top:8px">
+              ${row("Ingreso bruto", fmt.format(totals.income), "var(--accent)")}
+              ${row("Combustible", fmt.format(totals.fuel))}
+              ${tollsRow}${parkingRow}${otherRow}${hoursRow}${avgRow}
+            </div>
+          </div>`;
+
+        // Detalle de cada carga individual, en formato compacto, solo para editar/eliminar
+        const detailRows = items
+          .map((e) => {
+            const scheduleLabel = [e.timeStart, e.timeEnd]
+              .filter(Boolean)
+              .join(" → ");
+            const metaParts = [getDriverLabel(e.driver)];
+            if (scheduleLabel) metaParts.push(scheduleLabel);
+            if (e.time) metaParts.push(e.time + " hs");
 
             return `
-            <div style="background:rgba(0,0,0,0.02);border:1px solid var(--line);border-radius:14px;padding:14px 16px;${
-              idx < items.length - 1 ? "margin-bottom:12px" : ""
-            }">
-              ${multiHeader}
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-                <span style="font-size:15px;font-weight:800;color:var(--ink)">${getDriverLabel(
-                  e.driver
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)">
+              <div style="display:flex;flex-direction:column;gap:2px">
+                <span style="font-size:12px;color:var(--muted)">${metaParts.join(
+                  " · "
                 )}</span>
-                <span style="font-size:18px;font-weight:800;color:var(--accent-2)">${fmt.format(
+                <span style="font-size:13px;font-weight:700;color:var(--ink)">${fmt.format(
                   e.net
-                )}<span style="font-size:11px;font-weight:600;color:var(--muted);margin-left:3px">neto</span></span>
+                )} <span style="font-weight:500;color:var(--muted)">neto</span></span>
               </div>
-              <div style="border-top:2px solid var(--line);padding-top:8px">
-                ${row("Ingreso bruto", fmt.format(e.income), "var(--accent)")}
-                ${row("Combustible", fmt.format(e.fuel || 0))}
-                ${tollsRow}${parkingRow}${otherRow}${scheduleRow}${hoursRow}${avgRow}
+              <div class="entry-actions">
+                <button type="button" class="entry-action-btn" data-action="edit" data-id="${e.id}">Editar</button>
+                <button type="button" class="entry-action-btn entry-action-delete" data-action="delete" data-id="${e.id}">Eliminar</button>
               </div>
-              ${editBtns}
             </div>`;
           })
           .join("");
+
+        const detailSection =
+          items.length > 1
+            ? `<div style="margin-top:4px">
+                <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Cargas del día (${items.length})</div>
+                ${detailRows}
+              </div>`
+            : `<div class="entry-actions" style="margin-top:4px">
+                <button type="button" class="entry-action-btn" data-action="edit" data-id="${items[0].id}">Editar</button>
+                <button type="button" class="entry-action-btn entry-action-delete" data-action="delete" data-id="${items[0].id}">Eliminar</button>
+              </div>`;
+
+        dayDetailList.innerHTML = summaryCard + detailSection;
 
         dayDetailList.querySelectorAll("button[data-action]").forEach((btn) => {
           btn.addEventListener("click", (e) => {
