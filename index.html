@@ -2657,40 +2657,23 @@
                 <button type="button" class="primary" id="clear-btn">
                   Limpiar
                 </button>
-              </div>
-
-              <div
-                id="ocr-scan-block"
-                style="
-                  grid-column: 1/-1;
-                  border: 1px dashed var(--line);
-                  border-radius: 12px;
-                  padding: 10px 12px;
-                  display: flex;
-                  flex-direction: column;
-                  gap: 6px;
-                "
-              >
-                <input
-                  type="file"
-                  accept="image/*"
-                  id="ocr-photo-input"
-                  class="hidden"
-                />
+                <input type="file" accept="image/*" id="ocr-photo-input" class="hidden" />
                 <button
                   type="button"
                   class="secondary"
                   id="ocr-scan-btn"
-                  style="width: 100%"
+                  title="Cargar con foto (resumen de Uber)"
+                  aria-label="Cargar con foto (resumen de Uber)"
+                  style="font-size: 18px; line-height: 1; padding: 10px 16px"
                 >
-                  📷 Cargar con foto (resumen de Uber)
+                  📷
                 </button>
-                <p
-                  class="note"
-                  id="ocr-status"
-                  style="margin: 0; text-align: center; min-height: 16px"
-                ></p>
               </div>
+              <p
+                class="note"
+                id="ocr-status"
+                style="margin: 6px 0 0; text-align: center; display: none"
+              ></p>
             </form>
           </section>
 
@@ -4174,11 +4157,17 @@
         return { start, end };
       };
 
+      const setOcrStatus = (msg) => {
+        if (!ocrStatus) return;
+        ocrStatus.textContent = msg || "";
+        ocrStatus.style.display = msg ? "block" : "none";
+      };
+
       const handleOcrFile = async (file) => {
         if (!file) return;
 
         ocrScanBtn.disabled = true;
-        if (ocrStatus) ocrStatus.textContent = "Preparando lector…";
+        setOcrStatus("Preparando lector…");
 
         try {
           await loadTesseract();
@@ -4187,13 +4176,10 @@
 
           const worker = await Tesseract.createWorker("spa", 1, {
             logger: (m) => {
-              if (
-                ocrStatus &&
-                m.status === "recognizing text" &&
-                typeof m.progress === "number"
-              ) {
-                ocrStatus.textContent =
-                  "Leyendo la foto… " + Math.round(m.progress * 100) + "%";
+              if (m.status === "recognizing text" && typeof m.progress === "number") {
+                setOcrStatus(
+                  "Leyendo la foto… " + Math.round(m.progress * 100) + "%"
+                );
               }
             },
           });
@@ -4220,18 +4206,18 @@
           syncTimeWorked();
           calculate();
 
-          if (ocrStatus) {
-            ocrStatus.textContent = found.length
+          setOcrStatus(
+            found.length
               ? "Detectamos " +
-                found.join(" y ") +
-                ". Revisá los datos antes de guardar."
-              : "No pudimos detectar los datos de la foto. Cargalos a mano.";
-          }
+                  found.join(" y ") +
+                  ". Revisá los datos antes de guardar."
+              : "No pudimos detectar los datos de la foto. Cargalos a mano."
+          );
         } catch (err) {
           console.error(err);
-          if (ocrStatus)
-            ocrStatus.textContent =
-              "No se pudo leer la imagen. Probá con otra foto o cargá los datos a mano.";
+          setOcrStatus(
+            "No se pudo leer la imagen. Probá con otra foto o cargá los datos a mano."
+          );
         } finally {
           ocrScanBtn.disabled = false;
         }
