@@ -2564,6 +2564,40 @@
                 <input type="date" id="date" />
               </div>
 
+              <div
+                id="ocr-scan-block"
+                style="
+                  grid-column: 1/-1;
+                  border: 1px dashed var(--line);
+                  border-radius: 12px;
+                  padding: 10px 12px;
+                  display: flex;
+                  flex-direction: column;
+                  gap: 6px;
+                "
+              >
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  id="ocr-photo-input"
+                  class="hidden"
+                />
+                <button
+                  type="button"
+                  class="secondary"
+                  id="ocr-scan-btn"
+                  style="width: 100%"
+                >
+                  📷 Cargar con foto (resumen de Uber)
+                </button>
+                <p
+                  class="note"
+                  id="ocr-status"
+                  style="margin: 0; text-align: center; min-height: 16px"
+                ></p>
+              </div>
+
               <div>
                 <label for="income">Ganancia total del día</label>
                 <input
@@ -4004,6 +4038,157 @@
           timeWorkedDisplay.style.display = "none";
         }
       };
+
+      // ── Carga automática desde foto (resumen de sesión de Uber) ──
+      const ocrPhotoInput = document.getElementById("ocr-photo-input");
+      const ocrScanBtn = document.getElementById("ocr-scan-btn");
+      const ocrStatus = document.getElementById("ocr-status");
+
+      let tesseractLoadPromise = null;
+      const loadTesseract = () => {
+        if (window.Tesseract) return Promise.resolve();
+        if (tesseractLoadPromise) return tesseractLoadPromise;
+        tesseractLoadPromise = new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src =
+            "https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";
+          script.onload = () => resolve();
+          script.onerror = () =>
+            reject(new Error("No se pudo cargar el lector de imágenes."));
+          document.head.appendChild(script);
+        });
+        return tesseractLoadPromise;
+      };
+
+      // Convierte "6:49 p. m." / "6:49pm" / "18:49" a formato 24hs "HH:MM"
+      const parseClockTo24h = (raw) => {
+        if (!raw) return null;
+        const clean = raw.toLowerCase().replace(/\s+/g, " ").trim();
+        const withAmPm = clean.match(/(\d{1,2}):(\d{2})\s*([ap])\.?\s*\.?m\.?/);
+        if (withAmPm) {
+          let h = parseInt(withAmPm[1], 10);
+          const min = parseInt(withAmPm[2], 10);
+          const isPm = withAmPm[3] === "p";
+          if (isPm && h !== 12) h += 12;
+          if (!isPm && h === 12) h = 0;
+          if (h > 23 || min > 59) return null;
+          return pad2(h) + ":" + pad2(min);
+        }
+        const only24 = clean.match(/^(\d{1,2}):(\d{2})$/);
+        if (only24) {
+          const h = parseInt(only24[1], 10);
+          const min = parseInt(only24[2], 10);
+          if (h > 23 || min > 59) return null;
+          return pad2(h) + ":" + pad2(min);
+        }
+        return null;
+      };
+
+      // "63.000" / "63,000" / "63000" -> 63000 (formato AR: punto = miles, coma = decimales)
+      const normalizeArNumber = (raw) => {
+        if (!raw) return null;
+        const clean = raw.replace(/\./g, "").replace(",", ".");
+        const value = parseFloat(clean);
+        return Number.isFinite(value) ? value : null;
+      };
+
+      const extractIncomeFromText = (text) => {
+        const currencyMatch = text.match(
+          /(?:ARS|AR\$|\$)\s*([\d]{1,3}(?:[.,]\d{3})*(?:[.,]\d{1,2})?)/i
+        );
+        if (currencyMatch) {
+          const value = normalizeArNumber(currencyMatch[1]);
+          if (value) return value;
+        }
+        // Sin símbolo de moneda: nos quedamos con el número más grande del texto
+        const numbers = text.match(
+          /\d{1,3}(?:[.,]\d{3})+(?:[.,]\d{1,2})?|\d{4,}/g
+        );
+        if (numbers && numbers.length) {
+          const values = numbers
+            .map(normalizeArNumber)
+            .filter((v) => v !== null);
+          if (values.length) return Math.max(...values);
+        }
+        return null;
+      };
+
+      const extractTimeRangeFromText = (text) => {
+        const re =
+          /(\d{1,2}:\d{2}\s*[ap]\.?\s*\.?m\.?)\s*(?:a|-|–|—|to|hasta)\s*(\d{1,2}:\d{2}\s*[ap]\.?\s*\.?m\.?)/i;
+        const match = text.match(re);
+        if (!match) return null;
+        const start = parseClockTo24h(match[1]);
+        const end = parseClockTo24h(match[2]);
+        if (!start || !end) return null;
+        return { start, end };
+      };
+
+      if (ocrScanBtn && ocrPhotoInput) {
+        ocrScanBtn.addEventListener("click", () => ocrPhotoInput.click());
+
+        ocrPhotoInput.addEventListener("change", async () => {
+          const file = ocrPhotoInput.files && ocrPhotoInput.files[0];
+          ocrPhotoInput.value = ""; // permite elegir la misma foto otra vez
+          if (!file) return;
+
+          ocrScanBtn.disabled = true;
+          if (ocrStatus) ocrStatus.textContent = "Preparando lector…";
+
+          try {
+            await loadTesseract();
+            if (ocrStatus) ocrStatus.textContent = "Leyendo la foto…";
+
+            const worker = await Tesseract.createWorker("spa", 1, {
+              logger: (m) => {
+                if (
+                  ocrStatus &&
+                  m.status === "recognizing text" &&
+                  typeof m.progress === "number"
+                ) {
+                  ocrStatus.textContent =
+                    "Leyendo la foto… " + Math.round(m.progress * 100) + "%";
+                }
+              },
+            });
+            const { data } = await worker.recognize(file);
+            await worker.terminate();
+
+            const text = data.text || "";
+            const income = extractIncomeFromText(text);
+            const times = extractTimeRangeFromText(text);
+
+            const found = [];
+            if (income !== null) {
+              incomeInput.value = income;
+              found.push("la ganancia");
+            }
+            if (times) {
+              timeStartInput.value = times.start;
+              timeEndInput.value = times.end;
+              found.push("el horario");
+            }
+
+            syncTimeWorked();
+            calculate();
+
+            if (ocrStatus) {
+              ocrStatus.textContent = found.length
+                ? "Detectamos " +
+                  found.join(" y ") +
+                  ". Revisá los datos antes de guardar."
+                : "No pudimos detectar los datos de la foto. Cargalos a mano.";
+            }
+          } catch (err) {
+            console.error(err);
+            if (ocrStatus)
+              ocrStatus.textContent =
+                "No se pudo leer la imagen. Probá con otra foto o cargá los datos a mano.";
+          } finally {
+            ocrScanBtn.disabled = false;
+          }
+        });
+      }
 
       const syncQeTime = () => {
         if (!qeTimeStart || !qeTimeEnd) return;
@@ -5572,10 +5757,11 @@
 
         if (!date) return;
 
-        // Mostramos TODAS las cargas del día, sin filtro de conductor
-        const items = getHistory()
-          .filter((entry) => entry.date === date)
-          .sort((a, b) => (a.time || "").localeCompare(b.time || ""));
+        // Si hay un conductor seleccionado en el filtro, mostramos solo sus cargas;
+        // con "Todos" seleccionado, se muestran (y suman) las cargas de ambos conductores
+        const items = filterByDriver(
+          getHistory().filter((entry) => entry.date === date)
+        ).sort((a, b) => (a.time || "").localeCompare(b.time || ""));
 
         if (!items.length) return;
 
