@@ -2760,35 +2760,18 @@
                 <input
                   type="file"
                   accept="image/*"
-                  capture="environment"
-                  id="ocr-photo-input-camera"
+                  id="ocr-photo-input"
                   class="hidden"
                 />
                 <button
                   type="button"
                   class="secondary"
-                  id="ocr-scan-btn-camera"
-                  title="Tomar foto"
-                  aria-label="Tomar foto"
+                  id="ocr-scan-btn"
+                  title="Cargar con foto (resumen de Uber)"
+                  aria-label="Cargar con foto (resumen de Uber)"
                   style="font-size: 18px; line-height: 1; padding: 10px 16px"
                 >
                   📷
-                </button>
-                <input
-                  type="file"
-                  accept="image/*"
-                  id="ocr-photo-input-gallery"
-                  class="hidden"
-                />
-                <button
-                  type="button"
-                  class="secondary"
-                  id="ocr-scan-btn-gallery"
-                  title="Fototeca"
-                  aria-label="Fototeca"
-                  style="font-size: 18px; line-height: 1; padding: 10px 16px"
-                >
-                  🖼️
                 </button>
               </div>
               <p
@@ -4159,16 +4142,8 @@
       };
 
       // ── Carga automática desde foto (resumen de sesión de Uber) ──
-      const ocrPhotoInputCamera = document.getElementById(
-        "ocr-photo-input-camera"
-      );
-      const ocrPhotoInputGallery = document.getElementById(
-        "ocr-photo-input-gallery"
-      );
-      const ocrScanBtnCamera = document.getElementById("ocr-scan-btn-camera");
-      const ocrScanBtnGallery = document.getElementById(
-        "ocr-scan-btn-gallery"
-      );
+      const ocrPhotoInput = document.getElementById("ocr-photo-input");
+      const ocrScanBtn = document.getElementById("ocr-scan-btn");
       const ocrStatus = document.getElementById("ocr-status");
 
       let tesseractLoadPromise = null;
@@ -4319,8 +4294,7 @@
       const handleOcrFile = async (file) => {
         if (!file) return;
 
-        ocrScanBtnCamera.disabled = true;
-        ocrScanBtnGallery.disabled = true;
+        ocrScanBtn.disabled = true;
         setOcrStatus("Preparando lector…");
 
         try {
@@ -4373,34 +4347,16 @@
             "No se pudo leer la imagen. Probá con otra foto o cargá los datos a mano."
           );
         } finally {
-          ocrScanBtnCamera.disabled = false;
-          ocrScanBtnGallery.disabled = false;
+          ocrScanBtn.disabled = false;
         }
       };
 
-      if (
-        ocrScanBtnCamera &&
-        ocrPhotoInputCamera &&
-        ocrScanBtnGallery &&
-        ocrPhotoInputGallery
-      ) {
-        ocrScanBtnCamera.addEventListener("click", () =>
-          ocrPhotoInputCamera.click()
-        );
-        ocrScanBtnGallery.addEventListener("click", () =>
-          ocrPhotoInputGallery.click()
-        );
+      if (ocrScanBtn && ocrPhotoInput) {
+        ocrScanBtn.addEventListener("click", () => ocrPhotoInput.click());
 
-        ocrPhotoInputCamera.addEventListener("change", () => {
-          const file =
-            ocrPhotoInputCamera.files && ocrPhotoInputCamera.files[0];
-          ocrPhotoInputCamera.value = ""; // permite elegir la misma foto otra vez
-          handleOcrFile(file);
-        });
-        ocrPhotoInputGallery.addEventListener("change", () => {
-          const file =
-            ocrPhotoInputGallery.files && ocrPhotoInputGallery.files[0];
-          ocrPhotoInputGallery.value = "";
+        ocrPhotoInput.addEventListener("change", () => {
+          const file = ocrPhotoInput.files && ocrPhotoInput.files[0];
+          ocrPhotoInput.value = ""; // permite elegir la misma foto otra vez
           handleOcrFile(file);
         });
       }
@@ -5067,9 +5023,18 @@
             : { label: labelFn(worstIdx), value: worstVal };
         };
 
+        const hourRangeLabel = (i) =>
+          pad2(i) + ":00 – " + pad2((i + 1) % 24) + ":00 hs";
+
         const bestDay = bestOf(weekdayAvgs, (i) => WEEKDAY_LABELS[WEEKDAY_ORDER[i]]);
-        const bestHour = bestOf(hourAvgs, (i) => pad2(i) + ":00 hs");
-        const worstHour = worstOf(hourAvgs, (i) => pad2(i) + ":00 hs");
+        const bestHour = bestOf(hourAvgs, hourRangeLabel);
+        const worstHourRaw = worstOf(hourAvgs, hourRangeLabel);
+        // Si solo hay una franja con datos, no tiene sentido mostrarla como
+        // "la más floja" además de "la mejor": son la misma.
+        const worstHour =
+          worstHourRaw && bestHour && worstHourRaw.label === bestHour.label
+            ? null
+            : worstHourRaw;
 
         const highlightsHtml = `
           <div class="stats-highlights">
@@ -5091,7 +5056,11 @@
               <span class="stats-highlight-label">Franja más floja</span>
               <strong>${worstHour ? worstHour.label : "—"}</strong>
               <span class="stats-highlight-sub">${
-                worstHour ? fmt.format(worstHour.value) + "/hora en promedio" : "Cargá el horario de inicio y fin"
+                worstHour
+                  ? fmt.format(worstHour.value) + "/hora en promedio"
+                  : bestHour
+                  ? "Todavía hay una sola franja con datos"
+                  : "Cargá el horario de inicio y fin"
               }</span>
             </div>
           </div>`;
@@ -5119,7 +5088,7 @@
         const maxHour = Math.max(0, ...hourAvgs.filter((v) => v !== null));
         const hourBarsHtml = hourAvgs
           .map((val, h) => {
-            const isBest = bestHour && bestHour.label === pad2(h) + ":00 hs";
+            const isBest = bestHour && bestHour.label === hourRangeLabel(h);
             const heightPx =
               val === null || maxHour <= 0
                 ? 3
