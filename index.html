@@ -3018,31 +3018,9 @@
       <section id="view-stats" class="view hidden">
         <div class="view-grid" style="grid-template-columns: 1fr">
           <section class="card" style="padding: 20px">
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                gap: 10px;
-                flex-wrap: wrap;
-                margin-bottom: 4px;
-              "
-            >
-              <h2 style="margin: 0; font-size: 15px">
-                ¿En qué horas y días se gana más?
-              </h2>
-              <div class="filter-group">
-                <select id="stats-driver-filter">
-                  <option value="all">Todos</option>
-                  <option value="martin">Martín</option>
-                  <option value="osvaldo">Osvaldo</option>
-                </select>
-              </div>
-            </div>
-            <p class="note" style="margin: 0 0 16px">
-              Promedio bruto por hora trabajada (ingreso ÷ horas), agrupado
-              por franja horaria y por día de la semana.
-            </p>
+            <h2 style="margin: 0 0 16px; font-size: 15px">
+              ¿En qué horas y días se gana más?
+            </h2>
             <div id="stats-empty-note" class="note" style="margin: 0"></div>
             <div id="stats-content"></div>
           </section>
@@ -5053,8 +5031,11 @@
           }
         });
 
+        // Exigimos al menos 30 min acumulados para considerar el promedio
+        // confiable; con menos que eso, unos pocos minutos mal cargados
+        // pueden disparar el $/hora a valores absurdos.
         const avgOf = (bucket) =>
-          bucket.hours > 0.05 ? bucket.income / bucket.hours : null;
+          bucket.hours >= 0.5 ? bucket.income / bucket.hours : null;
 
         const weekdayAvgs = WEEKDAY_ORDER.map((d) => avgOf(weekdayBuckets[d]));
         const hourAvgs = hourBuckets.map(avgOf);
@@ -5162,10 +5143,10 @@
           highlightsHtml +
           `<p class="stats-block-title">Promedio por hora según día de la semana</p>
           <div class="stats-bar-chart">${weekdayBarsHtml}</div>` +
-          `<p class="stats-block-title">Promedio por hora según franja horaria (0 a 23 hs)</p>` +
           (hasHourData
-            ? `<div class="stats-bar-chart">${hourBarsHtml}</div>`
-            : `<p class="note" style="margin:0 0 20px">Para ver esto, cargá las jornadas con hora de inicio y hora de fin (por ejemplo, con la foto del resumen de Uber).</p>`);
+            ? `<p class="stats-block-title">Promedio por hora según franja horaria (0 a 23 hs)</p>
+          <div class="stats-bar-chart">${hourBarsHtml}</div>`
+            : "");
       };
 
       const openWeekDetail = (weekKey, weekMap) => {
@@ -5512,6 +5493,8 @@
           id: row.id,
           date: row.date,
           time: row.time,
+          timeStart: row.time_start || "",
+          timeEnd: row.time_end || "",
           income: row.income,
           fuel: row.fuel,
           tolls: row.tolls,
@@ -5531,6 +5514,8 @@
         team_id: TEAM_ID,
         date: entry.date,
         time: entry.time,
+        time_start: entry.timeStart || null,
+        time_end: entry.timeEnd || null,
         income: entry.income,
         fuel: entry.fuel,
         tolls: entry.tolls,
