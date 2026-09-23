@@ -1995,10 +1995,107 @@
         color: var(--ink);
       }
 
+      /* ── Estadísticas: gráficos de barras ── */
+      .stats-highlights {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        margin-bottom: 22px;
+      }
+
+      .stats-highlight {
+        background: #fffdf7;
+        border: 1px dashed var(--line);
+        border-radius: 14px;
+        padding: 12px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      body.dark .stats-highlight {
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .stats-highlight-label {
+        font-size: 11px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .stats-highlight strong {
+        font-size: 17px;
+        color: var(--ink);
+      }
+
+      .stats-highlight span.stats-highlight-sub {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .stats-block-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin: 0 0 10px;
+      }
+
+      .stats-bar-chart {
+        display: flex;
+        align-items: flex-end;
+        gap: 6px;
+        height: 170px;
+        padding-top: 22px;
+        margin-bottom: 28px;
+        overflow-x: auto;
+      }
+
+      .stats-bar-col {
+        flex: 1;
+        min-width: 22px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        height: 100%;
+        gap: 4px;
+      }
+
+      .stats-bar-value {
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--ink);
+        white-space: nowrap;
+      }
+
+      .stats-bar {
+        width: 60%;
+        min-width: 8px;
+        border-radius: 6px 6px 2px 2px;
+        background: var(--accent-2);
+        transition: height 0.2s ease;
+      }
+
+      .stats-bar.stats-bar-best {
+        background: var(--accent);
+      }
+
+      .stats-bar.stats-bar-empty {
+        background: var(--line);
+      }
+
+      .stats-bar-label {
+        font-size: 10px;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
       .goals-weeks-list {
         display: grid;
-        gap: 10px;
-      }
+        gap: 10px;      }
 
       .goals-week-row {
         display: grid;
@@ -2395,6 +2492,9 @@
               <button type="button" class="nav-btn" data-view="history">
                 Historial
               </button>
+              <button type="button" class="nav-btn" data-view="stats">
+                Estadísticas
+              </button>
               <button type="button" class="nav-btn" data-view="goals">
                 Metas
               </button>
@@ -2657,16 +2757,38 @@
                 <button type="button" class="primary" id="clear-btn">
                   Limpiar
                 </button>
-                <input type="file" accept="image/*" id="ocr-photo-input" class="hidden" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  id="ocr-photo-input-camera"
+                  class="hidden"
+                />
                 <button
                   type="button"
                   class="secondary"
-                  id="ocr-scan-btn"
-                  title="Cargar con foto (resumen de Uber)"
-                  aria-label="Cargar con foto (resumen de Uber)"
+                  id="ocr-scan-btn-camera"
+                  title="Tomar foto"
+                  aria-label="Tomar foto"
                   style="font-size: 18px; line-height: 1; padding: 10px 16px"
                 >
                   📷
+                </button>
+                <input
+                  type="file"
+                  accept="image/*"
+                  id="ocr-photo-input-gallery"
+                  class="hidden"
+                />
+                <button
+                  type="button"
+                  class="secondary"
+                  id="ocr-scan-btn-gallery"
+                  title="Fototeca"
+                  aria-label="Fototeca"
+                  style="font-size: 18px; line-height: 1; padding: 10px 16px"
+                >
+                  🖼️
                 </button>
               </div>
               <p
@@ -2891,6 +3013,39 @@
               </div>
             </section>
           </div>
+        </div>
+      </section>
+      <section id="view-stats" class="view hidden">
+        <div class="view-grid" style="grid-template-columns: 1fr">
+          <section class="card" style="padding: 20px">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+                flex-wrap: wrap;
+                margin-bottom: 4px;
+              "
+            >
+              <h2 style="margin: 0; font-size: 15px">
+                ¿En qué horas y días se gana más?
+              </h2>
+              <div class="filter-group">
+                <select id="stats-driver-filter">
+                  <option value="all">Todos</option>
+                  <option value="martin">Martín</option>
+                  <option value="osvaldo">Osvaldo</option>
+                </select>
+              </div>
+            </div>
+            <p class="note" style="margin: 0 0 16px">
+              Promedio bruto por hora trabajada (ingreso ÷ horas), agrupado
+              por franja horaria y por día de la semana.
+            </p>
+            <div id="stats-empty-note" class="note" style="margin: 0"></div>
+            <div id="stats-content"></div>
+          </section>
         </div>
       </section>
       <section id="view-goals" class="view hidden">
@@ -3857,6 +4012,10 @@
       const viewMain = document.getElementById("view-main");
       const viewHistory = document.getElementById("view-history");
       const viewGoals = document.getElementById("view-goals");
+      const viewStats = document.getElementById("view-stats");
+      const statsDriverFilterInput = document.getElementById(
+        "stats-driver-filter"
+      );
       const goalsDriverFilterInput = document.getElementById(
         "goals-driver-filter"
       );
@@ -4022,8 +4181,16 @@
       };
 
       // ── Carga automática desde foto (resumen de sesión de Uber) ──
-      const ocrPhotoInput = document.getElementById("ocr-photo-input");
-      const ocrScanBtn = document.getElementById("ocr-scan-btn");
+      const ocrPhotoInputCamera = document.getElementById(
+        "ocr-photo-input-camera"
+      );
+      const ocrPhotoInputGallery = document.getElementById(
+        "ocr-photo-input-gallery"
+      );
+      const ocrScanBtnCamera = document.getElementById("ocr-scan-btn-camera");
+      const ocrScanBtnGallery = document.getElementById(
+        "ocr-scan-btn-gallery"
+      );
       const ocrStatus = document.getElementById("ocr-status");
 
       let tesseractLoadPromise = null;
@@ -4096,11 +4263,19 @@
         return null;
       };
 
-      // "63.000" / "63,000" / "63000" -> 63000 (formato AR: punto = miles, coma = decimales)
-      const normalizeArNumber = (raw) => {
+      // Convierte cualquier número con puntos y/o comas a pesos enteros, SIN
+      // decimales: "66.000" -> 66000, "72,847.00" -> 72847, "6.000,50" -> 6000.
+      // Regla: si el último grupo (tras el separador final) tiene 3 dígitos,
+      // es separador de miles ("66.000" = 66000). Si tiene 1 o 2 dígitos, son
+      // centavos y se descartan ("72,847.00" = 72847 pesos, sin los ".00").
+      const normalizeIncomeAmount = (raw) => {
         if (!raw) return null;
-        const clean = raw.replace(/\./g, "").replace(",", ".");
-        const value = parseFloat(clean);
+        const parts = raw.split(/[.,]/).filter((p) => p.length > 0);
+        if (!parts.length) return null;
+        const last = parts[parts.length - 1];
+        const wholeParts = last.length === 3 ? parts : parts.slice(0, -1);
+        const digits = (wholeParts.length ? wholeParts : parts).join("");
+        const value = parseInt(digits, 10);
         return Number.isFinite(value) ? value : null;
       };
 
@@ -4109,7 +4284,7 @@
           /(?:ARS|AR\$|\$)\s*([\d]{1,3}(?:[.,]\d{3})*(?:[.,]\d{1,2})?)/i
         );
         if (currencyMatch) {
-          const value = normalizeArNumber(currencyMatch[1]);
+          const value = normalizeIncomeAmount(currencyMatch[1]);
           if (value) return value;
         }
         // Sin símbolo de moneda: nos quedamos con el número más grande del texto
@@ -4118,7 +4293,7 @@
         );
         if (numbers && numbers.length) {
           const values = numbers
-            .map(normalizeArNumber)
+            .map(normalizeIncomeAmount)
             .filter((v) => v !== null);
           if (values.length) return Math.max(...values);
         }
@@ -4166,7 +4341,8 @@
       const handleOcrFile = async (file) => {
         if (!file) return;
 
-        ocrScanBtn.disabled = true;
+        ocrScanBtnCamera.disabled = true;
+        ocrScanBtnGallery.disabled = true;
         setOcrStatus("Preparando lector…");
 
         try {
@@ -4219,16 +4395,34 @@
             "No se pudo leer la imagen. Probá con otra foto o cargá los datos a mano."
           );
         } finally {
-          ocrScanBtn.disabled = false;
+          ocrScanBtnCamera.disabled = false;
+          ocrScanBtnGallery.disabled = false;
         }
       };
 
-      if (ocrScanBtn && ocrPhotoInput) {
-        ocrScanBtn.addEventListener("click", () => ocrPhotoInput.click());
+      if (
+        ocrScanBtnCamera &&
+        ocrPhotoInputCamera &&
+        ocrScanBtnGallery &&
+        ocrPhotoInputGallery
+      ) {
+        ocrScanBtnCamera.addEventListener("click", () =>
+          ocrPhotoInputCamera.click()
+        );
+        ocrScanBtnGallery.addEventListener("click", () =>
+          ocrPhotoInputGallery.click()
+        );
 
-        ocrPhotoInput.addEventListener("change", () => {
-          const file = ocrPhotoInput.files && ocrPhotoInput.files[0];
-          ocrPhotoInput.value = ""; // permite elegir la misma foto otra vez
+        ocrPhotoInputCamera.addEventListener("change", () => {
+          const file =
+            ocrPhotoInputCamera.files && ocrPhotoInputCamera.files[0];
+          ocrPhotoInputCamera.value = ""; // permite elegir la misma foto otra vez
+          handleOcrFile(file);
+        });
+        ocrPhotoInputGallery.addEventListener("change", () => {
+          const file =
+            ocrPhotoInputGallery.files && ocrPhotoInputGallery.files[0];
+          ocrPhotoInputGallery.value = "";
           handleOcrFile(file);
         });
       }
@@ -4784,6 +4978,194 @@
             { passive: true }
           );
         }
+      };
+
+      // ── Estadísticas: por franja horaria y por día de la semana ──
+      const WEEKDAY_ORDER = [1, 2, 3, 4, 5, 6, 0]; // lunes ... domingo
+      const WEEKDAY_LABELS = {
+        0: "Dom",
+        1: "Lun",
+        2: "Mar",
+        3: "Mié",
+        4: "Jue",
+        5: "Vie",
+        6: "Sáb",
+      };
+
+      const renderStatsView = () => {
+        const content = document.getElementById("stats-content");
+        const emptyNote = document.getElementById("stats-empty-note");
+        if (!content) return;
+
+        const fmt = formatter();
+        const driverFilter = statsDriverFilterInput
+          ? statsDriverFilterInput.value
+          : "all";
+        const allItems = getHistory().filter((e) => (e.income || 0) > 0);
+        const items =
+          driverFilter === "all"
+            ? allItems
+            : allItems.filter((e) => e.driver === driverFilter);
+
+        if (!items.length) {
+          content.innerHTML = "";
+          if (emptyNote)
+            emptyNote.textContent =
+              "Todavía no hay jornadas cargadas para mostrar estadísticas.";
+          return;
+        }
+        if (emptyNote) emptyNote.textContent = "";
+
+        // ── Por día de la semana: usa el ingreso y las horas totales de cada jornada ──
+        const weekdayBuckets = {};
+        WEEKDAY_ORDER.forEach((d) => {
+          weekdayBuckets[d] = { income: 0, hours: 0, count: 0 };
+        });
+        items.forEach((e) => {
+          if (!e.date) return;
+          const day = new Date(e.date + "T00:00:00").getDay();
+          const bucket = weekdayBuckets[day];
+          if (!bucket) return;
+          bucket.income += e.income || 0;
+          bucket.hours += e.totalHours || 0;
+          bucket.count += 1;
+        });
+
+        // ── Por franja horaria: reparte el ingreso de cada jornada minuto a
+        // minuto entre las horas del día que ocupó (usa timeStart/timeEnd;
+        // las jornadas sin ese dato quedan afuera de este gráfico) ──
+        const hourBuckets = Array.from({ length: 24 }, () => ({
+          income: 0,
+          hours: 0,
+        }));
+        items.forEach((e) => {
+          if (!e.timeStart || !e.timeEnd) return;
+          const durationMin = calcMinutesBetween(e.timeStart, e.timeEnd);
+          if (!durationMin) return;
+          const [sh, sm] = e.timeStart.split(":").map(Number);
+          const startMin = sh * 60 + sm;
+          const incomePerMin = (e.income || 0) / durationMin;
+          for (let i = 0; i < durationMin; i++) {
+            const minuteOfDay = (startMin + i) % (24 * 60);
+            const hour = Math.floor(minuteOfDay / 60);
+            hourBuckets[hour].income += incomePerMin;
+            hourBuckets[hour].hours += 1 / 60;
+          }
+        });
+
+        const avgOf = (bucket) =>
+          bucket.hours > 0.05 ? bucket.income / bucket.hours : null;
+
+        const weekdayAvgs = WEEKDAY_ORDER.map((d) => avgOf(weekdayBuckets[d]));
+        const hourAvgs = hourBuckets.map(avgOf);
+
+        const bestOf = (avgs, labelFn) => {
+          let bestIdx = -1;
+          let bestVal = -Infinity;
+          avgs.forEach((v, i) => {
+            if (v !== null && v > bestVal) {
+              bestVal = v;
+              bestIdx = i;
+            }
+          });
+          return bestIdx === -1
+            ? null
+            : { label: labelFn(bestIdx), value: bestVal };
+        };
+        const worstOf = (avgs, labelFn) => {
+          let worstIdx = -1;
+          let worstVal = Infinity;
+          avgs.forEach((v, i) => {
+            if (v !== null && v < worstVal) {
+              worstVal = v;
+              worstIdx = i;
+            }
+          });
+          return worstIdx === -1
+            ? null
+            : { label: labelFn(worstIdx), value: worstVal };
+        };
+
+        const bestDay = bestOf(weekdayAvgs, (i) => WEEKDAY_LABELS[WEEKDAY_ORDER[i]]);
+        const bestHour = bestOf(hourAvgs, (i) => pad2(i) + ":00 hs");
+        const worstHour = worstOf(hourAvgs, (i) => pad2(i) + ":00 hs");
+
+        const highlightsHtml = `
+          <div class="stats-highlights">
+            <div class="stats-highlight">
+              <span class="stats-highlight-label">Mejor día</span>
+              <strong>${bestDay ? bestDay.label : "—"}</strong>
+              <span class="stats-highlight-sub">${
+                bestDay ? fmt.format(bestDay.value) + "/hora en promedio" : "Sin datos suficientes"
+              }</span>
+            </div>
+            <div class="stats-highlight">
+              <span class="stats-highlight-label">Mejor franja horaria</span>
+              <strong>${bestHour ? bestHour.label : "—"}</strong>
+              <span class="stats-highlight-sub">${
+                bestHour ? fmt.format(bestHour.value) + "/hora en promedio" : "Cargá el horario de inicio y fin"
+              }</span>
+            </div>
+            <div class="stats-highlight">
+              <span class="stats-highlight-label">Franja más floja</span>
+              <strong>${worstHour ? worstHour.label : "—"}</strong>
+              <span class="stats-highlight-sub">${
+                worstHour ? fmt.format(worstHour.value) + "/hora en promedio" : "Cargá el horario de inicio y fin"
+              }</span>
+            </div>
+          </div>`;
+
+        const maxWeekday = Math.max(0, ...weekdayAvgs.filter((v) => v !== null));
+        const weekdayBarsHtml = WEEKDAY_ORDER.map((d, i) => {
+          const val = weekdayAvgs[i];
+          const isBest = bestDay && WEEKDAY_LABELS[d] === bestDay.label && val === bestDay.value;
+          const heightPx =
+            val === null || maxWeekday <= 0
+              ? 3
+              : Math.max(6, Math.round((val / maxWeekday) * 140));
+          return `
+            <div class="stats-bar-col">
+              <span class="stats-bar-value">${
+                val === null ? "" : fmt.format(Math.round(val))
+              }</span>
+              <div class="stats-bar${
+                val === null ? " stats-bar-empty" : isBest ? " stats-bar-best" : ""
+              }" style="height:${heightPx}px"></div>
+              <span class="stats-bar-label">${WEEKDAY_LABELS[d]}</span>
+            </div>`;
+        }).join("");
+
+        const maxHour = Math.max(0, ...hourAvgs.filter((v) => v !== null));
+        const hourBarsHtml = hourAvgs
+          .map((val, h) => {
+            const isBest = bestHour && bestHour.label === pad2(h) + ":00 hs";
+            const heightPx =
+              val === null || maxHour <= 0
+                ? 3
+                : Math.max(6, Math.round((val / maxHour) * 140));
+            return `
+            <div class="stats-bar-col">
+              <span class="stats-bar-value">${
+                val === null ? "" : fmt.format(Math.round(val))
+              }</span>
+              <div class="stats-bar${
+                val === null ? " stats-bar-empty" : isBest ? " stats-bar-best" : ""
+              }" style="height:${heightPx}px"></div>
+              <span class="stats-bar-label">${h}</span>
+            </div>`;
+          })
+          .join("");
+
+        const hasHourData = hourAvgs.some((v) => v !== null);
+
+        content.innerHTML =
+          highlightsHtml +
+          `<p class="stats-block-title">Promedio por hora según día de la semana</p>
+          <div class="stats-bar-chart">${weekdayBarsHtml}</div>` +
+          `<p class="stats-block-title">Promedio por hora según franja horaria (0 a 23 hs)</p>` +
+          (hasHourData
+            ? `<div class="stats-bar-chart">${hourBarsHtml}</div>`
+            : `<p class="note" style="margin:0 0 20px">Para ver esto, cargá las jornadas con hora de inicio y hora de fin (por ejemplo, con la foto del resumen de Uber).</p>`);
       };
 
       const openWeekDetail = (weekKey, weekMap) => {
@@ -5989,6 +6371,7 @@
       const VIEW_TITLES = {
         main: "Cargar jornada",
         history: "Historial",
+        stats: "Estadísticas",
         goals: "Metas",
         repairs: "Mantenimiento",
       };
@@ -6003,11 +6386,16 @@
         const isGoals = view === "goals";
         const isHistory = view === "history";
         const isRepairs = view === "repairs";
+        const isStats = view === "stats";
 
         const viewRepairs = document.getElementById("view-repairs");
-        const allViews = [viewMain, viewHistory, viewGoals, viewRepairs].filter(
-          Boolean
-        );
+        const allViews = [
+          viewMain,
+          viewHistory,
+          viewGoals,
+          viewRepairs,
+          viewStats,
+        ].filter(Boolean);
         const currentView = allViews.find(
           (v) => !v.classList.contains("hidden")
         );
@@ -6017,6 +6405,7 @@
           viewHistory.classList.toggle("hidden", !isHistory);
           if (viewGoals) viewGoals.classList.toggle("hidden", !isGoals);
           if (viewRepairs) viewRepairs.classList.toggle("hidden", !isRepairs);
+          if (viewStats) viewStats.classList.toggle("hidden", !isStats);
 
           const incoming = isMain
             ? viewMain
@@ -6024,6 +6413,8 @@
             ? viewHistory
             : isGoals
             ? viewGoals
+            : isStats
+            ? viewStats
             : viewRepairs;
           if (incoming) {
             incoming.style.animation = "none";
@@ -6059,6 +6450,9 @@
           }
           if (isRepairs) {
             renderRepairs();
+          }
+          if (isStats) {
+            renderStatsView();
           }
         };
 
@@ -6576,6 +6970,9 @@
 
       if (goalsDriverFilterInput) {
         goalsDriverFilterInput.addEventListener("change", renderGoalsView);
+      }
+      if (statsDriverFilterInput) {
+        statsDriverFilterInput.addEventListener("change", renderStatsView);
       }
 
       const goalsExpandBtn = document.getElementById("goals-expand-btn");
